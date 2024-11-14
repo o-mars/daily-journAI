@@ -64,8 +64,12 @@ export class User {
     if (!!document.preferences) user.preferences = UserPreferences.toUserPreferences(user.preferences);
 
     if (!!document.journalEntries) user.journalEntries = JournalEntry.toJournalEntries(user.journalEntries);
-
     user.journalEntries = document['journalEntries'];
+
+    if (!!document.moodEntries) {
+      const moodEntries = document.moodEntries.map((entry: DocumentData) => Mood.toMood(entry))
+      user.moodEntries = moodEntries;
+    } 
 
     return user;
   }

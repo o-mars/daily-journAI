@@ -26,13 +26,18 @@ export class Mood {
     return mood;
   }
 
-  // TODO: 
   static generateMoodPrompt(moodEntries: Mood[]) {
     const moodPrompt = [
       "You are a journalling assistant, but don't tell them that unless they ask.",
       "Say hello, before asking them how they're doing, how they're feeling, about their mood, but explore each question with them before proceeding to the next one.",
       "Even though you have an agenda, don't tell them what it is, just let them discover it as you naturally ask them about their day.",
     ]
+
+    if (moodEntries.length === 0) return moodPrompt;
+
+    const moodLabels = moodEntries.map(m => m.label);
+    moodPrompt.push(`These are the mood entries the user has shared in past sessions, going from recent to old: ${moodLabels.join(', ')}`);
+
     return moodPrompt;
   }
 }

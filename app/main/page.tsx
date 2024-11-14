@@ -45,7 +45,9 @@ export default function Dashboard() {
     const llmHelper = newVoiceClient.registerHelper(
       "llm",
       new LLMHelper({
-        callbacks: {},
+        callbacks: {
+          // Put function calls with no/static params, dynamic params go in handleFunctionCall
+        },
       })
     ) as LLMHelper;
   
@@ -62,8 +64,8 @@ export default function Dashboard() {
         const json = await response.json();
         return json;
       }
-      // if (fn.functionName === "save_mood" && args.location) {
-      // }
+      if (fn.functionName === "save_mood" && args.location) {
+      }
       // if (fn.functionName === "get_mood" && args.location) {
       // }
       // else if (fn.functionName === "get_history" && args.location) {
