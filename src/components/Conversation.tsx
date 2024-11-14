@@ -13,6 +13,7 @@ const Conversation: React.FC = () => {
   useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
 
   useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
+  const v = useRTVIClient();
 
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -26,6 +27,11 @@ const Conversation: React.FC = () => {
 
   function handleDisconnect() {
     console.log('todo: disconnect logic in conversation.. to save the convo log?');
+
+    const transcriptChunks = [];
+    messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
+    
+    const completeTranscript = messages.map(message => `${message.from}: ${message.text}.`).join(' ');
     /*
      TODO: Take the entire transcript, and send it for post-convo analysis:
       - Ask the LLM to give you Mood[] from the text
