@@ -25,7 +25,12 @@ const Conversation: React.FC = () => {
   }
 
   function handleDisconnect() {
-    console.log('todo: disconnect logic in conversation.. to save the convo log?')
+    console.log('todo: disconnect logic in conversation.. to save the convo log?');
+    /*
+     TODO: Take the entire transcript, and send it for post-convo analysis:
+      - Ask the LLM to give you Mood[] from the text
+      - Update User & User/Mood
+     */
   }
 
   function handleFoo(data: LLMFunctionCallData) {

@@ -13,6 +13,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { useRouter } from "next/navigation";
 import Conversation from "@/src/components/Conversation";
+import { saveMoodEntry } from "@/src/client/firebase.service.client";
+import { Mood } from "@/src/models/mood";
 
 export default function Dashboard() {
   const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
@@ -64,17 +66,13 @@ export default function Dashboard() {
         const json = await response.json();
         return json;
       }
-      if (fn.functionName === "save_mood" && args.location) {
+      // This seems potentially strange: a) compute and pass partial mood in payload? b) why not at end
+      if (fn.functionName === "save_mood" && args.label) {
+        const moodPartial: Partial<Mood> = { label: encodeURIComponent(args.label) };
+        const response = await saveMoodEntry(moodPartial);
+        const json = await response.json();
+        return json;
       }
-      // if (fn.functionName === "get_mood" && args.location) {
-      // }
-      // else if (fn.functionName === "get_history" && args.location) {
-      //   const response = await fetch(
-      //     `/api/user?location=${encodeURIComponent(args.location)}`
-      //   );
-      //   const json = await response.json();
-      //   return json;
-      // }
       else {
         return { error: "couldn't fetch weather" };
       }
