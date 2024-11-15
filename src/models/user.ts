@@ -4,10 +4,9 @@ import { UserPreferences } from "@/src/models/user.preferences";
 import { DocumentData, Timestamp } from "firebase/firestore";
 
 const introductionMessage = [
-  "Introduce yourself warmly as someone here to help them explore their thoughts and feelings through voice journaling.",
-  "Let them know they can share as much or as little as they’re comfortable with.",
-  "Start by asking if there’s something on their mind or a feeling they’d like to explore today.",
-  "Keep the conversation easy-going and natural, letting them lead with what they’d like to discuss."
+  `Say the following: "Hello, I'm here to help you journal. How have you been feeling today?"`,
+  // "Briefly introduce yourself as someone here to help them explore their thoughts and feelings through journaling.",
+  // "Start by asking about how they've been feeling today and wait for a response.",
 ];
 
 export class UserProfile {
@@ -38,10 +37,12 @@ export class User {
       "They are also speaking to you, and their response is being converted to text before being sent to you.",
     ];
 
-    if (!this.hasMoodEntries) introductionMessage.map(message => systemPromptChunks.push(message));
+    if (!this.hasMoodEntries && this.moodEntries.length === 0) introductionMessage.map(message => systemPromptChunks.push(message));
     else Mood.generateMoodPrompt(this.moodEntries).map(moodChunk => systemPromptChunks.push(moodChunk));
 
     this.preferences.generateSystemMessage().map(prefChunk => systemPromptChunks.push(prefChunk));
+
+    console.log(systemPromptChunks);
 
     const config = [
       this.preferences.getVadConfig(),
@@ -69,6 +70,7 @@ export class User {
     if (!!document.moodEntries) {
       const moodEntries = document.moodEntries.map((entry: DocumentData) => Mood.toMood(entry))
       user.moodEntries = moodEntries;
+      user.hasMoodEntries = moodEntries > 0;
     } 
 
     return user;

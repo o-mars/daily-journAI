@@ -41,21 +41,21 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
   }
 }
 
-export async function addMood(userId: string, moodData: Partial<Mood>): Promise<Mood> {
+export async function addMoodEntries(userId: string, moodData: Partial<Mood[]>): Promise<boolean> {
   try {
-    const moodEntriesRef = db.collection(`test/${userId}/mood`);
-    const document = await moodEntriesRef.add({
-      label: moodData.label,
-      score: moodData.score,
-      source: moodData.source,
-      createdAt: moodData.createdAt?.toISOString()
+    const { FieldValue } = admin.firestore;
+    const batch = db.batch();
+    moodData.forEach(el => {
+      const docRef = db.collection(`test/${userId}/mood`).doc();
+      batch.set(docRef, {...el, createdAt: FieldValue.serverTimestamp()});
     });
-    const mood = Mood.toMood(document);
-    console.log('created mood! ', mood);
-    return mood;
+    batch.commit();
+
+    console.log('created moods!');
+    return true;
   } catch (error) {
     console.error("Error creating mood entry:", error);
-    throw error;
+    return false;
   }
 }
 
@@ -83,12 +83,8 @@ export async function getRecentMood(userId: string): Promise<Mood[]> {
 
 export async function getMoodCount(userId: string): Promise<number> {
   try {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
     const usersMoodCollectionRef = db.collection(`test/${userId}/mood`);
     const querySnapshot = await usersMoodCollectionRef.get();
-
     return querySnapshot.size;
   } catch (error) {
     throw error;

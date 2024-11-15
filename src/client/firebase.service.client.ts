@@ -50,12 +50,12 @@ export async function updateUser(data: Partial<User>) {
   }
 }
 
-export async function saveMoodEntry(data: Partial<Mood>) {
+export async function saveMoodEntries(data: Partial<Mood[]>) {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
 
-    const response = await fetch('/api/mood', {
+    const response = await fetch('/api/user/mood', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -67,9 +67,9 @@ export async function saveMoodEntry(data: Partial<Mood>) {
     if (!response.ok) throw new Error(`Failed to save mood entry: ${response.statusText}`);
 
     const result = await response.json();
-    console.log("Mood entry saved:", result);
+    console.log("Mood entries saved:", result);
     return result;
   } catch (error) {
-    console.error("Error saving mood entry:", error);
+    console.error("Error saving mood entries:", error);
   }
 }

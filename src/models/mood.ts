@@ -38,6 +38,7 @@ export class Mood {
     const moodLabels = moodEntries.map(m => m.label);
     moodPrompt.push(`These are the mood entries the user has shared in past sessions, going from recent to old: ${moodLabels.join(', ')}`);
 
+    console.log('mood prompt called for instructions');
     return moodPrompt;
   }
 }

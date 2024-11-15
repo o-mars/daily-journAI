@@ -1,3 +1,5 @@
+import { saveMoodEntries } from "@/src/client/firebase.service.client";
+import { analyzeTranscriptForMoods } from "@/src/client/openai.service.client";
 import React, { useState, useEffect } from "react";
 import { BotLLMTextData, LLMFunctionCallData, RTVIClientConfigOption, RTVIError, RTVIEvent, TranscriptData } from "realtime-ai";
 import { useRTVIClient, useRTVIClientTransportState, useRTVIClientEvent } from "realtime-ai-react";
@@ -25,13 +27,16 @@ const Conversation: React.FC = () => {
     setMessages((prevMessages) => [...prevMessages, { from: 'JournAI', text: data.text }]);
   }
 
-  function handleDisconnect() {
+  async function handleDisconnect() {
     console.log('todo: disconnect logic in conversation.. to save the convo log?');
 
     const transcriptChunks = [];
     messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
     
     const completeTranscript = messages.map(message => `${message.from}: ${message.text}.`).join(' ');
+    const moodPartials = await analyzeTranscriptForMoods(completeTranscript);
+    console.log('open ai analysis: ', moodPartials);
+    await saveMoodEntries(moodPartials);
     /*
      TODO: Take the entire transcript, and send it for post-convo analysis:
       - Ask the LLM to give you Mood[] from the text

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { addMood, auth, getRecentMood } from '../../../lib/firebase.admin';
+import { addMoodEntries, auth, getRecentMood } from '../../../lib/firebase.admin';
 import { Mood } from '@/src/models/mood';
 
 export async function GET(request: Request) {
@@ -32,9 +32,9 @@ export async function POST(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const newMoodEntry: Partial<Mood> = await request.json();
+    const newMoodEntries: Partial<Mood[]> = await request.json();
 
-    const response = addMood(userId, newMoodEntry);
+    const response = addMoodEntries(userId, newMoodEntries);
 
     return NextResponse.json(response);
   } catch (error) {

@@ -12,7 +12,6 @@ export const useUserData = () => {
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('auth changed: ', user);
       if (user) {
         setUserId(user.uid);
       } else {
@@ -25,18 +24,14 @@ export const useUserData = () => {
   }, []);
 
   useEffect(() => {
-    console.log(userId);
     if (!userId) return;
 
     const fetchUserData = async () => {
-      console.log('fetching user data');
       setIsLoading(true);
       setError(null);
 
       try {
-        console.log('fetching user...');
         const user = await getUser(userId);
-        console.log('useUser got user: ', user);
         setUser(user);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
