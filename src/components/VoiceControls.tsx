@@ -34,7 +34,7 @@ const VoiceControls: React.FC = () => {
     setIsStarted(false);
   }
 
-  function test() {
+  function toggleMicEnabled() {
     setIsMicEnabled(prev => !prev);
   }
 
@@ -46,7 +46,7 @@ const VoiceControls: React.FC = () => {
       <br />
       {isStarted &&
         <>
-          <button onClick={() => test()}>Mic: { isMicEnabled ? 'Enabled' : 'Disabled' }</button>
+          <button onClick={() => toggleMicEnabled()}>Mic: { isMicEnabled ? 'Enabled' : 'Disabled' }</button>
         </>
       }
     </div>

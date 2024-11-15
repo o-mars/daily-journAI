@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { RTVIClient, LLMHelper, FunctionCallParams } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
-import { RTVIClientAudio, RTVIClientProvider } from "realtime-ai-react";
+import { RTVIClientAudio, RTVIClientProvider, VoiceVisualizer } from "realtime-ai-react";
 
 import VoiceControls from "../../src/components/VoiceControls";
 
@@ -24,7 +24,6 @@ export default function Dashboard() {
       return;
     }
 
-    console.log(user);
     const config = user?.generateConfig() ?? defaultConfig;
     if (user === null) console.error('could not get user data from firebase... using default');
     const newVoiceClient = new RTVIClient({
@@ -40,6 +39,10 @@ export default function Dashboard() {
         },
         config: config,
       },
+      callbacks: {
+        onGenericMessage: (data) => console.log('generic rtvi: ', data),
+        onConfig: (config) => console.log('config: ', config),
+      }
     });
 
     const llmHelper = newVoiceClient.registerHelper(
@@ -90,6 +93,24 @@ export default function Dashboard() {
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
           <h1 className="text-4xl font-bold">JournAI</h1>
           <button onClick={() => handleLogout()}>Logout</button>
+          <div>
+            <VoiceVisualizer
+              participantType="local"
+              backgroundColor="black"
+              barColor="cyan"
+              barGap={1}
+              barWidth={4}
+              barMaxHeight={24}
+            />
+            <VoiceVisualizer
+              participantType="bot"
+              backgroundColor="black"
+              barColor="magenta"
+              barGap={1}
+              barWidth={4}
+              barMaxHeight={24}
+            />
+          </div>
           <Conversation />
           <VoiceControls />
         </main>

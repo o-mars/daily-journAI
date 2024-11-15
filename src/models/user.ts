@@ -4,7 +4,7 @@ import { UserPreferences } from "@/src/models/user.preferences";
 import { DocumentData, Timestamp } from "firebase/firestore";
 
 const introductionMessage = [
-  `Say the following: "Hello, I'm here to help you journal. How have you been feeling today?"`,
+  `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`,
   // "Briefly introduce yourself as someone here to help them explore their thoughts and feelings through journaling.",
   // "Start by asking about how they've been feeling today and wait for a response.",
 ];
@@ -33,11 +33,11 @@ export class User {
   generateConfig() {
     const systemPromptChunks = [
       "Your responses will converted to audio.",
-      "Please do not include any special characters in your response other than '!' or '?'.",
+      "Please do not include any special characters in your response other than '!', '-', or '?'.",
       "They are also speaking to you, and their response is being converted to text before being sent to you.",
     ];
 
-    if (!this.hasMoodEntries && this.moodEntries.length === 0) introductionMessage.map(message => systemPromptChunks.push(message));
+    if (!this.hasMoodEntries) introductionMessage.map(message => systemPromptChunks.push(message));
     else Mood.generateMoodPrompt(this.moodEntries).map(moodChunk => systemPromptChunks.push(moodChunk));
 
     this.preferences.generateSystemMessage().map(prefChunk => systemPromptChunks.push(prefChunk));

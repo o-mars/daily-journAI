@@ -50,9 +50,23 @@ export class UserPreferences {
     return {
       service: "tts",
       options: [
-        { name: "voice", value: this.voiceId },
         { name: "model", value: this.ttsModel },
+        { name: "voice", value: this.voiceId },
         { name: "language", value: this.languageId },
+        { name: 'speed', value: -0.2 },
+        { name: 'emotion', value: ['positivity:lowest'] },
+        // { name: 'engine', type: 'string' },
+        // { name: 'pitch', type: 'string' },
+        // { name: 'rate', value: 'fast' },
+        // { name: 'volume', type: 'string' },
+        // { name: 'emphasis', type: 'string' },
+        { name: 'style', value: 'empathetic' },
+        // { name: 'style_degree', type: 'string' },
+        // { name: 'role', type: 'string' },
+        // { name: 'optimize_streaming_latency', type: 'string' },
+        // { name: 'stability', type: 'number' },
+        // { name: 'similarity_boost', type: 'number' },
+        // { name: 'use_speaker_boost', type: 'bool' },
         {
           name: "text_filter",
           value: {
@@ -60,6 +74,7 @@ export class UserPreferences {
             filter_tables: false,
           },
         },
+        // {name: 'seed', type: 'number'},
       ],
     };
   };
@@ -69,6 +84,16 @@ export class UserPreferences {
       service: "llm",
       options: [
         { name: "model", value: this.llmModel },
+        { name: 'temperature', value: 0.7 },
+        // {name: 'top_p', type: 'number'},
+        // {name: 'top_k', type: 'number'},
+        { name: 'frequency_penalty', value: -0.2 },
+        // {name: 'presence_penalty', type: 'number'},
+        // {name: 'max_tokens', type: 'number'},
+        // {name: 'max_completion_tokens', type: 'number'},
+        // {name: 'max_response_output_tokens', type: 'number'},
+        // {name: 'seed', type: 'number'},
+        // {name: 'extra', type: 'object'},
         {
           name: "initial_messages",
           value: [
@@ -78,7 +103,12 @@ export class UserPreferences {
             },
           ],
         },
+        // {name: 'enable_prompt_caching', type: 'bool'},
+        // {name: 'tools', type: 'array'},
         { name: "run_on_config", value: true },
+        // {name: 'turn_detection', type: 'object'},
+        // {name: 'voice', type: 'string'},
+        // {name: 'modalities', type: 'array'},
       ],
     };
   }

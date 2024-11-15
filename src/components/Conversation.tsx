@@ -1,6 +1,6 @@
 import { saveMoodEntries } from "@/src/client/firebase.service.client";
 import { analyzeTranscriptForMoods } from "@/src/client/openai.service.client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BotLLMTextData, LLMFunctionCallData, RTVIClientConfigOption, RTVIError, RTVIEvent, TranscriptData } from "realtime-ai";
 import { useRTVIClient, useRTVIClientTransportState, useRTVIClientEvent } from "realtime-ai-react";
 
@@ -11,25 +11,39 @@ interface Message {
 
 const Conversation: React.FC = () => {
   useRTVIClientEvent(RTVIEvent.UserTranscript, handleUserTranscript)
-  useRTVIClientEvent(RTVIEvent.BotTranscript, handleBotTranscript)
+  useRTVIClientEvent(RTVIEvent.BotLlmText, handleBotLLmText);
+  useRTVIClientEvent(RTVIEvent.BotLlmStopped, commitBotText);
+  // useRTVIClientEvent(RTVIEvent.BotTranscript, handleBotTranscript)
+  // useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
   useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
 
   useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
-  const v = useRTVIClient();
 
+  const botTextStream = useRef<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
+  function handleBotLLmText({ text }: BotLLMTextData) {
+    botTextStream.current.push(text);
+  }
+
+  function commitBotText() {
+    const text = botTextStream.current.join('');
+    console.log('commit');
+    botTextStream.current = [];
+    setMessages((prevMessages) => [...prevMessages, { from: 'JournAI', text }]);
+  }
+
   function handleUserTranscript(data: TranscriptData): void {
+    console.log('user transcript');
     if (data.final) setMessages((prevMessages) => [...prevMessages, { from: 'User', text: data.text }]);
   }
   
   function handleBotTranscript(data: BotLLMTextData): void {
+    console.log('bot transcript');
     setMessages((prevMessages) => [...prevMessages, { from: 'JournAI', text: data.text }]);
   }
 
   async function handleDisconnect() {
-    console.log('todo: disconnect logic in conversation.. to save the convo log?');
-
     const transcriptChunks = [];
     messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
     
@@ -37,11 +51,6 @@ const Conversation: React.FC = () => {
     const moodPartials = await analyzeTranscriptForMoods(completeTranscript);
     console.log('open ai analysis: ', moodPartials);
     await saveMoodEntries(moodPartials);
-    /*
-     TODO: Take the entire transcript, and send it for post-convo analysis:
-      - Ask the LLM to give you Mood[] from the text
-      - Update User & User/Mood
-     */
   }
 
   function handleFoo(data: LLMFunctionCallData) {
