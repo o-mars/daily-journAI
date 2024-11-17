@@ -1,7 +1,7 @@
 import { JournalEntry } from "@/src/models/journal.entry";
 import { Mood } from "@/src/models/mood";
 import { UserPreferences } from "@/src/models/user.preferences";
-import { DocumentData, Timestamp } from "firebase/firestore";
+import { DocumentData } from "firebase/firestore";
 
 const introductionMessage = [
   `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`,

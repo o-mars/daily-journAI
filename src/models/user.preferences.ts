@@ -104,7 +104,56 @@ export class UserPreferences {
           ],
         },
         // {name: 'enable_prompt_caching', type: 'bool'},
-        // {name: 'tools', type: 'array'},
+        { name: 'tools', 
+          value: [
+            {
+              name: "record_answer",
+              description:
+                "Records the user's answer for a form field.",
+              input_schema: {
+                type: "object",
+                properties: {
+                  form_id: {
+                    type: "string",
+                    description: "The id of the form being filled. You should already know this from the initial prompt.",
+                  },
+                  field_id: {
+                    type: "string",
+                    description:
+                      "The field id to fill. You should already have the context to know this.",
+                  },
+                  value: {
+                    type: "string",
+                    description:
+                      "The value given by the user for this particular field.",
+                  },
+                },
+                required: ["form_id", "field_id", "value"], // todo: can we know form/field outside this bot, so it just sends value and "we" know form/field.
+              },
+            },
+            {
+              name: "update_bot_config",
+              description:
+                "Updates your configuration settings.",
+              input_schema: {
+                type: "object",
+                properties: {
+                  key: {
+                    type: "string",
+                    enum: ["response-speed", "response-length", "response-style"],
+                    description:
+                      "THe configuration key that we want changed.",
+                  },
+                  value: {
+                    type: "string",
+                    description: "The value for the config. E.g. 'slower' or 'faster' for response-speed, or 'shorter' or 'longer' for response-length.",
+                  },
+                },
+                required: ["key", "value"],
+              },
+            },
+          ] 
+        },
         { name: "run_on_config", value: true },
         // {name: 'turn_detection', type: 'object'},
         // {name: 'voice', type: 'string'},

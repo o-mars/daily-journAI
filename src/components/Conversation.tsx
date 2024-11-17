@@ -1,8 +1,8 @@
 import { saveMoodEntries } from "@/src/client/firebase.service.client";
 import { analyzeTranscriptForMoods } from "@/src/client/openai.service.client";
-import React, { useState, useEffect, useRef } from "react";
-import { BotLLMTextData, LLMFunctionCallData, RTVIClientConfigOption, RTVIError, RTVIEvent, TranscriptData } from "realtime-ai";
-import { useRTVIClient, useRTVIClientTransportState, useRTVIClientEvent } from "realtime-ai-react";
+import React, { useState, useRef } from "react";
+import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
+import { useRTVIClientEvent } from "realtime-ai-react";
 
 interface Message {
   from: string;
@@ -17,7 +17,7 @@ const Conversation: React.FC = () => {
   // useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
   useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
 
-  useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
+  // useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
 
   const botTextStream = useRef<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,11 +38,6 @@ const Conversation: React.FC = () => {
     if (data.final) setMessages((prevMessages) => [...prevMessages, { from: 'User', text: data.text }]);
   }
   
-  function handleBotTranscript(data: BotLLMTextData): void {
-    console.log('bot transcript');
-    setMessages((prevMessages) => [...prevMessages, { from: 'JournAI', text: data.text }]);
-  }
-
   async function handleDisconnect() {
     const transcriptChunks = [];
     messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
@@ -53,9 +48,9 @@ const Conversation: React.FC = () => {
     await saveMoodEntries(moodPartials);
   }
 
-  function handleFoo(data: LLMFunctionCallData) {
-    // data.function_name
-  }
+  // function handleFoo(data: LLMFunctionCallData) {
+  //   // data.function_name
+  // }
 
   return (
     <div>

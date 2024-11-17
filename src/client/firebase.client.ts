@@ -2,7 +2,6 @@ import { User } from "@/src/models/user";
 import { db } from "../../firebase.config";
 import { collection, doc, DocumentData, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { JournalEntry } from "@/src/models/journal.entry";
-import { getAuth } from "firebase/auth";
 
 export const USER_PATH = 'test';
 
