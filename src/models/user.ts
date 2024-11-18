@@ -26,10 +26,12 @@ export class User {
 
   generateConfig() {
     const systemPromptChunks = [
-      "Your responses will converted to audio.",
-      "Please do not include any special characters in your response other than '!', '-', or '?'.",
+      "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
       "They are also speaking to you, and their response is being converted to text before being sent to you.",
+      `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase. e.g. "It sounds like"`
     ];
+
+    this.preferences.generateSystemMessage().map(prefChunk => systemPromptChunks.push(prefChunk));
 
     if (this.isNewUser) {
       const introductionMessage = [
@@ -41,14 +43,13 @@ export class User {
     } 
     else {
       systemPromptChunks.push("You are a journalling assistant, but don't tell them that unless they ask.");
-      systemPromptChunks.push("Say hello, before asking them how they're doing, how they're feeling, about their mood, but explore each question with them before proceeding to the next one.");
-      systemPromptChunks.push("Even though you have an agenda, don't tell them what it is, just let them discover it as you naturally ask them about their day.");
-      systemPromptChunks.push('Here are the summaries of the last couple of conversations the user has had with you.');
-      systemPromptChunks.push('Reference these where necessary, if you notice a change or a continuation of patterns.');
-      this.journalEntries.filter(entry => !!entry.summary).map(entry => systemPromptChunks.push(entry.summary!));
+      systemPromptChunks.push("Say hello, before asking them about how they're feeling, and help them explore this feeling.");
+      // systemPromptChunks.push("Even though you have an agenda, don't tell them what it is, just let them discover it as you naturally ask them about their day.");
+      systemPromptChunks.push(`Here are the summaries of the last couple of conversations the user has had with you.`);
+      systemPromptChunks.push(`Only reference them if the user says something that might relate to it. Focus on how the user is presently feeling.`);
+      // systemPromptChunks.push(`Use these to inform your empathy but don't reference them unless they are directly relevant.`);
+      this.journalEntries.filter(entry => !!entry.summary).map(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
     } 
-
-    this.preferences.generateSystemMessage().map(prefChunk => systemPromptChunks.push(prefChunk));
 
     console.log(systemPromptChunks);
 

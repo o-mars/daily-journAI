@@ -1,7 +1,6 @@
 import admin from "firebase-admin";
 
 import { User } from "@/src/models/user";
-import { Mood } from "@/src/models/mood";
 import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
 import { generateSummary } from "@/app/lib/openai.admin";
 
@@ -72,6 +71,7 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
     const querySnapshot = await usersMoodCollectionRef
       .where("createdAt", ">=", oneWeekAgo)
       .orderBy("createdAt", "desc")
+      .limit(3)
       .get();
 
     const recentJournalEntries: JournalEntry[] = [];

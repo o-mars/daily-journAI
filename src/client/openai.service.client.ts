@@ -1,7 +1,6 @@
-import { Mood } from "@/src/models/mood";
 import { getAuth } from "firebase/auth";
 
-export async function analyzeTranscriptForSummary(transcript: string): Promise<Partial<Mood[]>> {
+export async function analyzeTranscriptForSummary(transcript: string): Promise<string> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user');
@@ -21,6 +20,6 @@ export async function analyzeTranscriptForSummary(transcript: string): Promise<P
     return JSON.parse(data);
   } catch (error) {
     console.error(error);
-    return [];
+    return '';
   }
 }

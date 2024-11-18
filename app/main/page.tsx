@@ -24,20 +24,22 @@ export default function Dashboard() {
       return;
     }
 
+    const services = user?.preferences.getServices() ?? defaultServices;
     const config = user?.generateConfig() ?? defaultConfig;
+    console.log(services);
     if (user === null) console.error('could not get user data from firebase... using default');
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
       params: {
         baseUrl: `/api`,
         requestData: {
-          services: defaultServices,
+          services,
         },
         endpoints: {
           connect: "/connect",
           action: "/actions",
         },
-        config: config,
+        config,
       },
       callbacks: {
         onGenericMessage: (data) => console.log('generic rtvi: ', data),
@@ -92,25 +94,7 @@ export default function Dashboard() {
       <>
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
           <h1 className="text-4xl font-bold">JournAI</h1>
-          <button onClick={() => handleLogout()}>Logout</button>
-          <div>
-            <VoiceVisualizer
-              participantType="local"
-              backgroundColor="black"
-              barColor="cyan"
-              barGap={1}
-              barWidth={4}
-              barMaxHeight={24}
-            />
-            <VoiceVisualizer
-              participantType="bot"
-              backgroundColor="black"
-              barColor="magenta"
-              barGap={1}
-              barWidth={4}
-              barMaxHeight={24}
-            />
-          </div>
+          <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><img src="/icons/feather-log-out.svg"/></button>
           <Conversation />
           <VoiceControls />
         </main>
