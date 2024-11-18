@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { addMoodEntries, auth, getRecentMood } from '../../../lib/firebase.admin';
+import { addJournalEntry, auth, getRecentJournalEntries } from '../../../lib/firebase.admin';
 import { Mood } from '@/src/models/mood';
+import { JournalConversationEntry, JournalEntry } from '@/src/models/journal.entry';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const response = getRecentMood(userId);
+    const response = getRecentJournalEntries(userId);
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error verifying ID token:", error);
@@ -32,9 +33,9 @@ export async function POST(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const newMoodEntries: Partial<Mood[]> = await request.json();
+    const conversation: JournalConversationEntry[] = await request.json();
 
-    const response = addMoodEntries(userId, newMoodEntries);
+    const response = addJournalEntry(userId, conversation);
 
     return NextResponse.json(response);
   } catch (error) {

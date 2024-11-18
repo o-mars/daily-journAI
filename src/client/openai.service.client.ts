@@ -1,7 +1,7 @@
 import { Mood } from "@/src/models/mood";
 import { getAuth } from "firebase/auth";
 
-export async function analyzeTranscriptForMoods(transcript: string): Promise<Partial<Mood[]>> {
+export async function analyzeTranscriptForSummary(transcript: string): Promise<Partial<Mood[]>> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user');

@@ -1,13 +1,8 @@
-import { saveMoodEntries } from "@/src/client/firebase.service.client";
-import { analyzeTranscriptForMoods } from "@/src/client/openai.service.client";
+import { saveJournalEntry } from "@/src/client/firebase.service.client";
+import { JournalConversationEntry } from "@/src/models/journal.entry";
 import React, { useState, useRef } from "react";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
 import { useRTVIClientEvent } from "realtime-ai-react";
-
-interface Message {
-  from: string;
-  text: string;
-}
 
 const Conversation: React.FC = () => {
   useRTVIClientEvent(RTVIEvent.UserTranscript, handleUserTranscript)
@@ -20,7 +15,7 @@ const Conversation: React.FC = () => {
   // useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
 
   const botTextStream = useRef<string[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
 
   function handleBotLLmText({ text }: BotLLMTextData) {
     botTextStream.current.push(text);
@@ -30,22 +25,28 @@ const Conversation: React.FC = () => {
     const text = botTextStream.current.join('');
     console.log('commit');
     botTextStream.current = [];
-    setMessages((prevMessages) => [...prevMessages, { from: 'JournAI', text }]);
+    setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   }
 
   function handleUserTranscript(data: TranscriptData): void {
     console.log('user transcript');
-    if (data.final) setMessages((prevMessages) => [...prevMessages, { from: 'User', text: data.text }]);
+    if (data.final) setMessages((prevMessages) => [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }]);
   }
   
   async function handleDisconnect() {
-    const transcriptChunks = [];
-    messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
+    const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
+    if (didUserInteract) {
+      await saveJournalEntry(messages);
+    } else {
+      console.log('no user input, not doing save on journal entry');
+    }
+    // const transcriptChunks = [];
+    // messages.map(message => transcriptChunks.push(`${message.from}: ${message.text}`));
     
-    const completeTranscript = messages.map(message => `${message.from}: ${message.text}.`).join(' ');
-    const moodPartials = await analyzeTranscriptForMoods(completeTranscript);
-    console.log('open ai analysis: ', moodPartials);
-    await saveMoodEntries(moodPartials);
+    // const completeTranscript = messages.map(message => `${message.from}: ${message.text}.`).join(' ');
+    // const summary = await analyzeTranscriptForSummary(completeTranscript);
+
+    // console.log('open ai analysis: ', summary);
   }
 
   // function handleFoo(data: LLMFunctionCallData) {

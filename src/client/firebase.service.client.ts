@@ -1,3 +1,4 @@
+import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
 import { Mood } from "@/src/models/mood";
 import { User } from "@/src/models/user";
 import { getAuth } from "firebase/auth";
@@ -50,24 +51,24 @@ export async function updateUser(data: Partial<User>) {
   }
 }
 
-export async function saveMoodEntries(data: Partial<Mood[]>) {
+export async function saveJournalEntry(conversation: JournalConversationEntry[]) {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
 
-    const response = await fetch('/api/user/mood', {
+    const response = await fetch('/api/user/journal', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(conversation)
     });
 
-    if (!response.ok) throw new Error(`Failed to save mood entry: ${response.statusText}`);
+    if (!response.ok) throw new Error(`Failed to save journal entry: ${response.statusText}`);
 
     const result = await response.json();
-    console.log("Mood entries saved:", result);
+    console.log("Journal Entry Saved:", result);
     return result;
   } catch (error) {
     console.error("Error saving mood entries:", error);

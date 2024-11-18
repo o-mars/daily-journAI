@@ -1,5 +1,5 @@
 // Example API route to get user
-import { getUser, updateUser, auth, getRecentMood, getMoodCount } from '@/app/lib/firebase.admin';
+import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount } from '@/app/lib/firebase.admin';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -15,11 +15,11 @@ export async function GET(request: Request) {
 
     const user = await getUser(userId);
 
-    const moodCount = await getMoodCount(userId);
-    user.hasMoodEntries = moodCount > 0;
+    const journalEntriesCount = await getJournalEntriesCount(userId);
+    user.isNewUser = journalEntriesCount === 0;
 
-    const recentMoodEntries = await getRecentMood(userId);
-    user.moodEntries = recentMoodEntries;
+    const recentJournalEntries = await getRecentJournalEntries(userId);
+    user.journalEntries = recentJournalEntries;
     
     console.log('returning user from backend using next response: ', user);
     return NextResponse.json(user);

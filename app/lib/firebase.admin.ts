@@ -2,6 +2,8 @@ import admin from "firebase-admin";
 
 import { User } from "@/src/models/user";
 import { Mood } from "@/src/models/mood";
+import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
+import { generateSummary } from "@/app/lib/openai.admin";
 
 
 if (!admin.apps.length) {
@@ -41,50 +43,52 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
   }
 }
 
-export async function addMoodEntries(userId: string, moodData: Partial<Mood[]>): Promise<boolean> {
+export async function addJournalEntry(userId: string, conversation: JournalConversationEntry[]): Promise<JournalEntry> {
   try {
-    const { FieldValue } = admin.firestore;
-    const batch = db.batch();
-    moodData.forEach(el => {
-      const docRef = db.collection(`test/${userId}/mood`).doc();
-      batch.set(docRef, {...el, createdAt: FieldValue.serverTimestamp()});
-    });
-    batch.commit();
+    const summary = await generateSummary(conversation);
 
-    console.log('created moods!');
-    return true;
+    const startTime = conversation[0].sentAt;
+    const endTime = conversation[conversation.length-1].sentAt;
+    const { FieldValue } = admin.firestore;
+    const journalEntriesCollectionRef = db.collection(`test/${userId}/journalEntries`);
+    const journalEntryDocRef = await journalEntriesCollectionRef.add({ conversation, summary, startTime, endTime, createdAt: FieldValue.serverTimestamp() });
+
+    const document = await journalEntryDocRef.get();
+    console.log('created journalEntry: ', document.data());
+
+    return JournalEntry.toJournalEntry({id: document.id, ...document.data()});
   } catch (error) {
-    console.error("Error creating mood entry:", error);
-    return false;
+    console.error("Error creating journal entry:", error);
+    throw error;
   }
 }
 
-export async function getRecentMood(userId: string): Promise<Mood[]> {
+export async function getRecentJournalEntries(userId: string): Promise<JournalEntry[]> {
   try {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    const usersMoodCollectionRef = db.collection(`test/${userId}/mood`);
+    const usersMoodCollectionRef = db.collection(`test/${userId}/journalEntries`);
     const querySnapshot = await usersMoodCollectionRef
       .where("createdAt", ">=", oneWeekAgo)
       .orderBy("createdAt", "desc")
       .get();
 
-    const recentMoodEntries: Mood[] = [];
+    const recentJournalEntries: JournalEntry[] = [];
     querySnapshot.forEach((doc) => {
-      recentMoodEntries.push(Mood.toMood(doc.data()));
+      recentJournalEntries.push(JournalEntry.toJournalEntry({ id: doc.id, ...doc.data() }));
     });
 
-    return recentMoodEntries;
+    return recentJournalEntries;
   } catch (error) {
     throw error;
   }
 }
 
-export async function getMoodCount(userId: string): Promise<number> {
+export async function getJournalEntriesCount(userId: string): Promise<number> {
   try {
-    const usersMoodCollectionRef = db.collection(`test/${userId}/mood`);
-    const querySnapshot = await usersMoodCollectionRef.get();
+    const usersJournalEntriesCollectionRef = db.collection(`test/${userId}/journalEntries`);
+    const querySnapshot = await usersJournalEntriesCollectionRef.get();
     return querySnapshot.size;
   } catch (error) {
     throw error;
