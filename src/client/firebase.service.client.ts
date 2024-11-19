@@ -1,5 +1,4 @@
-import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
-import { Mood } from "@/src/models/mood";
+import { JournalConversationEntry } from "@/src/models/journal.entry";
 import { User } from "@/src/models/user";
 import { getAuth } from "firebase/auth";
 
@@ -72,5 +71,29 @@ export async function saveJournalEntry(conversation: JournalConversationEntry[])
     return result;
   } catch (error) {
     console.error("Error saving mood entries:", error);
+  }
+}
+
+export async function submitFeedback(entryId: string, rating: number, comment: string) {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch("/api/feedback", {
+      method: "POST",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ entryId, rating, comment }),
+    });
+
+    if (!response.ok) throw new Error("Failed to submit feedback");
+    
+    const result = await response.json();
+    console.log("Feedback submitted successfully");
+    return result;
+  } catch (error) {
+    console.error("Error submitting feedback:", error);
   }
 }

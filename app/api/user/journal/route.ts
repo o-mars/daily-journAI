@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     const conversation: JournalConversationEntry[] = await request.json();
 
-    const response = addJournalEntry(userId, conversation);
+    const response = await addJournalEntry(userId, conversation);
 
     return NextResponse.json(response);
   } catch (error) {

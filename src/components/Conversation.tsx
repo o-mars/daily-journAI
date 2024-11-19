@@ -1,4 +1,5 @@
-import { saveJournalEntry } from "@/src/client/firebase.service.client";
+import { saveJournalEntry, submitFeedback } from "@/src/client/firebase.service.client";
+import FeedbackModal from "@/src/components/FeedbackModal";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import React, { useState, useRef, useEffect } from "react";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
@@ -18,6 +19,8 @@ const Conversation: React.FC = () => {
 
   const botTextStream = useRef<string[]>([]);
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
+  // const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [journalEntryId, setJournalEntryId] = useState<string>('');
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -57,15 +60,39 @@ const Conversation: React.FC = () => {
   async function handleDisconnect() {
     const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
     if (didUserInteract) {
-      await saveJournalEntry(messages);
+      const saved = await saveJournalEntry(messages);
+      console.log(saved);
+      setJournalEntryId(saved.id);
     } else {
       console.log('no user input, not doing save on journal entry');
     }
     setMessages([]);
+    // setModalOpen(true);
   }
+
+  const handleCloseModal = () => {
+    // setModalOpen(false); // Close the modal
+    setJournalEntryId('');
+  };
+
+  const handleSubmitFeedback = async (rating: number, comment: string) => {
+    try {
+      const response = await submitFeedback(journalEntryId, rating, comment);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      handleCloseModal();
+    }
+  };
 
   return (
     <div style={{ width: '60%', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
+      <FeedbackModal
+        isOpen={journalEntryId !== ''}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitFeedback}
+      />
       {messages.map((message, index) => (
         <div 
           key={index} 

@@ -94,3 +94,19 @@ export async function getJournalEntriesCount(userId: string): Promise<number> {
     throw error;
   }
 }
+
+export async function submitFeedback(userId: string, rating: number, comment: string, entryId: string = ''): Promise<boolean> {
+  try {
+    const { FieldValue } = admin.firestore;
+    const feedbackCollectionRef = db.collection(`feedback`);
+    const feedbackEntryDocRef = await feedbackCollectionRef.add({ userId, rating, comment, entryId, createdAt: FieldValue.serverTimestamp() });
+
+    const document = await feedbackEntryDocRef.get();
+    console.log('created feedback entry: ', document.data());
+
+    return true;
+  } catch (error) {
+    console.error("Error creating feedback entry:", error);
+    return false;
+  }
+}
