@@ -8,11 +8,11 @@ const Conversation: React.FC = () => {
   useRTVIClientEvent(RTVIEvent.UserTranscript, handleUserTranscript)
   useRTVIClientEvent(RTVIEvent.BotLlmText, handleBotLLmText);
   useRTVIClientEvent(RTVIEvent.BotLlmStopped, commitBotText);
-  useRTVIClientEvent(RTVIEvent.BotTranscript, (text) => console.log('Bot transcript: ' + text));
-  useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
+  // useRTVIClientEvent(RTVIEvent.BotTranscript, (text) => console.log('Bot transcript: ' + text));
+  // useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
   useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
-  useRTVIClientEvent(RTVIEvent.BotReady, () => console.log('bot is ready!!'));
-  useRTVIClientEvent(RTVIEvent.BotConnected, () => console.log('bot is connected!!'));
+  // useRTVIClientEvent(RTVIEvent.BotReady, () => console.log('bot is ready!!'));
+  // useRTVIClientEvent(RTVIEvent.BotConnected, () => console.log('bot is connected!!'));
 
   // useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
 
@@ -43,7 +43,15 @@ const Conversation: React.FC = () => {
   }
 
   function handleUserTranscript(data: TranscriptData): void {
-    if (data.final) setMessages((prevMessages) => [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }]);
+    if (!data.final) return;
+    setMessages((prevMessages) => {
+      const wasPreviousSender = prevMessages[prevMessages.length-1].from === 'user';
+      if (!wasPreviousSender) return [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }];
+      
+      const untouchedMessages = prevMessages.filter((_, index) => index !== prevMessages.length - 1);
+      untouchedMessages.push({ from: 'user', sentAt: new Date(data.timestamp), text: `${prevMessages[prevMessages.length-1].text} ${data.text}` });
+      return untouchedMessages;
+    });
   }
   
   async function handleDisconnect() {
