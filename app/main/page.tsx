@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { RTVIClient, LLMHelper, FunctionCallParams } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
-import { RTVIClientAudio, RTVIClientProvider, VoiceVisualizer } from "realtime-ai-react";
+import { RTVIClientAudio, RTVIClientProvider } from "realtime-ai-react";
 
 import VoiceControls from "../../src/components/VoiceControls";
 
@@ -92,9 +92,9 @@ export default function Dashboard() {
   return (
     <RTVIClientProvider client={voiceClient!}>
       <>
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-gray-900">
           <h1 className="text-4xl font-bold">JournAI</h1>
-          <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><img src="/icons/feather-log-out.svg"/></button>
+          <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><img src="/icons/feather-log-out.svg" alt="Logout"/></button>
           <Conversation />
           <VoiceControls />
         </main>

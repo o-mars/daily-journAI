@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase.config';
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -18,17 +19,23 @@ const Login: React.FC = () => {
     return () => unsubscribe();
   }, [router]);
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
       router.push('/main');
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Signup error:", error);
+      alert("Failed to create account: " + (error as Error).message);
     }
   };
 
-  const handleSignup = async () => {
-    router.push('/signup');
+  const handleLogin = () => {
+    router.push('/login');
   };
 
   return (
@@ -67,31 +74,44 @@ const Login: React.FC = () => {
                 placeholder="••••••••"
               />
             </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+                placeholder="••••••••"
+              />
+            </div>
           </div>
 
           <div className="space-y-4">
             <button
-              onClick={handleLogin}
+              onClick={handleSignup}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Sign in
+              Create Account
             </button>
             
             <div className="text-center">
-              <span className="text-gray-400">Don&apos;t have an account?</span>
+              <span className="text-gray-400">Already have an account?</span>
               <button
-                onClick={handleSignup}
+                onClick={handleLogin}
                 className="ml-2 text-indigo-400 hover:text-indigo-300 font-medium"
               >
-                Sign up
+                Sign in
               </button>
             </div>
           </div>
         </div>
       </div>
     </main>
-
   );
 };
 
-export default Login;
+export default Signup; 
