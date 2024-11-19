@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // Authentication check (implement your own auth logic)
-    const isAuthenticated = await checkAuthentication(request);
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { services, config } = await request.json();
 
     if (!services || !config || !process.env.DAILY_BOTS_API_KEY) {
@@ -47,8 +41,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-async function checkAuthentication(request: NextRequest): Promise<boolean> {
-  return true;
 }

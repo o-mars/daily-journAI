@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { addJournalEntry, auth, getRecentJournalEntries } from '../../../lib/firebase.admin';
-import { Mood } from '@/src/models/mood';
-import { JournalConversationEntry, JournalEntry } from '@/src/models/journal.entry';
+import { JournalConversationEntry } from '@/src/models/journal.entry';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];

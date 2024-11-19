@@ -13,6 +13,15 @@ export async function POST(request: Request) {
     });
   }
 
+  const prompt = [
+    "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
+    "They are also speaking to you, and their response is being converted to text before being sent to you.",
+    `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase. e.g. "It sounds like"`,
+    "Try to model your response such that when spoken out, it has a reflective style.",
+    "You are a journalling assistant, but don't tell them that unless they ask.",
+    "Say hello, before asking them about how they're feeling, and help them explore this feeling.",
+  ];
+
   const payload = {
     bot_profile: "voice_2024_10",
     max_duration: 999,
@@ -21,7 +30,7 @@ export async function POST(request: Request) {
       callDomain,
     },
     services: {
-      llm: "together",
+      llm: "openai",
       tts: "cartesia",
     },
     config: [
@@ -36,15 +45,14 @@ export async function POST(request: Request) {
         options: [
           {
             name: "model",
-            value: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            value: "gpt-4o-mini",
           },
           {
             name: "initial_messages",
             value: [
               {
                 role: "system",
-                content:
-                "Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'. They are also speaking to you, and their response is being converted to text before being sent to you. You are a journalling assistant, but don't tell them that unless they ask. Say hi to start, but then ask them about how they're doing, how they're feeling, about their mood, but explore each question with them before proceeding to the next one. Even though you have an agenda, don't tell them what it is, just let them discover it as you naturally ask them about their day. Be empathetic and try to model your response such that when spoken out, it could have a reflective tone.",
+                content: prompt.join(" "),
               },
             ],
           },
@@ -52,6 +60,9 @@ export async function POST(request: Request) {
         ],
       },
     ],
+    api_keys: {
+      openai: process.env.OPENAI_API_KEY
+    },
   };
 
   const req = await fetch("https://api.daily.co/v1/bots/start", {

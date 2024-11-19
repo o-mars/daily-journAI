@@ -65,7 +65,7 @@ const Conversation: React.FC = () => {
   }
 
   return (
-    <div style={{ width: '60%', border: '1px solid #ccc', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
+    <div style={{ width: '60%', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
       {messages.map((message, index) => (
         <div 
           key={index} 
@@ -73,21 +73,23 @@ const Conversation: React.FC = () => {
             marginBottom: '8px', 
             display: 'flex', 
             flexDirection: 'row', 
-            alignItems: 'flex-start'
+            justifyContent: message.from === 'user' ? 'flex-end' : 'flex-start',
+            paddingLeft: '8px',
+            paddingRight: '8px'
           }}
         >
-          <strong 
+          <div 
             style={{
-              paddingLeft: '8px',
-              minWidth: '80px',
-              fontWeight: 'bold', 
-              marginRight: '8px', 
-              color: message.from === 'user' ? 'cyan' : 'magenta'
+              maxWidth: '70%',
+              padding: '8px 12px',
+              borderRadius: '18px',
+              backgroundColor: message.from === 'user' ? '#007AFF' : '#E5E5EA',
+              color: message.from === 'user' ? 'white' : 'black',
+              wordWrap: 'break-word'
             }}
           >
-            {message.from === 'user' ? 'User' : 'JournAI'}:
-          </strong>
-          <span style={{ wordWrap: 'break-word', flex: 1, paddingRight: '8px' }}>{message.text}</span>
+            {message.text}
+          </div>
         </div>
       ))}
     </div>
