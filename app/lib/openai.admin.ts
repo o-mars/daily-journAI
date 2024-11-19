@@ -1,11 +1,9 @@
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
+export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-export default openai;
 
 export async function generateSummary(conversation: JournalConversationEntry[]) {
   const systemPromptChunks = [

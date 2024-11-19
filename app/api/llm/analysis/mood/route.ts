@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/app/lib/firebase.admin';
-import openai from '@/app/lib/openai.config';
+import { openai } from '@/app/lib/openai.admin';
 
 export async function POST(request: Request) {
   try {
