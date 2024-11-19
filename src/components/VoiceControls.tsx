@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { RTVIError } from "realtime-ai";
 import { useRTVIClient, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
 
@@ -55,37 +56,37 @@ const VoiceControls: React.FC = () => {
       <div className="text-red-500 text-bold">{error}</div>
       {isStarted &&
         <div style={{ display: 'flex' }}>
-          <button style={{ width: '28px' }}
-                  onClick={() => toggleMicEnabled()}>{ isMicEnabled ? <img src="/icons/mic-on.svg" alt="Mic On" /> : <img src="/icons/mic-off.svg" alt="Mic Off" /> }</button>
-            <VoiceVisualizer
-              participantType="local"
-              backgroundColor="black"
-              barColor="cyan"
-              barGap={1}
-              barWidth={4}
-              barMaxHeight={28}
-            />
-        </div>
-      }
-      <button style={{ width: '28px', height: '28px' }}
-              onClick={() => isStarted ? disconnect() : connect()}>
-        <img src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" />
-      </button>
-      <br />
-      {isStarted &&
-        <div style={{ display: 'flex' }}>
           <button style={{ width: '28px', zIndex: 4 }}
-                  onClick={() => toggleSpeakerEnabled()}>{ isSpeakerEnabled ? <img src="/icons/feather-volume.svg" alt="Speaker On" /> : <img src="/icons/feather-volume-x.svg" alt="Speaker Off" /> }</button>
+                  onClick={() => toggleSpeakerEnabled()}>{ isSpeakerEnabled ? <Image src="/icons/feather-volume.svg" alt="Speaker On" width={28} height={28} /> : <Image src="/icons/feather-volume-x.svg" alt="Speaker Off" width={28} height={28} /> }</button>
           <div style={{ marginLeft: '-12px' }}>
             <VoiceVisualizer
               participantType="bot"
-              backgroundColor="black"
-              barColor="magenta"
+              backgroundColor="rgb(17 24 39)"
+              barColor="rgb(229, 229, 234)"
               barGap={1}
               barWidth={4}
               barMaxHeight={28}
             />
           </div>
+        </div>
+      }
+      <button style={{ width: '28px', height: '28px' }}
+              onClick={() => isStarted ? disconnect() : connect()}>
+        <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />
+      </button>
+      <br />
+      {isStarted &&
+        <div style={{ display: 'flex' }}>
+          <button style={{ width: '28px' }}
+                  onClick={() => toggleMicEnabled()}>{ isMicEnabled ? <Image src="/icons/mic-on.svg" alt="Mic On" width={28} height={28} /> : <Image src="/icons/mic-off.svg" alt="Mic Off" width={28} height={28} /> }</button>
+            <VoiceVisualizer
+              participantType="local"
+              backgroundColor="rgb(17 24 39)"
+              barColor="rgb(0, 122, 255)"
+              barGap={1}
+              barWidth={4}
+              barMaxHeight={28}
+            />
         </div>
       }
     </div>
