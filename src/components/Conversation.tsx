@@ -12,16 +12,16 @@ const Conversation: React.FC = () => {
   useRTVIClientEvent(RTVIEvent.BotLlmStopped, commitBotText);
   // useRTVIClientEvent(RTVIEvent.BotTranscript, (text) => console.log('Bot transcript: ' + text));
   // useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
+  useRTVIClientEvent(RTVIEvent.Connected, () => setIsVisible(true));
   useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
   // useRTVIClientEvent(RTVIEvent.BotReady, () => console.log('bot is ready!!'));
   // useRTVIClientEvent(RTVIEvent.BotConnected, () => console.log('bot is connected!!'));
 
   // useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
+  const [isVisible, setIsVisible] = useState(true);
 
   const botTextStream = useRef<string[]>([]);
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
-  // const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [journalEntryId, setJournalEntryId] = useState<string>('');
 
   const { fetchUser } = useUser();
 
@@ -61,41 +61,22 @@ const Conversation: React.FC = () => {
   }
   
   async function handleDisconnect() {
+    setIsVisible(false)
     const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
     if (didUserInteract) {
       const saved = await saveJournalEntry(messages);
-      setJournalEntryId(saved.id);
       await fetchUser();
-      console.log('updated user via context fetchUser');
+      console.log('updated user via context fetchUser', saved);
     } else {
       console.log('no user input, not doing save on journal entry');
     }
     setMessages([]);
   }
 
-  const handleCloseModal = () => {
-    // setModalOpen(false); // Close the modal
-    setJournalEntryId('');
-  };
-
-  const handleSubmitFeedback = async (rating: number, comment: string) => {
-    try {
-      const response = await submitFeedback(journalEntryId, rating, comment);
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
+  if (!isVisible) return null;
 
   return (
     <div style={{ width: '60%', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
-      <FeedbackModal
-        isOpen={journalEntryId !== ''}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmitFeedback}
-      />
       {messages.map((message, index) => (
         <div 
           key={index} 

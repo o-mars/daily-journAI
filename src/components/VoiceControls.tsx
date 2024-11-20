@@ -30,8 +30,8 @@ const VoiceControls: React.FC = () => {
     if (!voiceClient) return;
 
     try {
-      await voiceClient.connect();
       setIsStarted(true);
+      await voiceClient.connect();
     } catch (e) {
       setError((e as RTVIError).message || "Unknown error occured");
       disconnect();

@@ -7,19 +7,35 @@ import { RTVIClientAudio, RTVIClientProvider } from "realtime-ai-react";
 
 import VoiceControls from "../../src/components/VoiceControls";
 
-import { defaultConfig, defaultServices } from "../../rtvi.config";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { useRouter } from "next/navigation";
 import Conversation from "@/src/components/Conversation";
 import { getServices } from "@/src/models/user.preferences";
-import { generateConfig } from "@/src/models/user";
+import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
+import FeedbackModal from "@/src/components/FeedbackModal";
+import { submitFeedback } from "@/src/client/firebase.service.client";
 
 export default function Dashboard() {
-  const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
-  const { user } = useUser();
   const router = useRouter();
+  const { user } = useUser();
+
+  const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
+
+  const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    if (user.journalEntries.length === 0) return;
+    const latestEntry = user.journalEntries[0];
+    if (latestEntry.id === lastJournalEntryId || !latestEntry.endTime) return;
+    const entryAge = new Date().getTime() - new Date(latestEntry.endTime).getTime();
+    if (entryAge > 1000 * 60 * 60) return; // Older than 1 hour
+    setLastJournalEntryId(latestEntry.id);
+    if (entryAge < 1000 * 60 * 2) setIsFeedbackOpen(true); // Less than 2 minutes old
+  }, [user, lastJournalEntryId]);
 
   useEffect(() => {
     console.log('updated voice or user', user, voiceClient);
@@ -28,8 +44,8 @@ export default function Dashboard() {
       return;
     }
 
-    const services = getServices(user.preferences) ?? defaultServices;
-    const config = generateConfig(user) ?? defaultConfig;
+    const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
+    const config = generateConfig(user) ?? generateConfig(defaultUser);
 
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
@@ -98,13 +114,35 @@ export default function Dashboard() {
     router.push('/login');
   }
 
+  async function handleFeedback() {
+    setIsFeedbackOpen(prev => !prev);
+  }
+
+  async function handleProfile() {
+    console.log('profile');
+  }
+
+  const handleSubmitFeedback = async (rating: number, comment: string) => {
+    try {
+      const response = await submitFeedback(lastJournalEntryId, rating, comment);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsFeedbackOpen(false);
+    }
+  };
+
   return (
     <RTVIClientProvider client={voiceClient!}>
       <>
         <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-gray-900">
           <h1 className="text-4xl font-bold">JournAI</h1>
+          <button style={{ position: 'absolute', left: '8px', top: '8px', width: '32px' }} onClick={() => handleProfile()}><img style={{ width: '32px' }} src="/icons/menu.svg" alt="Profile"/></button>
+          <button style={{ position: 'absolute', right: '48px', top: '8px', width: '28px' }} onClick={() => handleFeedback()}><img src="/icons/feather-mail.svg" alt="Feedback"/></button>
           <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><img src="/icons/feather-log-out.svg" alt="Logout"/></button>
-          <Conversation />
+          {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
+          {!isFeedbackOpen && <Conversation />}
           <VoiceControls />
         </main>
         <RTVIClientAudio />
