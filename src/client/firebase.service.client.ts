@@ -90,10 +90,9 @@ export async function saveJournalEntry(conversation: JournalConversationEntry[])
     if (!response.ok) throw new Error(`Failed to save journal entry: ${response.statusText}`);
 
     const result = await response.json();
-    console.log("Journal Entry Saved:", result);
     return result;
   } catch (error) {
-    console.error("Error saving mood entries:", error);
+    console.error("Error saving journal entry:", error);
   }
 }
 
@@ -114,7 +113,6 @@ export async function submitFeedback(entryId: string, rating: number, comment: s
     if (!response.ok) throw new Error("Failed to submit feedback");
     
     const result = await response.json();
-    console.log("Feedback submitted successfully");
     return result;
   } catch (error) {
     console.error("Error submitting feedback:", error);

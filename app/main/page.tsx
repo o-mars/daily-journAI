@@ -12,7 +12,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { useRouter } from "next/navigation";
 import Conversation from "@/src/components/Conversation";
-import { generateConfig, getServices } from "@/src/models/user.preferences";
+import { getServices } from "@/src/models/user.preferences";
+import { generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 
 export default function Dashboard() {
@@ -23,12 +24,13 @@ export default function Dashboard() {
   useEffect(() => {
     console.log('updated voice or user', user, voiceClient);
     if (!user || voiceClient) {
+      console.log('no user or voiceClient, skipping');
       return;
     }
 
     const services = getServices(user.preferences) ?? defaultServices;
-    const config = generateConfig(user.preferences) ?? defaultConfig;
-    
+    const config = generateConfig(user) ?? defaultConfig;
+
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
       params: {
@@ -84,11 +86,11 @@ export default function Dashboard() {
 
     setVoiceClient(newVoiceClient);
 
-    return () => {
+    // return () => {
       // if (newVoiceClient) {
       //   newVoiceClient.disconnect();
       // }
-    };
+    // };
   }, [user, voiceClient]);
 
   async function handleLogout() {

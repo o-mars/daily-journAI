@@ -16,7 +16,6 @@ export interface User {
   profile: UserProfile;
   preferences: UserPreferences;
   journalEntries: JournalEntry[];
-  moodEntries: Mood[];
   isNewUser: boolean;
 }
 
@@ -26,7 +25,6 @@ export const defaultUser: User = {
   profile: {},
   preferences: defaultUserPreferences,
   journalEntries: [],
-  moodEntries: [],
   isNewUser: true,
 };
 
@@ -84,11 +82,7 @@ export function toUser(document: DocumentData): User {
   user.profile = document['profile'] || {};
   user.preferences = document.preferences ? document.preferences : defaultUserPreferences;
   user.journalEntries = document.journalEntries ? toJournalEntries(document.journalEntries) : [];
-
-  if (document.moodEntries) {
-    user.moodEntries = document.moodEntries.map((entry: DocumentData) => Mood.toMood(entry));
-    user.isNewUser = user.moodEntries.length === 0;
-  }
+  user.isNewUser = document.isNewUser ? document.isNewUser : user.journalEntries.length === 0;
 
   return user;
 }

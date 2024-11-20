@@ -29,8 +29,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    return unsubscribe;
+    // Check initial auth state
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUserId(currentUser.uid);
+    }
+
+    return () => unsubscribe();
   }, []);
+
 
   const fetchUser = async () => {
     if (!userId) return;
@@ -38,6 +45,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const newUser = await getUser(userId);
     setIsLoading(false);
     setError(null);
+    console.log('fetchUser', newUser);
     setUser(newUser);
   }
 

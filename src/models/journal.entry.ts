@@ -21,8 +21,8 @@ export function toJournalEntry(document: DocumentData): JournalEntry {
   if (!document.id || !document.createdAt) throw new Error(`Document did not contain entryId or cr: ${document.toString()}`);
 
   const entry: JournalEntry = {
-    id: document.id,  
-    createdAt: document.createdAt.toDate(),
+    id: document.id,
+    createdAt: document.createdAt,
     ...(!!document.conversation ? { conversation: document.conversation } : { conversation: [] }),
     ...(!!document.startTime && { startTime: document.startTime }),
     ...(!!document.endTime && { endTime: document.endTime }),
