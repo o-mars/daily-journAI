@@ -54,7 +54,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
     };
-  }, [userId]);
+  }, [userId, fetchUser]);
 
   return (
     <UserContext.Provider value={{ user, isLoading, error, fetchUser }}>

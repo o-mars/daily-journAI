@@ -1,5 +1,4 @@
-import { saveJournalEntry, submitFeedback } from "@/src/client/firebase.service.client";
-import FeedbackModal from "@/src/components/FeedbackModal";
+import { saveJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import React, { useState, useRef, useEffect } from "react";
