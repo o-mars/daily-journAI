@@ -1,3 +1,4 @@
+import { SUMMARY_NONE } from "@/src/models/constants";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import OpenAI from "openai";
 
@@ -10,6 +11,8 @@ export async function generateSummary(conversation: JournalConversationEntry[]) 
     "You are going to receive a journalling entry transcript between a user and an assistant.",
     "Analyze the transcript and give me a rich but concise one sentence summary of the conversation.",
     "This summary will be fed back to you later to give you context about a past session.",
+    "Focus on what the user said, not what the assistant said, unless directly relevant to the user's statement.",
+    `If nothing substantive was said by the user, output '${SUMMARY_NONE}'`
   ];
   const systemPrompt = systemPromptChunks.join(' ');
 
@@ -40,5 +43,6 @@ export async function generateSummary(conversation: JournalConversationEntry[]) 
   });
 
   const summary = response.choices[0].message.content;
+  if (summary && summary.indexOf(SUMMARY_NONE) !== -1 && summary.length < 6) return SUMMARY_NONE;
   return summary;
 }

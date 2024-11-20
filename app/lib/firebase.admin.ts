@@ -77,6 +77,7 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
     const usersMoodCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersMoodCollectionRef
       .where("createdAt", ">=", oneWeekAgo)
+      .where("summary", "!=", "None")
       .orderBy("createdAt", "desc")
       .limit(MAX_JOURNAL_ENTRIES)
       .get();
