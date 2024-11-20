@@ -8,41 +8,36 @@ export interface JournalConversationEntry {
   sentAt: Date;
 }
 
-export class JournalEntry {
+export interface JournalEntry {
   id: string;
   createdAt: Date;
   conversation: JournalConversationEntry[];
   startTime?: Date;
   endTime?: Date;
-  content?: string;
   summary?: string;
-
-  constructor(entryId: string, createdAt: Date) {
-    this.id = entryId;
-    this.createdAt = createdAt;
-    this.content = '';
-    this.conversation = [];
-  }
-
-  addConversationEntry(entry: JournalConversationEntry) {
-    if (this.conversation.length === 0) this.startTime = entry.sentAt;
-    this.conversation.push(entry);
-    this.endTime = entry.sentAt;
-  }
-
-  static toJournalEntry(document: DocumentData): JournalEntry {
-    if (!document.id || !document.createdAt) throw new Error(`Document did not contain entryId or cr: ${document.toString()}`);
-    const entry = new JournalEntry(document.id, document.createdAt.toDate());
-
-    if (!!document.startTime) entry.startTime = document.startTime;
-    if (!!document.endTime) entry.endTime = document.endTime;
-    if (!!document.content) entry.content = document.content;
-    if (!!document.summary) entry.summary = document.summary;
-
-    return entry;
-  }
-
-  static toJournalEntries(document: DocumentData[]): JournalEntry[] {
-    return document.map(doc => JournalEntry.toJournalEntry(doc));
-  }
 }
+
+export function toJournalEntry(document: DocumentData): JournalEntry {
+  if (!document.id || !document.createdAt) throw new Error(`Document did not contain entryId or cr: ${document.toString()}`);
+
+  const entry: JournalEntry = {
+    id: document.id,  
+    createdAt: document.createdAt.toDate(),
+    ...(!!document.conversation ? { conversation: document.conversation } : { conversation: [] }),
+    ...(!!document.startTime && { startTime: document.startTime }),
+    ...(!!document.endTime && { endTime: document.endTime }),
+    ...(!!document.summary && { summary: document.summary }),
+  }
+
+  return entry;
+}
+
+export function toJournalEntries(document: DocumentData[]): JournalEntry[] {
+  return document.map(doc => toJournalEntry(doc));
+}
+
+export function addConversationEntry(entry: JournalEntry, conversationEntry: JournalConversationEntry) {
+  if (entry.conversation.length === 0) entry.startTime = conversationEntry.sentAt;
+  entry.conversation.push(conversationEntry);
+  entry.endTime = conversationEntry.sentAt;
+};

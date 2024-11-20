@@ -1,5 +1,6 @@
 import { saveJournalEntry, submitFeedback } from "@/src/client/firebase.service.client";
 import FeedbackModal from "@/src/components/FeedbackModal";
+import { useUser } from "@/src/contexts/UserContext";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import React, { useState, useRef, useEffect } from "react";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
@@ -21,6 +22,8 @@ const Conversation: React.FC = () => {
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   // const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [journalEntryId, setJournalEntryId] = useState<string>('');
+
+  const { fetchUser } = useUser();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +51,7 @@ const Conversation: React.FC = () => {
   function handleUserTranscript(data: TranscriptData): void {
     if (!data.final) return;
     setMessages((prevMessages) => {
-      const wasPreviousSender = prevMessages[prevMessages.length-1].from === 'user';
+      const wasPreviousSender = prevMessages.length > 0 && prevMessages[prevMessages.length-1].from === 'user';
       if (!wasPreviousSender) return [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }];
       
       const untouchedMessages = prevMessages.filter((_, index) => index !== prevMessages.length - 1);
@@ -61,13 +64,13 @@ const Conversation: React.FC = () => {
     const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
     if (didUserInteract) {
       const saved = await saveJournalEntry(messages);
-      console.log(saved);
       setJournalEntryId(saved.id);
+      await fetchUser();
+      console.log('updated user via context fetchUser');
     } else {
       console.log('no user input, not doing save on journal entry');
     }
     setMessages([]);
-    // setModalOpen(true);
   }
 
   const handleCloseModal = () => {

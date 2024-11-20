@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('connect route');
     const { services, config } = await request.json();
 
     if (!services || !config || !process.env.DAILY_BOTS_API_KEY) {

@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
 
-import { User } from "@/src/models/user";
-import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
+import { defaultUser, toUser, User } from "@/src/models/user";
+import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
 import { generateSummary } from "@/app/lib/openai.admin";
+import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
 
 
 if (!admin.apps.length) {
@@ -17,15 +18,21 @@ export const db = admin.firestore();
 
 export async function getUser(userId: string): Promise<User> {
   try {
-    const userDocRef = db.doc(`test/${userId}`);
+    const userDocRef = db.doc(`${USER_PATH}/${userId}`);
     const docSnap = await userDocRef.get();
 
     if (docSnap.exists) {
-      const user = User.toUser(docSnap.data()!);
+      const user = toUser(docSnap.data()!);
+      console.log('user exists');
       return user;
     } else {
-      const user = new User(userId, new Date());
+      const user: User = {
+        ...defaultUser,
+        userId,
+        createdAt: new Date(),
+      };
       await userDocRef.set(user);
+      console.log('created user');
       return user;
     }
   } catch (error) {
@@ -35,7 +42,7 @@ export async function getUser(userId: string): Promise<User> {
 
 export async function updateUser(userId: string, userData: Partial<User>): Promise<void> {
   try {
-    const userDocRef = db.doc(`test/${userId}`);
+    const userDocRef = db.doc(`${USER_PATH}/${userId}`);
     await userDocRef.update(userData);
   } catch (error) {
     throw error;
@@ -49,13 +56,13 @@ export async function addJournalEntry(userId: string, conversation: JournalConve
     const startTime = conversation[0].sentAt;
     const endTime = conversation[conversation.length-1].sentAt;
     const { FieldValue } = admin.firestore;
-    const journalEntriesCollectionRef = db.collection(`test/${userId}/journalEntries`);
+    const journalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const journalEntryDocRef = await journalEntriesCollectionRef.add({ conversation, summary, startTime, endTime, createdAt: FieldValue.serverTimestamp() });
 
     const document = await journalEntryDocRef.get();
     console.log('created journalEntry: ', document.data());
 
-    return JournalEntry.toJournalEntry({id: document.id, ...document.data()});
+    return toJournalEntry({id: document.id, ...document.data()});
   } catch (error) {
     console.error("Error creating journal entry:", error);
     throw error;
@@ -67,16 +74,16 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    const usersMoodCollectionRef = db.collection(`test/${userId}/journalEntries`);
+    const usersMoodCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersMoodCollectionRef
       .where("createdAt", ">=", oneWeekAgo)
       .orderBy("createdAt", "desc")
-      .limit(3)
+      .limit(MAX_JOURNAL_ENTRIES)
       .get();
 
     const recentJournalEntries: JournalEntry[] = [];
     querySnapshot.forEach((doc) => {
-      recentJournalEntries.push(JournalEntry.toJournalEntry({ id: doc.id, ...doc.data() }));
+      recentJournalEntries.push(toJournalEntry({ id: doc.id, ...doc.data() }));
     });
 
     return recentJournalEntries;
@@ -87,7 +94,7 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
 
 export async function getJournalEntriesCount(userId: string): Promise<number> {
   try {
-    const usersJournalEntriesCollectionRef = db.collection(`test/${userId}/journalEntries`);
+    const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersJournalEntriesCollectionRef.get();
     return querySnapshot.size;
   } catch (error) {

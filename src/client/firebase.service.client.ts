@@ -1,5 +1,5 @@
-import { JournalConversationEntry } from "@/src/models/journal.entry";
-import { User } from "@/src/models/user";
+import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
+import { toUser, User } from "@/src/models/user";
 import { getAuth } from "firebase/auth";
 
 export const USER_PATH = 'test';
@@ -19,11 +19,34 @@ export async function getUser(userId: string): Promise<User> {
     if (!response.ok) throw new Error('Failed to fetch user');
     
     const userData = await response.json();
-    const user = User.toUser(userData);
+    const user = toUser(userData);
     return user;
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch user, got error');
+  }
+}
+
+export async function getRecentJournalEntries(): Promise<JournalEntry[]> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch('/api/user/journal', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to get recent journal entries: ${response.statusText}`);
+
+    const result: JournalEntry[] = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error saving mood entries:", error);
+    throw new Error('Failed to get recent journal entries');
   }
 }
 

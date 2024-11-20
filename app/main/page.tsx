@@ -8,26 +8,27 @@ import { RTVIClientAudio, RTVIClientProvider } from "realtime-ai-react";
 import VoiceControls from "../../src/components/VoiceControls";
 
 import { defaultConfig, defaultServices } from "../../rtvi.config";
-import { useUserData } from "@/src/contexts/useUserData";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { useRouter } from "next/navigation";
 import Conversation from "@/src/components/Conversation";
+import { generateConfig, getServices } from "@/src/models/user.preferences";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Dashboard() {
   const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
-  const { user } = useUserData();
+  const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (voiceClient || !user) {
+    console.log('updated voice or user', user, voiceClient);
+    if (!user || voiceClient) {
       return;
     }
 
-    const services = user?.preferences.getServices() ?? defaultServices;
-    const config = user?.generateConfig() ?? defaultConfig;
-    console.log(services);
-    if (user === null) console.error('could not get user data from firebase... using default');
+    const services = getServices(user.preferences) ?? defaultServices;
+    const config = generateConfig(user.preferences) ?? defaultConfig;
+    
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
       params: {
@@ -82,7 +83,13 @@ export default function Dashboard() {
     });  
 
     setVoiceClient(newVoiceClient);
-  }, [voiceClient, user]);
+
+    return () => {
+      // if (newVoiceClient) {
+      //   newVoiceClient.disconnect();
+      // }
+    };
+  }, [user, voiceClient]);
 
   async function handleLogout() {
     await signOut(auth);
