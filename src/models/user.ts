@@ -1,5 +1,4 @@
 import { JournalEntry, toJournalEntries } from "@/src/models/journal.entry";
-import { Mood } from "@/src/models/mood";
 import { UserPreferences, defaultUserPreferences, generateSystemMessage, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
 

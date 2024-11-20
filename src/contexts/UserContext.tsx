@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { getUser } from "@/src/client/firebase.service.client";
@@ -38,14 +38,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     if (!userId) return;
     setIsLoading(true);
     const newUser = await getUser(userId);
     setIsLoading(false);
     setError(null);
     setUser(newUser);
-  }
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
