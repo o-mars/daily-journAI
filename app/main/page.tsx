@@ -137,8 +137,8 @@ export default function Dashboard() {
         <main className="flex min-h-screen flex-col items-center justify-between p-2 md:p-24 bg-gray-900">
           <h1 className="text-2xl md:text-4xl font-bold">JournAI</h1>
           <button style={{ position: 'absolute', left: '8px', top: '8px', width: '32px' }} onClick={() => handleProfile()}><Image width={32} height={32} src="/icons/menu.svg" alt="Profile"/></button>
-          <button style={{ position: 'absolute', right: '48px', top: '8px', width: '28px' }} onClick={() => handleFeedback()}><Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/></button>
-          <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/></button>
+          <button style={{ position: 'absolute', right: '48px', top: '10px', width: '28px' }} onClick={() => handleFeedback()}><Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/></button>
+          <button style={{ position: 'absolute', right: '8px', top: '10px', width: '28px' }} onClick={() => handleLogout()}><Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/></button>
           <MessageProvider>
             {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
             {!isFeedbackOpen && <Conversation />}
