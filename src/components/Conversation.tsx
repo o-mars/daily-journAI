@@ -17,7 +17,7 @@ const Conversation: React.FC = () => {
   }, [messages]);
 
   return (
-    <div style={{ width: '60%', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
+    <div style={{ width: '100%', paddingTop: '16px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
       {messages.map((message, index) => (
         <div 
           key={index} 
@@ -26,8 +26,6 @@ const Conversation: React.FC = () => {
             display: 'flex', 
             flexDirection: 'row', 
             justifyContent: message.from === 'user' ? 'flex-end' : 'flex-start',
-            paddingLeft: '8px',
-            paddingRight: '8px'
           }}
         >
           <div 
@@ -37,7 +35,9 @@ const Conversation: React.FC = () => {
               borderRadius: '18px',
               backgroundColor: message.from === 'user' ? '#007AFF' : '#E5E5EA',
               color: message.from === 'user' ? 'white' : 'black',
-              wordWrap: 'break-word'
+              wordWrap: 'break-word',
+              borderBottomLeftRadius: message.from !== 'user' ? 0 : '18px',
+              borderBottomRightRadius: message.from !== 'user' ? '18px' : 0,
             }}
           >
             {message.text}
