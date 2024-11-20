@@ -17,6 +17,7 @@ import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import FeedbackModal from "@/src/components/FeedbackModal";
 import { submitFeedback } from "@/src/client/firebase.service.client";
+import { MessageProvider } from "@/src/contexts/MessageContext";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -138,8 +139,10 @@ export default function Dashboard() {
           <button style={{ position: 'absolute', left: '8px', top: '8px', width: '32px' }} onClick={() => handleProfile()}><Image width={32} height={32} src="/icons/menu.svg" alt="Profile"/></button>
           <button style={{ position: 'absolute', right: '48px', top: '8px', width: '28px' }} onClick={() => handleFeedback()}><Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/></button>
           <button style={{ position: 'absolute', right: '8px', top: '8px', width: '28px' }} onClick={() => handleLogout()}><Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/></button>
-          {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
-          {!isFeedbackOpen && <Conversation />}
+          <MessageProvider>
+            {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
+            {!isFeedbackOpen && <Conversation />}
+          </MessageProvider>
           <VoiceControls />
         </main>
         <RTVIClientAudio />

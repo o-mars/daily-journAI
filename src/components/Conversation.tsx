@@ -1,29 +1,8 @@
-import { saveJournalEntry } from "@/src/client/firebase.service.client";
-import { useUser } from "@/src/contexts/UserContext";
-import { JournalConversationEntry } from "@/src/models/journal.entry";
-import React, { useState, useRef, useEffect } from "react";
-import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
-import { useRTVIClientEvent } from "realtime-ai-react";
+import React, { useEffect, useRef } from "react";
+import { useMessageContext } from "@/src/contexts/MessageContext";
 
 const Conversation: React.FC = () => {
-  useRTVIClientEvent(RTVIEvent.UserTranscript, handleUserTranscript)
-  useRTVIClientEvent(RTVIEvent.BotLlmText, handleBotLLmText);
-  useRTVIClientEvent(RTVIEvent.BotLlmStopped, commitBotText);
-  // useRTVIClientEvent(RTVIEvent.BotTranscript, (text) => console.log('Bot transcript: ' + text));
-  // useRTVIClientEvent(RTVIEvent.BotTtsText, (text) => console.log('BOT TTS:  ', text));
-  useRTVIClientEvent(RTVIEvent.Connected, () => setIsVisible(true));
-  useRTVIClientEvent(RTVIEvent.Disconnected, handleDisconnect);
-  // useRTVIClientEvent(RTVIEvent.BotReady, () => console.log('bot is ready!!'));
-  // useRTVIClientEvent(RTVIEvent.BotConnected, () => console.log('bot is connected!!'));
-
-  // useRTVIClientEvent(RTVIEvent.LLMFunctionCall, handleFoo);
-  const [isVisible, setIsVisible] = useState(true);
-
-  const botTextStream = useRef<string[]>([]);
-  const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
-
-  const { fetchUser } = useUser();
-
+  const { messages } = useMessageContext();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,43 +13,8 @@ const Conversation: React.FC = () => {
       const conversationEl = el as HTMLDivElement;
       conversationEl.scrollTop = conversationEl.scrollHeight;
     }
-    if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
-
-  function handleBotLLmText({ text }: BotLLMTextData) {
-    botTextStream.current.push(text);
-  }
-
-  function commitBotText() {
-    const text = botTextStream.current.join('');
-    botTextStream.current = [];
-    setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
-  }
-
-  function handleUserTranscript(data: TranscriptData): void {
-    if (!data.final) return;
-    setMessages((prevMessages) => {
-      const wasPreviousSender = prevMessages.length > 0 && prevMessages[prevMessages.length-1].from === 'user';
-      if (!wasPreviousSender) return [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }];
-      
-      const untouchedMessages = prevMessages.filter((_, index) => index !== prevMessages.length - 1);
-      untouchedMessages.push({ from: 'user', sentAt: new Date(data.timestamp), text: `${prevMessages[prevMessages.length-1].text} ${data.text}` });
-      return untouchedMessages;
-    });
-  }
-  
-  async function handleDisconnect() {
-    setIsVisible(false)
-    const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
-    if (didUserInteract) {
-      await saveJournalEntry(messages);
-      await fetchUser();
-    } else {
-    }
-    setMessages([]);
-  }
-
-  if (!isVisible) return null;
 
   return (
     <div style={{ width: '60%', margin: '20px', borderRadius: '8px', overflowY: 'scroll', height: '150px', flexGrow: 1 }} data-conversation-content>
