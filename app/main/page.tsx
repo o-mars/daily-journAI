@@ -38,11 +38,7 @@ export default function Dashboard() {
   }, [user, lastJournalEntryId]);
 
   useEffect(() => {
-    console.log('updated voice or user', user, voiceClient);
-    if (!user || voiceClient) {
-      console.log('no user or voiceClient, skipping');
-      return;
-    }
+    if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
     const config = generateConfig(user) ?? generateConfig(defaultUser);
@@ -102,12 +98,12 @@ export default function Dashboard() {
 
     setVoiceClient(newVoiceClient);
 
-    // return () => {
-      // if (newVoiceClient) {
-      //   newVoiceClient.disconnect();
-      // }
-    // };
-  }, [user, voiceClient]);
+    return () => {
+      if (newVoiceClient && newVoiceClient.connected) {
+        newVoiceClient.disconnect();
+      }
+    };
+  }, [user]);
 
   async function handleLogout() {
     await signOut(auth);

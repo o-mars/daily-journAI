@@ -61,8 +61,6 @@ export function generateConfig(user: User) {
     }
   } 
 
-  console.log(systemPromptChunks);
-
   const config = [
     getVadConfig(user.preferences),
     getTtsConfig(user.preferences),

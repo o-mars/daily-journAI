@@ -20,7 +20,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('onAuthStateChanged', user);
       if (user) {
         setUserId(user.uid);
       } else {
@@ -45,7 +44,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const newUser = await getUser(userId);
     setIsLoading(false);
     setError(null);
-    console.log('fetchUser', newUser);
     setUser(newUser);
   }
 

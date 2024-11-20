@@ -39,7 +39,7 @@ const VoiceControls: React.FC = () => {
   }
 
   function disconnect() {
-    if (voiceClient) voiceClient.disconnect();
+    if (voiceClient && voiceClient.connected) voiceClient.disconnect();
     setIsStarted(false);
   }
 

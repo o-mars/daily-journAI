@@ -64,11 +64,9 @@ const Conversation: React.FC = () => {
     setIsVisible(false)
     const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
     if (didUserInteract) {
-      const saved = await saveJournalEntry(messages);
+      await saveJournalEntry(messages);
       await fetchUser();
-      console.log('updated user via context fetchUser', saved);
     } else {
-      console.log('no user input, not doing save on journal entry');
     }
     setMessages([]);
   }
