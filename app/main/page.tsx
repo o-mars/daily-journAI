@@ -129,23 +129,37 @@ export default function Dashboard() {
       setIsFeedbackOpen(false);
     }
   };
-
   return (
     <RTVIClientProvider client={voiceClient!}>
-      <>
-        <main className="flex min-h-screen flex-col items-center justify-between p-2 md:p-24 bg-gray-900">
+      <div className="flex flex-col min-h-screen bg-gray-900">
+        <header className="flex justify-between items-center p-4 bg-gray-900 sticky top-0 z-10">
+          <button className="w-8" onClick={() => handleProfile()}>
+            <Image width={32} height={32} src="/icons/menu.svg" alt="Profile"/>
+          </button>
           <h1 className="text-2xl md:text-4xl font-bold">JournAI</h1>
-          <button style={{ position: 'absolute', left: '8px', top: '8px', width: '32px' }} onClick={() => handleProfile()}><Image width={32} height={32} src="/icons/menu.svg" alt="Profile"/></button>
-          <button style={{ position: 'absolute', right: '48px', top: '10px', width: '28px' }} onClick={() => handleFeedback()}><Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/></button>
-          <button style={{ position: 'absolute', right: '8px', top: '10px', width: '28px' }} onClick={() => handleLogout()}><Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/></button>
+          <div className="flex">
+            <button className="w-7 mr-4" onClick={() => handleFeedback()}>
+              <Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/>
+            </button>
+            <button className="w-7" onClick={() => handleLogout()}>
+              <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/>
+            </button>
+          </div>
+        </header>
+        
+        <main className="flex-grow overflow-auto p-2">
           <MessageProvider>
             {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
             {!isFeedbackOpen && <Conversation />}
           </MessageProvider>
-          <VoiceControls />
         </main>
+        
+        <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+          <VoiceControls />
+        </footer>
+        
         <RTVIClientAudio />
-      </>
+      </div>
     </RTVIClientProvider>
   );
 }

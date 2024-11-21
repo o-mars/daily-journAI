@@ -53,13 +53,12 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, onSubmit
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 0, 0, 0.5);
           display: flex;
           justify-content: center;
           align-items: center;
         }
         .modal {
-          background: black;
+          background: #111111;
           padding: 20px;
           border-radius: 10px;
           width: 300px;
@@ -83,7 +82,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, onSubmit
           padding: 10px;
           border: 1px solid #ccc;
           border-radius: 5px;
-          background: black;
+          background: #111111;
         }
         button {
           margin: 5px;
