@@ -122,7 +122,7 @@ export default function Dashboard() {
 
   const handleSubmitFeedback = async (rating: number, comment: string) => {
     try {
-      const response = await submitFeedback(lastJournalEntryId, rating, comment);
+      await submitFeedback(lastJournalEntryId, rating, comment);
     } catch (error) {
       console.error(error);
     } finally {

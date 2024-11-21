@@ -4,7 +4,6 @@ import { defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
 import { generateSummary } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
-import { ProviderId } from "firebase/auth";
 
 
 if (!admin.apps.length) {

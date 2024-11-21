@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { RTVIError } from "realtime-ai";
 import { useRTVIClient, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
@@ -15,12 +15,28 @@ const VoiceControls: React.FC = () => {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
 
+  const disconnect = useCallback(() => {
+    if (voiceClient && voiceClient.connected) voiceClient.disconnect();
+    setIsStarted(false);
+  }, [voiceClient]);
+
+  const connect = useCallback(async () => {
+    if (!voiceClient) return;
+
+    try {
+      setIsStarted(true);
+      await voiceClient.connect();
+    } catch (e) {
+      setError((e as RTVIError).message || "Unknown error occured");
+      disconnect();
+    }
+  }, [voiceClient, disconnect]);
+
   useEffect(() => {
     if(voiceClient && user && user.isNewUser && user.profile.isAnonymous) {
       connect();
     }
-  }, [user, voiceClient]);
-
+  }, [user, voiceClient, connect]);
 
   useEffect(() => {
     if(voiceClient && vcs === 'ready') {
@@ -34,23 +50,6 @@ const VoiceControls: React.FC = () => {
       if (botTrack) botTrack.enabled = isSpeakerEnabled;
     }
   }, [vcs, isSpeakerEnabled, voiceClient]);
-
-  async function connect() {
-    if (!voiceClient) return;
-
-    try {
-      setIsStarted(true);
-      await voiceClient.connect();
-    } catch (e) {
-      setError((e as RTVIError).message || "Unknown error occured");
-      disconnect();
-    }
-  }
-
-  function disconnect() {
-    if (voiceClient && voiceClient.connected) voiceClient.disconnect();
-    setIsStarted(false);
-  }
 
   function toggleMicEnabled() {
     setIsMicEnabled(prev => !prev);

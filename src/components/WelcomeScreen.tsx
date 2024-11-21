@@ -12,7 +12,7 @@ const WelcomeScreen: React.FC = () => {
       await signInAnonymously(auth);
       router.push('/main');
     } catch (e) {
-      setError("Failed to sign in or connect. Please try again.");
+      setError("Failed to sign in or connect. Please try again." + e);
     }
   };
 
@@ -25,7 +25,7 @@ const WelcomeScreen: React.FC = () => {
       </p>
       
       <p className="mb-4 text-center">
-        Feel free to talk about whatever is on your mind. Whether it's your daily experiences, thoughts, or emotions, JournAI is here to listen and help you reflect.
+        Feel free to talk about whatever is on your mind. Whether it&apos;s your daily experiences, thoughts, or emotions, JournAI is here to listen and help you reflect.
       </p>
       
       <div className="bg-yellow-800 p-4 rounded-lg mb-4">
