@@ -63,7 +63,7 @@ const VoiceControls: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', width: '100%', paddingBottom: '8px' }}>
+    <div style={{ display: 'flex', width: '100%', paddingBottom: '8px', justifyContent: 'center' }}>
       <div className="text-red-500 text-bold">{error}</div>
       {isStarted &&
         <div style={{ display: 'flex' }}>
