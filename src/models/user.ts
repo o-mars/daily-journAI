@@ -7,6 +7,7 @@ export interface UserProfile {
   phone?: string;
   email?: string;
   city?: string;
+  isAnonymous?: boolean;
 }
 
 export interface User {

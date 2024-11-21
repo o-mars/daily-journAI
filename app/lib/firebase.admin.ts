@@ -4,6 +4,7 @@ import { defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
 import { generateSummary } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
+import { ProviderId } from "firebase/auth";
 
 
 if (!admin.apps.length) {
@@ -16,7 +17,7 @@ if (!admin.apps.length) {
 export const auth = admin.auth();
 export const db = admin.firestore();
 
-export async function getUser(userId: string): Promise<User> {
+export async function getUser(userId: string, ): Promise<User> {
   try {
     const userDocRef = db.doc(`${USER_PATH}/${userId}`);
     const docSnap = await userDocRef.get();
@@ -26,10 +27,18 @@ export async function getUser(userId: string): Promise<User> {
       console.log('user exists');
       return user;
     } else {
+      const userRecord = await auth.getUser(userId);
+      const isAnonymous = !userRecord.email && !userRecord.phoneNumber && userRecord.providerData.length === 0;
+
       const user: User = {
         ...defaultUser,
         userId,
         createdAt: new Date(),
+        profile: {
+          isAnonymous,
+          ...userRecord.email ? { email: userRecord.email } : {},
+          ...userRecord.phoneNumber ? { phone: userRecord.phoneNumber } : {},
+        }
       };
       await userDocRef.set(user);
       console.log('created user');

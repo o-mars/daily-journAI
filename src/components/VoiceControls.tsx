@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { RTVIError } from "realtime-ai";
 import { useRTVIClient, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
+import { useUser } from "@/src/contexts/UserContext";
 
 const VoiceControls: React.FC = () => {
+  const { user } = useUser();
   const voiceClient = useRTVIClient();
   const vcs = useRTVIClientTransportState();
 
@@ -12,6 +14,13 @@ const VoiceControls: React.FC = () => {
 
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
+
+  useEffect(() => {
+    if(voiceClient && user && user.isNewUser && user.profile.isAnonymous) {
+      connect();
+    }
+  }, [user, voiceClient]);
+
 
   useEffect(() => {
     if(voiceClient && vcs === 'ready') {
