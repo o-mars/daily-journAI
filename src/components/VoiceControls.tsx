@@ -63,7 +63,7 @@ const VoiceControls: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', width: '50%', justifyContent: 'space-around' }}>
+    <div style={{ display: 'flex', width: '100%', paddingBottom: '8px' }}>
       <div className="text-red-500 text-bold">{error}</div>
       {isStarted &&
         <div style={{ display: 'flex' }}>
@@ -81,7 +81,7 @@ const VoiceControls: React.FC = () => {
           </div>
         </div>
       }
-      <button style={{ width: '28px', height: '28px' }}
+      <button style={{ width: '28px', height: '28px', marginLeft: '32px', marginRight: '32px', justifyContent: 'center' }}
               onClick={() => isStarted ? disconnect() : connect()}>
         <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />
       </button>
