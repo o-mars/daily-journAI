@@ -1,18 +1,24 @@
 import React, { useState } from "react";
+import { submitFeedback } from "@/src/client/firebase.service.client";
 
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (rating: number, comment: string) => Promise<void>;
+  lastJournalEntryId: string;
 }
 
-const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, lastJournalEntryId }) => {
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
 
   const handleSubmit = async () => {
-    await onSubmit(rating, comment);
-    handleClose();
+    try {
+      await submitFeedback(lastJournalEntryId, rating, comment);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      handleClose();
+    }
   };
 
   const handleClose = () => {
@@ -49,10 +55,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, onSubmit
       <style jsx>{`
         .modal-overlay {
           position: fixed;
-          top: 0;
+          top: 50px;
           left: 0;
           width: 100%;
-          height: 100%;
+          height: calc(100% - 50px - 50px);
           display: flex;
           justify-content: center;
           align-items: center;

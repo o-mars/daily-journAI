@@ -4,23 +4,17 @@ import { useEffect, useState } from "react";
 import { RTVIClient, LLMHelper, FunctionCallParams } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { RTVIClientAudio, RTVIClientProvider } from "realtime-ai-react";
-import Image from "next/image";
 
 import VoiceControls from "../../src/components/VoiceControls";
 
-import { signOut } from "firebase/auth";
-import { auth } from "@/firebase.config";
-import { useRouter } from "next/navigation";
 import Conversation from "@/src/components/Conversation";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
-import FeedbackModal from "@/src/components/FeedbackModal";
-import { submitFeedback } from "@/src/client/firebase.service.client";
 import { MessageProvider } from "@/src/contexts/MessageContext";
+import Header from "@/src/components/Header";
 
 export default function Dashboard() {
-  const router = useRouter();
   const { user } = useUser();
 
   const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
@@ -107,57 +101,31 @@ export default function Dashboard() {
     };
   }, [user]);
 
-  async function handleLogout() {
-    await signOut(auth);
-    router.push('/login');
-  }
-
-  async function handleFeedback() {
+  const handleFeedback = () => {
     setIsFeedbackOpen(prev => !prev);
-  }
-
-  async function handleProfile() {
-    console.log('profile');
-  }
-
-  const handleSubmitFeedback = async (rating: number, comment: string) => {
-    try {
-      await submitFeedback(lastJournalEntryId, rating, comment);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsFeedbackOpen(false);
-    }
   };
+
   return (
     <RTVIClientProvider client={voiceClient!}>
       <div className="flex flex-col min-h-screen bg-gray-900">
-        <header className="flex justify-between items-center p-4 bg-gray-900 sticky top-0 z-10">
-          <button className="w-8" onClick={() => handleProfile()}>
-            <Image width={32} height={32} src="/icons/menu.svg" alt="Profile"/>
-          </button>
-          <h1 className="text-2xl md:text-4xl font-bold">JournAI</h1>
-          <div className="flex">
-            <button className="w-7 mr-4" onClick={() => handleFeedback()}>
-              <Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback"/>
-            </button>
-            <button className="w-7" onClick={() => handleLogout()}>
-              <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout"/>
-            </button>
-          </div>
-        </header>
-        
+        <Header
+          onMenuClick={() => console.log('profile')}
+          onFeedbackClick={handleFeedback}
+          isFeedbackOpen={isFeedbackOpen}
+          onCloseFeedback={() => setIsFeedbackOpen(false)}
+          lastJournalEntryId={lastJournalEntryId}
+        />
+
         <main className="flex-grow overflow-auto p-2">
           <MessageProvider>
-            {isFeedbackOpen && <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} onSubmit={handleSubmitFeedback} />}
             {!isFeedbackOpen && <Conversation />}
           </MessageProvider>
         </main>
-        
+
         <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
           <VoiceControls />
         </footer>
-        
+
         <RTVIClientAudio />
       </div>
     </RTVIClientProvider>
