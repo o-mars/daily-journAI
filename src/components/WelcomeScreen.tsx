@@ -21,28 +21,37 @@ const WelcomeScreen: React.FC = () => {
       <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to JournAI</h1>
       
       <p className="mb-4 text-center">
-        JournAI is your personal journaling assistant.
+        Your personal journaling assistant.
       </p>
       
+      <p style={{ marginTop: '16px' }} className="mb-4 text-center">
+        Providing you a safe and supportive space for your thoughts.
+      </p>
       <p className="mb-4 text-center">
-        Feel free to talk about whatever is on your mind. Whether it&apos;s your daily experiences, thoughts, or emotions, JournAI is here to listen and help you reflect.
+        Explore and reflect on your experiences, emotions, or anything else on your mind.
       </p>
       
-      <div className="bg-yellow-800 p-4 rounded-lg mb-4">
+      <div style={{ marginTop: '48px' }} className="bg-yellow-800 p-4 rounded-lg mb-4">
         <p className="text-center font-semibold">
-          Please note: While the product is in testing, transcripts of your conversations may be reviewed by humans.
+          Disclaimer: Transcripts of your conversations may be reviewed by humans.
         </p>
       </div>
       
       <p className="mb-4 text-center">
-        By continuing to use this app, you are consenting to this review.
+        By proceeding, you are consenting to this policy.
       </p>
       
       {error && <div className="text-red-500 mb-4">{error}</div>}
       
       <button
-        style={{ marginTop: '32px' }}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105"
+        style={{ 
+          marginTop: '32px',
+          border: '2px solid #3b82f6',
+          backgroundColor: '#1d4ed8',
+          padding: '12px 24px',
+          borderRadius: '9999px'
+        }}
+        className="text-white font-bold text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-800 hover:border-blue-400"
         onClick={handleAgreeAndContinue}
       >
         I Agree & Continue
