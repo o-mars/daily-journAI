@@ -31,16 +31,13 @@ const WelcomeScreen: React.FC = () => {
         Explore and reflect on your experiences, emotions, or anything else on your mind.
       </p>
       
-      <div style={{ marginTop: '48px' }} className="bg-yellow-800 p-4 rounded-lg mb-4">
+      <div style={{ marginTop: '24px' }} className="bg-red-900 p-4 rounded-lg mb-4">
         <p className="text-center font-semibold">
           Disclaimer: Transcripts of your conversations may be reviewed by humans.
+          <br />
+          By proceeding, you are consenting to this policy.
         </p>
       </div>
-      
-      <p className="mb-4 text-center">
-        By proceeding, you are consenting to this policy.
-      </p>
-      
       {error && <div className="text-red-500 mb-4">{error}</div>}
       
       <button
