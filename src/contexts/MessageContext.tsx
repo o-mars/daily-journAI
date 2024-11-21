@@ -39,12 +39,15 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   });
 
   useRTVIClientEvent(RTVIEvent.Disconnected, async () => {
-    const didUserInteract = messages.filter(message => message.from === 'user').length > 0;
+    const didUserInteract = messages.some(message => message.from === 'user');
     if (didUserInteract) {
-      await saveJournalEntry(messages);
+      const messagesToSave = [...messages];
+      setMessages([]);
+      await saveJournalEntry(messagesToSave);
       await fetchUser();
+    } else {
+      setMessages([]);
     }
-    setMessages([]);
   });
 
   return (
