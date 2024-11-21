@@ -1,3 +1,6 @@
+import { defaultUser } from "@/src/models/user";
+import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
+
 // [POST] /api
 export async function POST(request: Request) {
   const { test, callId, callDomain } = await request.json();
@@ -13,6 +16,7 @@ export async function POST(request: Request) {
     });
   }
 
+
   const prompt = [
     "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
     "They are also speaking to you, and their response is being converted to text before being sent to you.",
@@ -22,6 +26,10 @@ export async function POST(request: Request) {
     "Say hello, before asking them about how they're feeling, and help them explore this feeling.",
   ];
 
+  const ttsConfig = getTtsConfig(defaultUser.preferences);
+  const llmConfig = getLlmConfig(defaultUser.preferences, prompt.join(' '));
+  const services = getServices(defaultUser.preferences);
+
   const payload = {
     bot_profile: "voice_2024_10",
     max_duration: 999,
@@ -30,35 +38,12 @@ export async function POST(request: Request) {
       callDomain,
     },
     services: {
-      llm: "openai",
-      tts: "cartesia",
+      llm: services.llm,
+      tts: services.tts,
     },
     config: [
-      {
-        service: "tts",
-        options: [
-          { name: "voice", value: "79a125e8-cd45-4c13-8a67-188112f4dd22" },
-        ],
-      },
-      {
-        service: "llm",
-        options: [
-          {
-            name: "model",
-            value: "gpt-4o-mini",
-          },
-          {
-            name: "initial_messages",
-            value: [
-              {
-                role: "system",
-                content: prompt.join(" "),
-              },
-            ],
-          },
-          { name: "run_on_config", value: true },
-        ],
-      },
+      ttsConfig,
+      llmConfig,
     ],
     api_keys: {
       openai: process.env.OPENAI_API_KEY
