@@ -15,6 +15,8 @@ const VoiceControls: React.FC = () => {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
 
+  const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
+
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
     setIsStarted(false);
@@ -33,10 +35,11 @@ const VoiceControls: React.FC = () => {
   }, [voiceClient, disconnect]);
 
   useEffect(() => {
-    if(voiceClient && user && user.isNewUser && user.profile.isAnonymous) {
+    if (voiceClient && user && user.isNewUser && user.profile.isAnonymous && !hasConnectedOnce) {
       connect();
+      setHasConnectedOnce(true);
     }
-  }, [user, voiceClient, connect]);
+  }, [user, voiceClient, connect, hasConnectedOnce]);
 
   useEffect(() => {
     if(voiceClient && vcs === 'ready') {

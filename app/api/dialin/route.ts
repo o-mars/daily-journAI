@@ -16,6 +16,12 @@ export async function POST(request: Request) {
     });
   }
 
+  /* TODO: do an auth with firebase so that you can save journal entry..
+  The problem is that we need to be able to proceed once the call is done but retain the information.
+  Need to watch for the events to track transcript so we can do the summary, and either do that post convo or
+  configure the bot to function call it as part of the completion flow, which would also only happen sometimes?
+  i.e. this isn't a simple problem.. you need to do function calling / know what happens when the call ends / do RTVI Event watching server side
+  */
 
   const prompt = [
     "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
