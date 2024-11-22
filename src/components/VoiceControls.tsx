@@ -11,6 +11,7 @@ const VoiceControls: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [isStarted, setIsStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
@@ -48,11 +49,14 @@ const VoiceControls: React.FC = () => {
     if (!voiceClient) return;
 
     try {
-      setIsStarted(true);
+      setIsLoading(true);
       await voiceClient.connect();
+      setIsStarted(true);
     } catch (e) {
       setError((e as RTVIError).message || "Unknown error occured");
       disconnect();
+    } finally {
+      setIsLoading(false);
     }
   }, [voiceClient, disconnect]);
 
@@ -84,8 +88,25 @@ const VoiceControls: React.FC = () => {
     setIsSpeakerEnabled(prev => !prev);
   }
 
+  const spinnerStyle = {
+    border: '4px solid rgba(255, 255, 255, 0.1)',
+    width: '28px',
+    height: '28px',
+    borderRadius: '50%',
+    borderLeftColor: '#09f',
+    animation: 'spin 1s linear infinite',
+  };
+
+  const spinnerKeyframes = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+
   return (
     <div style={{ display: 'flex', width: '100%', paddingBottom: '8px', justifyContent: 'center' }}>
+      <style>{spinnerKeyframes}</style>
       <div className="text-red-500 text-bold">{error}</div>
       {isStarted &&
         <div style={{ display: 'flex' }}>
@@ -105,7 +126,11 @@ const VoiceControls: React.FC = () => {
       }
       <button style={{ width: '28px', height: '28px', marginLeft: '32px', marginRight: '32px', justifyContent: 'center' }}
               onClick={() => isStarted ? disconnect() : connect()}>
-        <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />
+        {isLoading ? (
+          <div style={spinnerStyle}></div>
+        ) : (
+          <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />
+        )}
       </button>
       <br />
       {isStarted &&
