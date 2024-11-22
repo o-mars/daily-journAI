@@ -1,6 +1,6 @@
 import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
-
+import { DEFAULT_VOICE_ID } from "@/src/models/constants";
 export type ConversationStyle = "empathetic" | "reflective" | "Neutral" | "inquisitive" | "Motivational" | "Playful";
 export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
@@ -25,8 +25,8 @@ export interface UserPreferences {
 
 export const defaultUserPreferences: UserPreferences = {
   languageId: 'en',
-  voiceId: '79a125e8-cd45-4c13-8a67-188112f4dd22',
-  vadStopSecs: 1.0,
+  voiceId: DEFAULT_VOICE_ID,
+  vadStopSecs: 0.8,
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
@@ -36,7 +36,7 @@ export const defaultUserPreferences: UserPreferences = {
   style: 'reflective',
   tone: 'reflective',
   responseDepth: 'regular',
-  vocabulary: 'slang',
+  vocabulary: 'regular',
   quirks: [],
 };
 

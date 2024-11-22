@@ -45,7 +45,7 @@ export function generateConfig(user: User) {
 
   generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
-  systemPromptChunks.push("Once the conversation has ended, or if they say goodbye, you should say goodbye but also disconnect the session by calling the function `disconnect_voice_client`.");
+  systemPromptChunks.push("Once the conversation ends, or if they say goodbye, say goodbye but also disconnect the session by calling the function `disconnect_voice_client`.");
 
   if (user.isNewUser) {
     const introductionMessage = [

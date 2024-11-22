@@ -35,7 +35,7 @@ const VoiceControls: React.FC = () => {
     }
   });
 
-  const waitAndDisconnect = async (ms: number = 1500) => {
+  const waitAndDisconnect = async (ms: number = 2500) => {
     await new Promise(resolve => setTimeout(resolve, ms));
     disconnect();
   }
