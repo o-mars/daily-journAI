@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { RTVIError } from "realtime-ai";
-import { useRTVIClient, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
+import { LLMFunctionCallData, RTVIError, RTVIEvent } from "realtime-ai";
+import { useRTVIClient, useRTVIClientEvent, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
 import { useUser } from "@/src/contexts/UserContext";
 
 const VoiceControls: React.FC = () => {
@@ -16,6 +16,28 @@ const VoiceControls: React.FC = () => {
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
 
   const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
+
+  const disconnectFlag = useRef<boolean>(false);
+
+  useRTVIClientEvent(RTVIEvent.LLMFunctionCall, (data: LLMFunctionCallData) => {
+    if (data.function_name === 'disconnect_voice_client') {
+      console.log('disconnect_voice_client flag set in voice controls');
+      disconnectFlag.current = true;
+    }
+  });
+
+  useRTVIClientEvent(RTVIEvent.BotTtsStopped, () => {
+    if (disconnectFlag.current) {
+      console.log('bot tts stopped and disconnect flag is set so disconnecting...');
+      disconnectFlag.current = false;
+      waitAndDisconnect();
+    }
+  });
+
+  const waitAndDisconnect = async (ms: number = 1500) => {
+    await new Promise(resolve => setTimeout(resolve, ms));
+    disconnect();
+  }
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();

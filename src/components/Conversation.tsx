@@ -17,7 +17,7 @@ const Conversation: React.FC = () => {
   }, [messages]);
 
   return (
-    <div style={{ width: '100%', paddingTop: '16px', borderRadius: '8px', overflowY: 'scroll', height: 'calc(100vh - 100px)', flexGrow: 1 }} data-conversation-content>
+    <div style={{ width: '100%', paddingTop: '16px', borderRadius: '8px', overflowY: 'scroll', height: 'calc(100vh - 120px)', flexGrow: 1 }} data-conversation-content>
       {messages.map((message, index) => (
         <div 
           key={index} 

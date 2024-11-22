@@ -62,7 +62,11 @@ export default function Dashboard() {
       "llm",
       new LLMHelper({
         callbacks: {
-          // Put function calls with no/static params, dynamic params go in handleFunctionCall
+          onLLMFunctionCall(func) {
+            if (func.function_name === "disconnect_voice_client") {
+              // return { success: true, message: "Voice client should disconnect soon." };
+            }
+          },
         },
       })
     ) as LLMHelper;
@@ -80,15 +84,8 @@ export default function Dashboard() {
         const json = await response.json();
         return json;
       }
-      // This seems potentially strange: a) compute and pass partial mood in payload? b) why not at end
-      if (fn.functionName === "save_mood" && args.label) {
-        // const moodPartial: Partial<Mood> = { label: encodeURIComponent(args.label) };
-        // const response = await saveMoodEntries(moodPartial);
-        // const json = await response.json();
-        // return json;
-      }
       else {
-        return { error: "couldn't fetch weather" };
+        return { error: `unknown function call: ${fn.functionName}` };
       }
     });  
 

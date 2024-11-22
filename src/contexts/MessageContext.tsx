@@ -35,6 +35,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   useRTVIClientEvent(RTVIEvent.BotLlmStopped, () => {
     const text = botTextStream.current.join('');
     botTextStream.current = [];
+    if (text === '') return;
     setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   });
 

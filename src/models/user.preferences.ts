@@ -88,7 +88,26 @@ export function getSttConfig(preferences: UserPreferences) {
 export function getLlmConfig(preferences: UserPreferences, systemMessage: string) {
   return {
     service: "llm",
-    options: [{ name: "model", value: preferences.llmModel }, { name: 'temperature', value: 0.7 }, { name: "initial_messages", value: [{ role: "system", content: systemMessage }]}, { name: "run_on_config", value: true }],
+    options: [
+      { name: "model", value: preferences.llmModel },
+      { name: 'temperature', value: 0.7 },
+      { name: "initial_messages", value: [{ role: "system", content: systemMessage }]},
+      { name: "tools", value: [
+        {
+          type: "function",
+          function: {
+            name: "disconnect_voice_client",
+            description: "Disconnect the voice client.",
+            parameters: {
+              type: "object",
+              properties: {},
+              required: [],
+            },
+          },
+        },
+      ]},
+      { name: "run_on_config", value: true }
+    ],
   }
 }
 

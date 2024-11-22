@@ -45,6 +45,8 @@ export function generateConfig(user: User) {
 
   generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
+  systemPromptChunks.push("Once the conversation has ended, or if they say goodbye, you should say goodbye but also disconnect the session by calling the function `disconnect_voice_client`.");
+
   if (user.isNewUser) {
     const introductionMessage = [
       `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`,
@@ -60,6 +62,8 @@ export function generateConfig(user: User) {
       user.journalEntries.filter(entry => !!entry.summary).forEach(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
     }
   } 
+
+  // console.log('systemPromptChunks: ', systemPromptChunks);
 
   const config = [
     getVadConfig(user.preferences),
