@@ -64,7 +64,7 @@ export default function Dashboard() {
         callbacks: {
           onLLMFunctionCall(func) {
             if (func.function_name === "disconnect_voice_client") {
-              // return { success: true, message: "Voice client should disconnect soon." };
+              return { success: true, message: "Voice client should disconnect soon." };
             }
           },
         },
