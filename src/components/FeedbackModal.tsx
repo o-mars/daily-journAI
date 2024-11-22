@@ -89,6 +89,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, lastJour
           border: 1px solid #ccc;
           border-radius: 5px;
           background: #111111;
+          color: #eeeeee;
         }
         button {
           margin: 5px;
