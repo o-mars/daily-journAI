@@ -7,6 +7,7 @@ import { useUser } from "@/src/contexts/UserContext";
 
 interface MessageContextType {
   messages: JournalConversationEntry[];
+  addMessage: (message: JournalConversationEntry) => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -51,8 +52,12 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   });
 
+  const addMessage = (message: JournalConversationEntry) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
   return (
-    <MessageContext.Provider value={{ messages }}>
+    <MessageContext.Provider value={{ messages, addMessage }}>
       {children}
     </MessageContext.Provider>
   );

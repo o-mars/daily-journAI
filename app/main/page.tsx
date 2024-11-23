@@ -13,6 +13,7 @@ import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { MessageProvider } from "@/src/contexts/MessageContext";
 import Header from "@/src/components/Header";
+import TextMessageInput from "../../src/components/TextMessageInput";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -113,15 +114,16 @@ export default function Dashboard() {
           lastJournalEntryId={lastJournalEntryId}
         />
 
-        <main className="flex-grow overflow-auto p-2">
-          <MessageProvider>
+        <MessageProvider>
+          <main className="flex-grow overflow-auto p-2">
             {!isFeedbackOpen && <Conversation />}
-          </MessageProvider>
-        </main>
+          </main>
 
-        <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-          <VoiceControls />
-        </footer>
+          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+            <TextMessageInput />
+            <VoiceControls />
+          </footer>
+        </MessageProvider>
 
         <RTVIClientAudio />
       </div>
