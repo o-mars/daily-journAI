@@ -5,7 +5,7 @@ export const USER_PATH = 'test';
 export const JOURNAL_ENTRIES_PATH = 'journalEntries';
 export const SUMMARY_NONE = 'None';
 
-export const DEFAULT_VOICE_ID = '5c42302c-194b-4d0c-ba1a-8cb485c84ab9';
+export const DEFAULT_VOICE_ID = '03496517-369a-4db1-8236-3d3ae459ddf7';
 
 export const VOICES: Voice[] = [
   { id: '5c42302c-194b-4d0c-ba1a-8cb485c84ab9', name: 'American', region: 'X', country: 'US', sex: 'female', language: 'en' },

@@ -13,7 +13,6 @@ import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { MessageProvider } from "@/src/contexts/MessageContext";
 import Header from "@/src/components/Header";
-import TextMessageInput from "../../src/components/TextMessageInput";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -120,7 +119,6 @@ export default function Dashboard() {
           </main>
 
           <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-            <TextMessageInput />
             <VoiceControls />
           </footer>
         </MessageProvider>

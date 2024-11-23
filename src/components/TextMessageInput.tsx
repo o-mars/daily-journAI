@@ -24,11 +24,10 @@ const TextMessageInput: React.FC = () => {
       );
       console.log('response: ', response);
 
-      // Add the message to the local context
       addMessage({ from: 'user', text: inputText, sentAt: new Date() });
     }
 
-    setInputText(""); // Clear the input field
+    setInputText("");
   };
 
   if (!voiceClient || !voiceClient.connected) return null;
