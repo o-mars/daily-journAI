@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useMessageContext } from "@/src/contexts/MessageContext";
 
 const Conversation: React.FC = () => {
-  const { messages } = useMessageContext();
+  const { messages, isTextInputVisible } = useMessageContext();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -17,7 +17,17 @@ const Conversation: React.FC = () => {
   }, [messages]);
 
   return (
-    <div style={{ width: '100%', paddingTop: '16px', borderRadius: '8px', overflowY: 'scroll', height: 'calc(100vh - 170px)', flexGrow: 1 }} data-conversation-content>
+    <div
+      style={{
+        width: '100%',
+        paddingTop: '16px',
+        borderRadius: '8px',
+        overflowY: 'scroll',
+        height: `calc(100vh - ${isTextInputVisible ? 170 : 120}px)`,
+        flexGrow: 1
+      }}
+      data-conversation-content
+    >
       {messages.map((message, index) => (
         <div 
           key={index} 

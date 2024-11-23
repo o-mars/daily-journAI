@@ -8,6 +8,8 @@ import { useUser } from "@/src/contexts/UserContext";
 interface MessageContextType {
   messages: JournalConversationEntry[];
   addMessage: (message: JournalConversationEntry) => void;
+  isTextInputVisible: boolean;
+  toggleTextInputVisibility: () => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -16,6 +18,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   const { fetchUser } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
+  const [isTextInputVisible, setIsTextInputVisible] = useState(false);
 
   useRTVIClientEvent(RTVIEvent.UserTranscript, (data: TranscriptData) => {
     if (!data.final) return;
@@ -56,8 +59,12 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
+  const toggleTextInputVisibility = () => {
+    setIsTextInputVisible((prev) => !prev);
+  };
+
   return (
-    <MessageContext.Provider value={{ messages, addMessage }}>
+    <MessageContext.Provider value={{ messages, addMessage, isTextInputVisible, toggleTextInputVisibility }}>
       {children}
     </MessageContext.Provider>
   );

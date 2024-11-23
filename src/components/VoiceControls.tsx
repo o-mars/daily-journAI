@@ -4,11 +4,13 @@ import { LLMFunctionCallData, RTVIError, RTVIEvent } from "realtime-ai";
 import { useRTVIClient, useRTVIClientEvent, useRTVIClientTransportState, VoiceVisualizer } from "realtime-ai-react";
 import { useUser } from "@/src/contexts/UserContext";
 import TextMessageInput from "./TextMessageInput";
+import { useMessageContext } from "@/src/contexts/MessageContext";
 
 const VoiceControls: React.FC = () => {
   const { user } = useUser();
   const voiceClient = useRTVIClient();
   const vcs = useRTVIClientTransportState();
+  const { toggleTextInputVisibility } = useMessageContext();
 
   const [error, setError] = useState<string | null>(null);
   const [isStarted, setIsStarted] = useState(false);
@@ -83,6 +85,7 @@ const VoiceControls: React.FC = () => {
 
   function toggleMicEnabled() {
     setIsMicEnabled(prev => !prev);
+    toggleTextInputVisibility();
   }
 
   function toggleSpeakerEnabled() {
