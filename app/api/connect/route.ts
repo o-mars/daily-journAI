@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     const payload = {
       bot_profile: "voice_2024_10",
-      max_duration: 600,
+      max_duration: 1200,
       services,
       config,
       api_keys: {
