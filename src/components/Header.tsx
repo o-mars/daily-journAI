@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import FeedbackModal from "./FeedbackModal";
+import { APP_TITLE } from "@/src/models/constants";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -31,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
       <button className="w-8" onClick={onMenuClick}>
         <Image width={32} height={32} src="/icons/menu.svg" alt="Profile" />
       </button>
-      <h1 className="text-2xl md:text-4xl font-bold">JournAI</h1>
+      <h1 className="text-2xl md:text-4xl font-bold">{APP_TITLE}</h1>
       <div className="flex">
         <button className="w-7 mr-4" onClick={onFeedbackClick}>
           <Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback" />

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase.config';
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-
+import { APP_TITLE } from '@/src/models/constants';
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-2">JournAI</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">{APP_TITLE}</h1>
         </div>
 
         <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">

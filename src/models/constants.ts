@@ -5,10 +5,12 @@ export const USER_PATH = 'test';
 export const JOURNAL_ENTRIES_PATH = 'journalEntries';
 export const SUMMARY_NONE = 'None';
 
-export const DEFAULT_VOICE_ID = '00a77add-48d5-4ef6-8157-71e5437b282d';
+export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
+
+export const APP_TITLE = 'Inner Echo';// 'Inner Chronicle';
 
 export const VOICES: Voice[] = [
-  { id: '00a77add-48d5-4ef6-8157-71e5437b282d', name: 'American', region: 'X', country: 'US', sex: 'female', language: 'en' },
+  { id: '794f9389-aac1-45b6-b726-9d9369183238', name: 'American', region: 'X', country: 'US', sex: 'female', language: 'en' },
   { id: '03496517-369a-4db1-8236-3d3ae459ddf7', name: 'Spa Voice', region: 'X', country: 'US', sex: 'female', language: 'en' },
   { id: '79a125e8-cd45-4c13-8a67-188112f4dd22', name: 'British', region: 'X', country: 'UK', sex: 'female', language: 'en' },
   { id: 'f9836c6e-a0bd-460e-9d3c-f7299fa60f94', name: 'Southern', region: 'X', country: 'US', sex: 'female', language: 'en' },

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInAnonymously } from "firebase/auth";
 import { auth } from "@/firebase.config";
-
+import { APP_TITLE } from "@/src/models/constants";
 const WelcomeScreen: React.FC = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to JournAI</h1>
+      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to {APP_TITLE}</h1>
       
       <p className="mb-4 text-center">
         Your personal journaling assistant.
@@ -33,7 +33,11 @@ const WelcomeScreen: React.FC = () => {
       
       <div style={{ marginTop: '24px' }} className="bg-red-900 p-4 rounded-lg mb-4">
         <p className="text-center font-semibold">
-          Disclaimer: Transcripts of your conversations may be reviewed by humans.
+          Privacy Policy: All data is stored securely and protected from unauthorized access.
+          <br />
+          Your data is never shared, sold, or given to third parties under any circumstances.
+          <br />
+          Data might be accessed by our team, but only to improve the user experience.
           <br />
           By proceeding, you are consenting to this policy.
         </p>
