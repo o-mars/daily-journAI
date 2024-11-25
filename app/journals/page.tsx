@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "@/src/contexts/UserContext";
 
 import VoiceControls from "../../src/components/VoiceControls";
-import Conversation from "@/src/components/Conversation";
+
+import { useUser } from "@/src/contexts/UserContext";
+import { MessageProvider } from "@/src/contexts/MessageContext";
 import Header from "@/src/components/Header";
 
-export default function Dashboard() {
+export default function Journals() {
   const { user } = useUser();
 
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
@@ -29,22 +30,28 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
-      <Header
-        // onMenuClick={() => console.log('profile')}
-        onFeedbackClick={handleFeedback}
-        isFeedbackOpen={isFeedbackOpen}
-        onCloseFeedback={() => setIsFeedbackOpen(false)}
-        lastJournalEntryId={lastJournalEntryId}
-      />
+      <div className="flex flex-col min-h-screen bg-gray-900">
+        <Header
+          onFeedbackClick={handleFeedback}
+          isFeedbackOpen={isFeedbackOpen}
+          onCloseFeedback={() => setIsFeedbackOpen(false)}
+          lastJournalEntryId={lastJournalEntryId}
+        />
 
-      <main className="flex-grow overflow-auto p-2">
-        {!isFeedbackOpen && <Conversation />}
-      </main>
+        <MessageProvider>
+          <main className="flex-grow overflow-auto p-2">
+            <div>
+              <h1>Journals</h1>
+              <p>
+                Here you can view your past journals.
+              </p>
+            </div>
+          </main>
 
-      <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-        <VoiceControls />
-      </footer>
-    </div>
+          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+            <VoiceControls />
+          </footer>
+        </MessageProvider>
+      </div>
   );
 }

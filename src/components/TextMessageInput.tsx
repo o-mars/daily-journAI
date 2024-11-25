@@ -15,14 +15,13 @@ const TextMessageInput: React.FC = () => {
 
     const llmHelper = voiceClient?.getHelper("llm") as LLMHelper;
     if (llmHelper) {
-      const response = await llmHelper.appendToMessages(
+      await llmHelper.appendToMessages(
         {
           role: "user",
           content: inputText,
         },
         true
       );
-      console.log('response: ', response);
 
       addMessage({ from: 'user', text: inputText, sentAt: new Date() });
     }
