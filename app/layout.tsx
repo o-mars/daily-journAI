@@ -4,6 +4,7 @@ import { MessageProvider } from "@/src/contexts/MessageContext";
 import "./globals.css";
 import { UserProvider } from "@/src/contexts/UserContext";
 import { VoiceClientProvider } from "@/src/contexts/VoiceClientContext";
+import { HeaderProvider } from "@/src/contexts/HeaderContext";
 
 export default function RootLayout({
   children,
@@ -16,7 +17,9 @@ export default function RootLayout({
         <UserProvider>
           <VoiceClientProvider>
             <MessageProvider>
-              {children}
+              <HeaderProvider>
+                {children}
+              </HeaderProvider>
             </MessageProvider>
           </VoiceClientProvider>
         </UserProvider>
