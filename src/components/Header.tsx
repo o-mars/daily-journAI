@@ -6,13 +6,10 @@ import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 
-interface HeaderProps {
-}
 
 const flipFeature = false;
 
-const Header: React.FC<HeaderProps> = ({
-}) => {
+const Header: React.FC = () => {
   const { user } = useUser();
   const { 
     isMenuOpen, 
@@ -31,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({
     const entryAge = new Date().getTime() - new Date(latestEntry.endTime).getTime();
     if (entryAge > ONE_HOUR_MS) return;
     setLastJournalEntryId(latestEntry.id);
-  }, [user]);
+  }, [user, lastJournalEntryId, setLastJournalEntryId]);
 
   const handleLogoutClick = async () => {
     await signOut(auth);
