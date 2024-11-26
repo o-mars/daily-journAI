@@ -20,7 +20,7 @@ interface VoiceClientContextType {
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
-const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
+const DisconnectHandler: React.FC<{ onDisconnect: () => void, voiceClient: RTVIClient | null }> = ({ onDisconnect, voiceClient }) => {
   const disconnectFlag = useRef<boolean>(false);
   const ttsInProgress = useRef<boolean>(false);
   const waitForTtsTimeout = useRef<NodeJS.Timeout>();
@@ -45,11 +45,16 @@ const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnec
       disconnectFlag.current = true;
 
       if (!ttsInProgress.current) {
-        waitForTtsTimeout.current = setTimeout(() => {
+        waitForTtsTimeout.current = setTimeout(async () => {
           if (!ttsInProgress.current) {
             console.log('No TTS, disconnecting.');
+            await voiceClient?.action({
+              service: "tts",
+              action: "say",
+              arguments: [{ name: "text", value: "Bye now!" }],
+            })
             disconnectFlag.current = false;
-            waitAndDisconnect(500);
+            waitAndDisconnect(2000);
           }
         }, 500);
       }
@@ -201,7 +206,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       toggleSpeakerEnabled
     }}>
       <BaseRTVIClientProvider client={voiceClient!}>
-        <DisconnectHandler onDisconnect={disconnect} />
+        <DisconnectHandler onDisconnect={disconnect} voiceClient={voiceClient} />
         {children}
       </BaseRTVIClientProvider>
     </VoiceClientContext.Provider>

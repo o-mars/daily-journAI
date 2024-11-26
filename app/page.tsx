@@ -25,7 +25,7 @@ export default function Home() {
     <>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <h1 className="text-4xl font-bold">{APP_TITLE}</h1>
-        <div> Please Wait... redirecting based on auth state... </div>
+        <div> Please Wait... redirecting... </div>
       </main>
     </>
   );

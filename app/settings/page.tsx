@@ -147,7 +147,7 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="city" className="block mb-2">City</label>
                   <input
                     type="text"
@@ -158,7 +158,7 @@ export default function Settings() {
                     placeholder="Enter your city"
                     disabled={isDisabled}
                   />
-                </div>
+                </div> */}
 
                 <div className="form-group">
                   <label htmlFor="voiceId" className="block mb-2">Voice</label>

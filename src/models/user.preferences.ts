@@ -97,7 +97,7 @@ export function getLlmConfig(preferences: UserPreferences, systemMessage: string
           type: "function",
           function: {
             name: "disconnect_voice_client",
-            description: "Disconnect the voice client.",
+            description: "Disconnects the voice client after the conversation ends.",
             parameters: {
               type: "object",
               properties: {},
