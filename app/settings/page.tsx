@@ -10,9 +10,13 @@ import { MessageProvider } from "@/src/contexts/MessageContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
 import { COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
+import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
 export default function Settings() {
   const { user, updateUser } = useUser();
+  const { isLoading, isStarted } = useVoiceClient()!;
+
+  const isDisabled = isLoading || isStarted;
 
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -41,10 +45,10 @@ export default function Settings() {
 
   useEffect(() => {
     if (user) {
-      setLocalUser({
-        ...defaultUser,
+      setLocalUser(prevUser => ({
+        ...prevUser,
         ...user
-      });
+      }));
     }
   }, [user]);
 
@@ -135,24 +139,26 @@ export default function Settings() {
                   <input
                     type="text"
                     id="name"
-                    value={localUser.profile.name}
+                    value={localUser.profile.name || ''}
                     onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your name"
+                    disabled={isDisabled}
                   />
                 </div>
 
-                {/* <div className="form-group">
+                <div className="form-group">
                   <label htmlFor="city" className="block mb-2">City</label>
                   <input
                     type="text"
                     id="city"
-                    value={localUser.profile.city}
+                    value={localUser.profile.city || ''}
                     onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your city"
+                    disabled={isDisabled}
                   />
-                </div> */}
+                </div>
 
                 <div className="form-group">
                   <label htmlFor="voiceId" className="block mb-2">Voice</label>
@@ -160,7 +166,8 @@ export default function Settings() {
                     id="voiceId"
                     value={localUser.preferences.voiceId}
                     onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isDisabled}
                   >
                     <option value="">Select a voice</option>
                     {filteredVoices.map(voice => (
@@ -177,7 +184,8 @@ export default function Settings() {
                     id="languageId"
                     value={localUser.preferences.languageId}
                     onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700"
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isDisabled}
                   >
                     {Object.values(LANGUAGES).map(language => (
                       <option key={language.id} value={language.id}>
@@ -199,7 +207,8 @@ export default function Settings() {
                     step={0.1}
                     value={localUser.preferences.vadStopSecs}
                     onChange={handleChange}
-                    className="w-full"
+                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isDisabled}
                   />
                 </div>
 

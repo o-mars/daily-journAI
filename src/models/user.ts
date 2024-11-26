@@ -40,12 +40,12 @@ export function generateConfig(user: User) {
   const systemPromptChunks = [
     "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
     "They are also speaking to you, and their response is being converted to text before being sent to you.",
-    `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase. e.g. "It sounds like"`
+    `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase such as "It sounds like".`
   ];
 
   generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
-  systemPromptChunks.push("Once the conversation ends, or if they say goodbye, say goodbye but also disconnect the session by calling the function `disconnect_voice_client`.");
+  systemPromptChunks.push("Once the conversation ends and you have said goodbye, disconnect the session by calling the function 'disconnect_voice_client'.");
 
   if (user.isNewUser) {
     const introductionMessage = [
@@ -70,7 +70,7 @@ export function generateConfig(user: User) {
     getSttConfig(user.preferences),
   ];
 
-  // console.log('config: ', config);
+  console.log('config: ', config);
 
   return config;
 }

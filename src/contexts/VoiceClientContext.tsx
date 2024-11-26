@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { RTVIClient, LLMHelper, FunctionCallParams } from "realtime-ai";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { RTVIClient, LLMHelper, FunctionCallParams, RTVIEvent, LLMFunctionCallData } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfig } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
-import { RTVIClientProvider as BaseRTVIClientProvider } from "realtime-ai-react";
+import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
 
 interface VoiceClientContextType {
   voiceClient: RTVIClient | null;
@@ -19,6 +19,58 @@ interface VoiceClientContextType {
 }
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
+
+const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
+  const disconnectFlag = useRef<boolean>(false);
+  const ttsInProgress = useRef<boolean>(false);
+  const waitForTtsTimeout = useRef<NodeJS.Timeout>();
+
+  useRTVIClientEvent(RTVIEvent.BotTtsStarted, () => {
+    ttsInProgress.current = true;
+  });
+
+  useRTVIClientEvent(RTVIEvent.BotTtsStopped, () => {
+    ttsInProgress.current = false;
+    
+    if (disconnectFlag.current) {
+      console.log('Disconnecting post TTS.');
+      disconnectFlag.current = false;
+      waitAndDisconnect(1500);
+    }
+  });
+
+  useRTVIClientEvent(RTVIEvent.LLMFunctionCall, (data: LLMFunctionCallData) => {
+    if (data.function_name === 'disconnect_voice_client') {
+      console.log('LLM: disconnect_voice_client');
+      disconnectFlag.current = true;
+
+      if (!ttsInProgress.current) {
+        waitForTtsTimeout.current = setTimeout(() => {
+          if (!ttsInProgress.current) {
+            console.log('No TTS, disconnecting.');
+            disconnectFlag.current = false;
+            waitAndDisconnect(500);
+          }
+        }, 500);
+      }
+    }
+  });
+
+  const waitAndDisconnect = async (ms: number) => {
+    await new Promise(resolve => setTimeout(resolve, ms));
+    onDisconnect();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (waitForTtsTimeout.current) {
+        clearTimeout(waitForTtsTimeout.current);
+      }
+    };
+  }, []);
+
+  return null;
+};
 
 export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useUser();
@@ -149,6 +201,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       toggleSpeakerEnabled
     }}>
       <BaseRTVIClientProvider client={voiceClient!}>
+        <DisconnectHandler onDisconnect={disconnect} />
         {children}
       </BaseRTVIClientProvider>
     </VoiceClientContext.Provider>
