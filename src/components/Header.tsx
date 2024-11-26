@@ -1,11 +1,10 @@
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { APP_TITLE, ONE_HOUR_MS } from "@/src/models/constants";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
-import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
+import { useHeader } from '@/src/contexts/HeaderContext';
 
 interface HeaderProps {
 }
@@ -14,17 +13,16 @@ const flipFeature = false;
 
 const Header: React.FC<HeaderProps> = ({
 }) => {
-  const router = useRouter();
-  const pathName = usePathname();
   const { user } = useUser();
-  const { isStarted } = useVoiceClient()!;
-
-  const [isMenuOpen, setIsMenuOpen] = useState(pathName === '/settings');
-  const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
-
-  // useEffect(() => {
-  //   if (isStarted && pathName.includes('/feedback')) router.back();
-  // }, [isStarted]);
+  const { 
+    isMenuOpen, 
+    currentView,
+    lastJournalEntryId,
+    setLastJournalEntryId,
+    toggleMenu,
+    navigateToView,
+    goBack
+  } = useHeader();
 
   useEffect(() => {
     if (!user) return;
@@ -33,81 +31,43 @@ const Header: React.FC<HeaderProps> = ({
     const entryAge = new Date().getTime() - new Date(latestEntry.endTime).getTime();
     if (entryAge > ONE_HOUR_MS) return;
     setLastJournalEntryId(latestEntry.id);
-
-    // if (isStarted || !pathName.includes('/main') || entryAge > ONE_MINUTE_MS) return;
-    // router.push(`/feedback?entryId=${latestEntry.id}`);
-  }, [user, router, isStarted]);
+  }, [user]);
 
   const handleLogoutClick = async () => {
     await signOut(auth);
-    router.push('/login');
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (pathName === '/settings') router.back();
-  };
-
-  const handleNewClick = () => {
-    router.push('/main');
-  };
-
-  const handleReadClick = () => {
-    router.push('/journals');
-  };
-
-  const handleSettingsClick = () => {
-    if (pathName === '/settings') router.back();
-    else router.push('/settings');
+    navigateToView('main');
   };
 
   const handleFeedbackClick = () => {
-    if (pathName.includes('/feedback')) {
-      console.log('back');
-      router.back();
+    if (currentView === 'feedback') {
+      goBack();
     } else {
-      console.log('feedback');
-      router.push(`/feedback?entryId=${lastJournalEntryId}&menuOpen=${isMenuOpen}`);
+      navigateToView('feedback', { 
+        entryId: lastJournalEntryId, 
+        menuOpen: isMenuOpen.toString() 
+      });
     }
   };
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const menuOpen = searchParams.get('menuOpen');
-    if (menuOpen === 'true') {
-      setIsMenuOpen(true);
-    }
-  }, []);
 
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
       <div className="flex flex-grow-0">
-        {!isMenuOpen && pathName !== '/settings' ? (
+        {!isMenuOpen && currentView !== 'settings' ? (
           <button className="w-8" onClick={toggleMenu}>
-            <Image
-              width={32}
-              height={32}
-              src={"/icons/menu.svg"}
-              alt="Menu"
-            />
+            <Image width={32} height={32} src="/icons/menu.svg" alt="Menu" />
           </button>
         ) : (
           <>
             <button className="w-8 mr-4" onClick={toggleMenu}>
-              <Image
-                width={32}
-                height={32}
-                src={"/icons/feather-chevron-left.svg"}
-                alt="Menu"
-              />
+              <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
             </button>
-            <button className="w-7 mr-4" onClick={handleSettingsClick}>
+            <button className="w-7 mr-4" onClick={() => navigateToView('settings')}>
               <Image 
                 width={24} 
                 height={24} 
                 src="/icons/settings.svg" 
                 alt="Settings" 
-                className={`${pathName.includes('/settings') ? '' : 'opacity-50'}`} 
+                className={`${currentView === 'settings' ? '' : 'opacity-50'}`} 
               />
             </button>
             <button className="w-7" onClick={handleLogoutClick}>
@@ -117,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
         )}
       </div>
       <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-4xl font-bold">
-        {pathName === '/settings' ? 'Settings' : APP_TITLE}
+        {currentView === 'settings' ? 'Settings' : APP_TITLE}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         <button className="w-7 mr-4" onClick={handleFeedbackClick}>
@@ -126,11 +86,11 @@ const Header: React.FC<HeaderProps> = ({
             height={28} 
             src="/icons/feather-mail.svg" 
             alt="Feedback" 
-            className={`${pathName.includes('/feedback') ? '' : 'opacity-50'}`}
+            className={`${currentView === 'feedback' ? '' : 'opacity-50'}`}
           />
         </button>
-        {pathName === '/journals' && flipFeature && (
-          <button className="w-7 mr-2" onClick={handleNewClick}>
+        {currentView === 'journals' && flipFeature && (
+          <button className="w-7 mr-2" onClick={() => navigateToView('main')}>
             <Image 
               width={20} 
               height={20} 
@@ -140,8 +100,8 @@ const Header: React.FC<HeaderProps> = ({
             />
           </button>
         )}
-        {pathName === '/main' && flipFeature && (
-          <button className="w-7 mr-4" onClick={handleReadClick}>
+        {currentView === 'main' && flipFeature && (
+          <button className="w-7 mr-4" onClick={() => navigateToView('journals')}>
             <Image 
               width={26} 
               height={26} 

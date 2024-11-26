@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 type HeaderView = 'main' | 'settings' | 'feedback' | 'journals';
@@ -24,6 +24,10 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   );
   const [previousView, setPreviousView] = useState<HeaderView | null>(null);
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
+
+  useEffect(() => {
+    setCurrentView((pathName.split('/')[1] as HeaderView) || 'main');
+  }, [pathName]);
 
   const toggleMenu = () => {
     if (currentView === 'settings') {

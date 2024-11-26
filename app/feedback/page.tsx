@@ -13,8 +13,8 @@ export default function FeedbackPage() {
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
 
-      <div className="flex items-start justify-center min-h-screen bg-gray-900 pt-24 p-4">
-        <div className="w-full max-w-2xl min-h-[450px] bg-gray-950 rounded-lg shadow-xl p-6 m-4">
+      <div className="flex items-start justify-center min-h-screen bg-gray-900 pt-8 p-4">
+        <div className="w-full max-w-2xl min-h-[400px] bg-gray-950 rounded-lg shadow-xl p-6 m-4">
           <Feedback lastJournalEntryId={entryId} />
         </div>
       </div>
