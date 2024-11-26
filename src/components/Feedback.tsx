@@ -34,8 +34,8 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
 
   return (
     <div className="flex flex-col items-center p-4">
-      <div className="w-full max-w-md">
-        <div className="flex justify-center space-x-4 my-4">
+      <div className="w-full max-w-sm">
+        <div className="flex justify-center space-x-4 my-3">
           {[2, 4, 6, 8, 10].map((star) => (
             <span
               key={star}
@@ -47,12 +47,12 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
           ))}
         </div>
         <textarea
-          className="w-full h-32 bg-gray-800 text-white p-2 rounded-md mb-4"
+          className="w-full h-20 bg-gray-800 text-white p-4 rounded-md mt-4 mb-4"
           placeholder="Add your comment here..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center space-x-4 mt-4">
           <button 
             className="bg-blue-500 px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
