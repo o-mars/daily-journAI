@@ -30,10 +30,9 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   }, [pathName]);
 
   const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
     if (currentView === 'settings') {
       goBack();
-    } else {
-      setIsMenuOpen(!isMenuOpen);
     }
   };
 

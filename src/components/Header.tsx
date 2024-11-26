@@ -46,6 +46,16 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleSettingsClick = () => {
+    if (currentView === 'settings') {
+      toggleMenu();
+    } else {
+      navigateToView('settings', { 
+        menuOpen: isMenuOpen.toString() 
+      });
+    }
+  };
+
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
       <div className="flex flex-grow-0">
@@ -58,7 +68,7 @@ const Header: React.FC = () => {
             <button className="w-8 mr-4" onClick={toggleMenu}>
               <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
             </button>
-            <button className="w-7 mr-4" onClick={() => navigateToView('settings')}>
+            <button className="w-7 mr-4" onClick={handleSettingsClick}>
               <Image 
                 width={24} 
                 height={24} 
