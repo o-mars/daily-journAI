@@ -51,7 +51,11 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   useEffect(() => {
-    if (!user || voiceClient) return;
+    if (voiceClient && voiceClient.connected) {
+      voiceClient.disconnect();
+    }
+
+    if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
     const config = generateConfig(user) ?? generateConfig(defaultUser);
@@ -109,7 +113,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         newVoiceClient.disconnect();
       }
     };
-  }, [user, voiceClient]);
+  }, [user]);
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();

@@ -14,6 +14,8 @@ interface HeaderProps {
   lastJournalEntryId: string;
 }
 
+const flipFeature = false;
+
 const Header: React.FC<HeaderProps> = ({
   // onMenuClick,
   onFeedbackClick,
@@ -86,20 +88,20 @@ const Header: React.FC<HeaderProps> = ({
         )}
       </div>
       <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-4xl font-bold">
-        {APP_TITLE}
+        {pathName === '/settings' ? 'Settings' : APP_TITLE}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         <button className="w-7 mr-4" onClick={handleFeedbackClick}>
           <Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback" />
         </button>
-        {pathName !== '/main' && (
+        {pathName === '/journals' && flipFeature && (
           <button className="w-7 mr-2" onClick={handleNewClick}>
             <Image width={20} height={20} src="/icons/plus.svg" alt="New" />
           </button>
         )}
-        {pathName === '/main' && (
+        {pathName === '/main' && flipFeature && (
           <button className="w-7 mr-4" onClick={handleReadClick}>
-            <Image width={24} height={24} src="/icons/bookmark.png" alt="Read" />
+            <Image width={26} height={26} src="/icons/bookmark.png" alt="Read" />
           </button>
         )}
       </div>

@@ -63,14 +63,14 @@ export function generateConfig(user: User) {
     }
   } 
 
-  // console.log('systemPromptChunks: ', systemPromptChunks);
-
   const config = [
     getVadConfig(user.preferences),
     getTtsConfig(user.preferences),
     getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
     getSttConfig(user.preferences),
   ];
+
+  // console.log('config: ', config);
 
   return config;
 }

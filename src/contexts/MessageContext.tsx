@@ -15,7 +15,7 @@ interface MessageContextType {
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
 
 export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { fetchUser } = useUser();
+  const { syncLocalUser } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
   const [isTextInputVisible, setIsTextInputVisible] = useState(false);
@@ -49,7 +49,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
       const messagesToSave = [...messages];
       setMessages([]);
       await saveJournalEntry(messagesToSave);
-      await fetchUser();
+      await syncLocalUser();
     } else {
       setMessages([]);
     }

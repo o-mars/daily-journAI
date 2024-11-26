@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 
 export const USER_PATH = 'test';
 
-export async function getUser(userId: string): Promise<User> {
+export async function fetchUser(userId: string): Promise<User> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user: ' + userId);
@@ -27,7 +27,7 @@ export async function getUser(userId: string): Promise<User> {
   }
 }
 
-export async function getRecentJournalEntries(): Promise<JournalEntry[]> {
+export async function fetchRecentJournalEntries(): Promise<JournalEntry[]> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
@@ -50,7 +50,7 @@ export async function getRecentJournalEntries(): Promise<JournalEntry[]> {
   }
 }
 
-export async function updateUser(data: Partial<User>) {
+export async function saveUpdatedUser(data: Partial<User>) {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user: ' + data.userId);
@@ -66,7 +66,6 @@ export async function updateUser(data: Partial<User>) {
     if (!response.ok) throw new Error('Failed to update user');
     
     const result = await response.json();
-    console.log("User update result:", result);
     return result;
   } catch (error) {
     console.error("Error updating user:", error);

@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase.config";
-import { getUser } from "@/src/client/firebase.service.client";
+import { fetchUser, saveUpdatedUser } from "@/src/client/firebase.service.client";
 import { User } from "@/src/models/user";
 
 const UserContext = createContext<{
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  fetchUser: () => Promise<void>;
-}>({ user: null, isLoading: true, error: null, fetchUser: async () => {} });
+  syncLocalUser: () => Promise<void>;
+  updateUser: (data: Partial<User>) => Promise<void>;
+}>({ user: null, isLoading: true, error: null, syncLocalUser: async () => {}, updateUser: async () => {} });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -38,10 +39,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
 
-  const fetchUser = useCallback(async () => {
+  const syncLocalUser = useCallback(async () => {
     if (!userId) return;
     setIsLoading(true);
-    const newUser = await getUser(userId);
+    const newUser = await fetchUser(userId);
     setIsLoading(false);
     setError(null);
     setUser(newUser);
@@ -50,14 +51,39 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!userId) return;
 
-    fetchUser();
+    syncLocalUser();
 
     return () => {
     };
-  }, [userId, fetchUser]);
+  }, [userId, syncLocalUser]);
+
+  const updateUser = useCallback(async (data: Partial<User>) => {
+    if (!userId || !user) return;
+    
+    try {
+      setIsLoading(true);
+      await saveUpdatedUser(data);
+      
+      // Update local state immediately
+      const updatedUser = {
+        ...user,
+        ...data,
+        profile: { ...user.profile, ...(data.profile || {}) },
+        preferences: { ...user.preferences, ...(data.preferences || {}) }
+      };
+      setUser(updatedUser);
+      setError(null);
+    } catch (error) {
+      console.error(error);
+      setError('Failed to update user');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, user]);
 
   return (
-    <UserContext.Provider value={{ user, isLoading, error, fetchUser }}>
+    <UserContext.Provider value={{ user, isLoading, error, syncLocalUser, updateUser }}>
       {children}
     </UserContext.Provider>
   );

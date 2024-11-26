@@ -4,5 +4,10 @@ export interface Voice {
   region: string;
   country: string;
   sex: 'male' | 'female' | 'other';
-  language: string;
+  languageId: string;
+}
+
+export interface Language {
+  id: string;
+  name: string;
 }
