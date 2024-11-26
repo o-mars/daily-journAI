@@ -1,5 +1,7 @@
 import { Language, Voice } from "@/src/models/voice";
 
+export const ONE_MINUTE_MS = 1000 * 60;
+export const ONE_HOUR_MS = ONE_MINUTE_MS * 60;
 export const MAX_JOURNAL_ENTRIES = 3;
 export const USER_PATH = 'test';
 export const JOURNAL_ENTRIES_PATH = 'journalEntries';
@@ -21,8 +23,8 @@ export const VOICES: Voice[] = [
   { id: '729651dc-c6c3-4ee5-97fa-350da1f88600', name: 'Jaime', region: 'X', country: 'EU', sex: 'male', languageId: 'en' }, 
   { id: '79a125e8-cd45-4c13-8a67-188112f4dd22', name: 'Olivia', region: 'X', country: 'UK', sex: 'female', languageId: 'en' },
   { id: '40104aff-a015-4da1-9912-af950fbec99e', name: 'Peter', region: 'X', country: 'US', sex: 'male', languageId: 'en' },
-  { id: '3b554273-4299-48b9-9aaf-eefd438e3941', name: 'Zara', region: 'X', country: 'PK', sex: 'female', languageId: 'en' },
-  { id: '638efaaa-4d0c-442e-b701-3fae16aad012', name: 'Ali', region: 'X', country: 'PK', sex: 'male', languageId: 'en' },
+  { id: '3b554273-4299-48b9-9aaf-eefd438e3941', name: 'Sonia', region: 'X', country: 'IN', sex: 'female', languageId: 'en' },
+  { id: '638efaaa-4d0c-442e-b701-3fae16aad012', name: 'Raj', region: 'X', country: 'IN', sex: 'male', languageId: 'en' },
 
   // { id: 'f9836c6e-a0bd-460e-9d3c-f7299fa60f94', name: 'Julia', region: 'X', country: 'US', sex: 'female', languageId: 'en' },
   // { id: 'daf747c6-6bc2-4083-bd59-aa94dce23f5d', name: 'Arab', region: 'X', country: 'UAE', sex: 'female', languageId: 'en' },

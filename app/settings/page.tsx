@@ -18,8 +18,6 @@ export default function Settings() {
 
   const isDisabled = isLoading || isStarted;
 
-  const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
-  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [status, setStatus] = useState<{ type: StatusType; message: string }>({
     type: null,
     message: ''
@@ -31,17 +29,6 @@ export default function Settings() {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    if (user.journalEntries.length === 0) return;
-    const latestEntry = user.journalEntries[0];
-    if (latestEntry.id === lastJournalEntryId || !latestEntry.endTime) return;
-    const entryAge = new Date().getTime() - new Date(latestEntry.endTime).getTime();
-    if (entryAge > 1000 * 60 * 60) return; // Older than 1 hour
-    setLastJournalEntryId(latestEntry.id);
-    if (entryAge < 1000 * 60 * 2) setIsFeedbackOpen(true); // Less than 2 minutes old
-  }, [user, lastJournalEntryId]);
 
   useEffect(() => {
     if (user) {
@@ -56,10 +43,6 @@ export default function Settings() {
     const voices = VOICES.filter(voice => voice.languageId === localUser.preferences.languageId);
     setFilteredVoices(voices);
   }, [localUser.preferences.languageId]);
-
-  const handleFeedback = () => {
-    setIsFeedbackOpen(prev => !prev);
-  };
 
   const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -123,12 +106,7 @@ export default function Settings() {
 
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
-        <Header
-          onFeedbackClick={handleFeedback}
-          isFeedbackOpen={isFeedbackOpen}
-          onCloseFeedback={() => setIsFeedbackOpen(false)}
-          lastJournalEntryId={lastJournalEntryId}
-        />
+        <Header />
 
         <MessageProvider>
           <main className="flex-grow overflow-auto pt-8 p-4">
@@ -169,7 +147,6 @@ export default function Settings() {
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
                   >
-                    <option value="">Select a voice</option>
                     {filteredVoices.map(voice => (
                       <option key={voice.id} value={voice.id}>
                         {`${COUNTRY_ICONS[voice.country] || ''} ${voice.name}`}

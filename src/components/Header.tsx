@@ -2,31 +2,41 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
-import FeedbackModal from "./FeedbackModal";
-import { APP_TITLE } from "@/src/models/constants";
-import { useState } from "react";
+import { APP_TITLE, ONE_HOUR_MS } from "@/src/models/constants";
+import { useState, useEffect } from "react";
+import { useUser } from "@/src/contexts/UserContext";
+import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
 interface HeaderProps {
-  // onMenuClick: () => void;
-  onFeedbackClick: () => void;
-  isFeedbackOpen: boolean;
-  onCloseFeedback: () => void;
-  lastJournalEntryId: string;
 }
 
 const flipFeature = false;
 
 const Header: React.FC<HeaderProps> = ({
-  // onMenuClick,
-  onFeedbackClick,
-  isFeedbackOpen,
-  onCloseFeedback,
-  lastJournalEntryId
 }) => {
   const router = useRouter();
   const pathName = usePathname();
+  const { user } = useUser();
+  const { isStarted } = useVoiceClient()!;
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(pathName === '/settings');
+  const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
+
+  // useEffect(() => {
+  //   if (isStarted && pathName.includes('/feedback')) router.back();
+  // }, [isStarted]);
+
+  useEffect(() => {
+    if (!user) return;
+    const latestEntry = user?.journalEntries?.[0];
+    if (!latestEntry || latestEntry.id === lastJournalEntryId || !latestEntry.endTime) return;
+    const entryAge = new Date().getTime() - new Date(latestEntry.endTime).getTime();
+    if (entryAge > ONE_HOUR_MS) return;
+    setLastJournalEntryId(latestEntry.id);
+
+    // if (isStarted || !pathName.includes('/main') || entryAge > ONE_MINUTE_MS) return;
+    // router.push(`/feedback?entryId=${latestEntry.id}`);
+  }, [user, router, isStarted]);
 
   const handleLogoutClick = async () => {
     await signOut(auth);
@@ -52,9 +62,22 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const handleFeedbackClick = () => {
-    // router.push('/feedback');
-    onFeedbackClick();
+    if (pathName.includes('/feedback')) {
+      console.log('back');
+      router.back();
+    } else {
+      console.log('feedback');
+      router.push(`/feedback?entryId=${lastJournalEntryId}&menuOpen=${isMenuOpen}`);
+    }
   };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const menuOpen = searchParams.get('menuOpen');
+    if (menuOpen === 'true') {
+      setIsMenuOpen(true);
+    }
+  }, []);
 
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
@@ -79,7 +102,13 @@ const Header: React.FC<HeaderProps> = ({
               />
             </button>
             <button className="w-7 mr-4" onClick={handleSettingsClick}>
-              <Image width={24} height={24} src="/icons/settings.svg" alt="Settings" />
+              <Image 
+                width={24} 
+                height={24} 
+                src="/icons/settings.svg" 
+                alt="Settings" 
+                className={`${pathName.includes('/settings') ? '' : 'opacity-50'}`} 
+              />
             </button>
             <button className="w-7" onClick={handleLogoutClick}>
               <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout" />
@@ -92,26 +121,37 @@ const Header: React.FC<HeaderProps> = ({
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         <button className="w-7 mr-4" onClick={handleFeedbackClick}>
-          <Image width={28} height={28} src="/icons/feather-mail.svg" alt="Feedback" />
+          <Image 
+            width={28} 
+            height={28} 
+            src="/icons/feather-mail.svg" 
+            alt="Feedback" 
+            className={`${pathName.includes('/feedback') ? '' : 'opacity-50'}`}
+          />
         </button>
         {pathName === '/journals' && flipFeature && (
           <button className="w-7 mr-2" onClick={handleNewClick}>
-            <Image width={20} height={20} src="/icons/plus.svg" alt="New" />
+            <Image 
+              width={20} 
+              height={20} 
+              src="/icons/plus.svg" 
+              alt="New"
+              className="opacity-50 hover:opacity-100" 
+            />
           </button>
         )}
         {pathName === '/main' && flipFeature && (
           <button className="w-7 mr-4" onClick={handleReadClick}>
-            <Image width={26} height={26} src="/icons/bookmark.png" alt="Read" />
+            <Image 
+              width={26} 
+              height={26} 
+              src="/icons/bookmark.png" 
+              alt="Read"
+              className="opacity-50 hover:opacity-100" 
+            />
           </button>
         )}
       </div>
-      {isFeedbackOpen && (
-        <FeedbackModal
-          isOpen={isFeedbackOpen}
-          onClose={onCloseFeedback}
-          lastJournalEntryId={lastJournalEntryId}
-        />
-      )}
     </header>
   );
 };
