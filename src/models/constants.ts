@@ -3,7 +3,7 @@ import { Language, Voice } from "@/src/models/voice";
 export const ONE_MINUTE_MS = 1000 * 60;
 export const ONE_HOUR_MS = ONE_MINUTE_MS * 60;
 export const MAX_JOURNAL_ENTRIES = 3;
-export const USER_PATH = 'test';
+export const USER_PATH = 'users';
 export const JOURNAL_ENTRIES_PATH = 'journalEntries';
 export const SUMMARY_NONE = 'None';
 
