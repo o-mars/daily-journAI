@@ -65,14 +65,14 @@ export function generateSystemMessagesForInnerEcho(user: User) {
       LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
     ];
     introductionMessage.forEach(message => systemPromptChunks.push(message));
-  } 
+  }
   else {
     systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE);
     if (user.journalEntries.length > 0) {
       systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE);
       user.journalEntries.filter(entry => !!entry.summary).forEach(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
     }
-  } 
+  }
 
   return systemPromptChunks;
 }
@@ -92,10 +92,10 @@ export function generateSystemMessagesForVentingMachine(user: User) {
       LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
     ];
     introductionMessage.forEach(message => systemPromptChunks.push(message));
-  } 
+  }
   else {
     systemPromptChunks.push(LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE);
-  } 
+  }
 
   return systemPromptChunks;
 }
