@@ -10,7 +10,7 @@ export const SUMMARY_NONE = 'None';
 export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';
 
-export const APP_TITLE = 'Inner Echo';// 'Inner Chronicle';
+export const APP_TITLE = 'Venting Machine';
 
 export const LANGUAGES: Record<string, Language> = {
   'en': { id: 'en', name: 'English' }
