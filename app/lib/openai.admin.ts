@@ -17,7 +17,7 @@ export async function generateTitle(conversation: JournalConversationEntry[]) {
         content: [
           {
             type: "text",
-            text: "Create a concise 1-10 word title that captures the essence of this journal entry. Respond with only the title text."
+            text: "Create a concise 1-10 word title that captures the essence of this journal entry. Respond with only the title text. Don't wrap it in quotes."
           },
         ],
       },

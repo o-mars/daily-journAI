@@ -23,6 +23,8 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
     return new Date(entry.createdAt).toLocaleDateString();
   };
 
+  console.log(entries);
+
   return (
     <div className="journal-entries">
       <h2>Journal Entries</h2>

@@ -1,0 +1,44 @@
+.journal-entry-view header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-view-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.content-card {
+  background: #1a1a1a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  margin: 8px;
+  padding: 16px;
+  height: calc(100% - 16px);
+  overflow: auto;
+
+  /* Customize scrollbar for webkit browsers (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 8px;  /* width of the scrollbar */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;  /* scrollbar track */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);  /* scrollbar handle */
+    border-radius: 4px;
+  }
+
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}

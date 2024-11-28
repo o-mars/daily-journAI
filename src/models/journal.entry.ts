@@ -29,6 +29,8 @@ export function toJournalEntry(document: DocumentData): JournalEntry {
     ...(!!document.startTime && { startTime: document.startTime }),
     ...(!!document.endTime && { endTime: document.endTime }),
     ...(!!document.summary && { summary: document.summary }),
+    ...(!!document.title && { title: document.title }),
+    ...(!!document.transformedEntry && { transformedEntry: document.transformedEntry }),
   }
 
   return entry;

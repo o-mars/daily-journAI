@@ -2,6 +2,7 @@ import { JournalEntry } from "@/src/models/journal.entry";
 import { useState } from "react";
 import Conversation from "./Conversation";
 import { TransformedEntryView } from "./TransformedEntryView";
+import '@/src/styles/JournalEntryView.css';
 
 interface JournalEntryViewProps {
   entry: JournalEntry;
@@ -22,38 +23,35 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
     entry.transformedEntry ? 'transformed' : 'conversation'
   );
 
+  console.log(entry);
+
   return (
     <div className="journal-entry-view">
       <header>
-        <button className="back-button" onClick={onBack}>← Back</button>
-        <h2>{entry.title || getEntryDisplayText(entry)}</h2>
+        <div className="header-left">
+          <button className="back-button" onClick={onBack}>← Back</button>
+          <h2>{entry.title || getEntryDisplayText(entry)}</h2>
+        </div>
+        {entry.transformedEntry && (
+          <button 
+            className="toggle-view-button"
+            onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+          >
+            {activeTab === 'conversation' ? 'View Edited Entry' : 'View Conversation'}
+          </button>
+        )}
       </header>
 
-      {entry.transformedEntry && (
-        <div className="tabs">
-          <button 
-            className={activeTab === 'conversation' ? 'active' : ''}
-            onClick={() => setActiveTab('conversation')}
-          >
-            Conversation
-          </button>
-          <button 
-            className={activeTab === 'transformed' ? 'active' : ''}
-            onClick={() => setActiveTab('transformed')}
-          >
-            Transformed Entry
-          </button>
-        </div>
-      )}
-
       <div className="content">
-        {activeTab === 'conversation' ? (
-          <Conversation messages={entry.conversation} />
-        ) : entry.transformedEntry ? (
-          <TransformedEntryView text={entry.transformedEntry!} />
-        ) : (
-          <p>No transformed entry available</p>
-        )}
+        <div className="content-card">
+          {activeTab === 'conversation' ? (
+            <Conversation messages={entry.conversation} />
+          ) : entry.transformedEntry ? (
+            <TransformedEntryView text={entry.transformedEntry!} />
+          ) : (
+            <p>No transformed entry available</p>
+          )}
+        </div>
       </div>
     </div>
   );

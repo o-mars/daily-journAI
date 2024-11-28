@@ -7,7 +7,7 @@ import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 
 
-const flipFeature = false;
+const flipFeature = true;
 
 const Header: React.FC = () => {
   const { user } = useUser();

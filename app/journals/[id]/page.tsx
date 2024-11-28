@@ -3,11 +3,12 @@
 import { JournalEntryView } from "@/src/components/JournalEntryView";
 import Header from "@/src/components/Header";
 import { useUser } from "@/src/contexts/UserContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
-export default function JournalEntryPage({ params }: { params: { id: string } }) {
+export default function JournalEntryPage() {
+  const params = useParams();
   const { journalEntries } = useUser();
-  const entry = journalEntries.find(entry => entry.id === params.id);
+  const entry = journalEntries.find(entry => entry.id === params.id as string);
   const router = useRouter();
 
   if (!entry) {
