@@ -1,3 +1,4 @@
+import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 import { defaultUser } from "@/src/models/user";
 import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     "Say hello, before asking them about how they're feeling, and help them explore this feeling.",
   ];
 
-  const ttsConfig = getTtsConfig(defaultUser.preferences);
+  const ttsConfig = getTtsConfig(defaultUser.preferences, DEFAULT_BOT_TYPE);
   const llmConfig = getLlmConfig(defaultUser.preferences, prompt.join(' '));
   const services = getServices(defaultUser.preferences);
 
