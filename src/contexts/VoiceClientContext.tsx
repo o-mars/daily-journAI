@@ -5,6 +5,7 @@ import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
+import { DEFAULT_BOT_TYPE } from '@/src/models/constants';
 
 interface VoiceClientContextType {
   voiceClient: RTVIClient | null;
@@ -143,7 +144,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
-    const config = generateConfigWithBotType(user, 'venting-machine') ?? generateConfigWithBotType(defaultUser, 'venting-machine');
+    const config = generateConfigWithBotType(user, DEFAULT_BOT_TYPE) ?? generateConfigWithBotType(defaultUser, DEFAULT_BOT_TYPE);
 
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
