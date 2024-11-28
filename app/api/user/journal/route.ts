@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { addJournalEntry, auth, getRecentJournalEntries } from '../../../lib/firebase.admin';
+import { addJournalEntry, auth, getJournalEntries } from '../../../lib/firebase.admin';
 import { JournalConversationEntry } from '@/src/models/journal.entry';
 
 export async function GET(request: Request) {
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const response = getRecentJournalEntries(userId);
+    const response = await getJournalEntries(userId);
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error verifying ID token:", error);

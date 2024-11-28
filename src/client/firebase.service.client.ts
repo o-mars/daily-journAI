@@ -27,7 +27,7 @@ export async function fetchUser(userId: string): Promise<User> {
   }
 }
 
-export async function fetchRecentJournalEntries(): Promise<JournalEntry[]> {
+export async function fetchJournalEntries(): Promise<JournalEntry[]> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
@@ -45,8 +45,8 @@ export async function fetchRecentJournalEntries(): Promise<JournalEntry[]> {
     const result: JournalEntry[] = await response.json();
     return result;
   } catch (error) {
-    console.error("Error saving mood entries:", error);
-    throw new Error('Failed to get recent journal entries');
+    console.error("Error fetching journal entries:", error);
+    throw new Error('Failed to get journal entries');
   }
 }
 

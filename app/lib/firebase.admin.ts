@@ -113,6 +113,28 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
   }
 }
 
+export async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
+  try {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const usersMoodCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
+    const querySnapshot = await usersMoodCollectionRef
+      .where("summary", "!=", "None")
+      .orderBy("createdAt", "desc")
+      .get();
+
+    const recentJournalEntries: JournalEntry[] = [];
+    querySnapshot.forEach((doc) => {
+      recentJournalEntries.push(toJournalEntry({ id: doc.id, ...doc.data() }));
+    });
+
+    return recentJournalEntries;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getJournalEntriesCount(userId: string): Promise<number> {
   try {
     const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
