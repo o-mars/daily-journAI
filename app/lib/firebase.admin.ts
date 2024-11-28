@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 
 import { defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
-import { generateSummary } from "@/app/lib/openai.admin";
+import { generateSummary, generateTitle, generateTransformedEntry } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
 
 
@@ -59,13 +59,25 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
 
 export async function addJournalEntry(userId: string, conversation: JournalConversationEntry[]): Promise<JournalEntry> {
   try {
-    const summary = await generateSummary(conversation);
+    const [summary, title, transformedEntry] = await Promise.all([
+      generateSummary(conversation),
+      generateTitle(conversation),
+      generateTransformedEntry(conversation)
+    ]);
 
     const startTime = conversation[0].sentAt;
     const endTime = conversation[conversation.length-1].sentAt;
     const { FieldValue } = admin.firestore;
     const journalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
-    const journalEntryDocRef = await journalEntriesCollectionRef.add({ conversation, summary, startTime, endTime, createdAt: FieldValue.serverTimestamp() });
+    const journalEntryDocRef = await journalEntriesCollectionRef.add({ 
+      conversation, 
+      summary, 
+      title,
+      transformedEntry,
+      startTime, 
+      endTime, 
+      createdAt: FieldValue.serverTimestamp() 
+    });
 
     const document = await journalEntryDocRef.get();
     console.log('created journalEntry: ', document.data());

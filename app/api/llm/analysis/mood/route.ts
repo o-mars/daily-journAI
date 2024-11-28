@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/app/lib/firebase.admin';
-import { openai } from '@/app/lib/openai.admin';
+import { generateSummary, generateTitle, generateTransformedEntry } from '@/app/lib/openai.admin';
+
 
 export async function POST(request: Request) {
   try {
@@ -20,45 +21,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Got no transcript for analysis" }, { status: 400 });
     }
 
-    console.log('about to do open ai analysis on transcript...   ' + transcript.substr(0, 14));
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: [
-            {
-              type: "text",
-              text: "You have going to receive a journalling entry transcript between a user and an assistant."
-            },
-            {
-              type: "text",
-              text: "Analyze the user's response to determine their mood. They might be feeling many different things."
-            },
-            {
-              type: "text",
-              text: "Respond with only raw JSON, as an array of objects in the following format: {label:single-word-string,score:0-10,source:string-where-label-was-fetched}."
-            },
-            {
-              type: "text",
-              text: "The content of this response will be used directly to parse JSON, don't even include ``` to format your response, pure JSON string."
-            },
-          ],
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: transcript
-            }
-          ],
-        },
-      ],
-    });
+    const [summaryResponse, titleResponse, transformedResponse] = await Promise.all([
+      generateSummary(transcript),
+      generateTitle(transcript),
+      generateTransformedEntry(transcript),
+    ]);
 
-    const moods = response.choices[0].message.content;
-    return NextResponse.json(moods);
+    return NextResponse.json({
+      summary: summaryResponse,
+      title: titleResponse,
+      transformedEntry: transformedResponse,
+    });
   } catch (error) {
     console.error('Error processing transcript for analysis:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

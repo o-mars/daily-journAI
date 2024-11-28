@@ -15,6 +15,8 @@ export interface JournalEntry {
   startTime?: Date;
   endTime?: Date;
   summary?: string;
+  title?: string;
+  transformedEntry?: string;
 }
 
 export function toJournalEntry(document: DocumentData): JournalEntry {

@@ -1,6 +1,7 @@
+import { JournalEntry } from "@/src/models/journal.entry";
 import { getAuth } from "firebase/auth";
 
-export async function analyzeTranscriptForSummary(transcript: string): Promise<string> {
+export async function analyzeTranscriptForSummary(transcript: string): Promise<Partial<JournalEntry>> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user');
@@ -20,6 +21,6 @@ export async function analyzeTranscriptForSummary(transcript: string): Promise<s
     return JSON.parse(data);
   } catch (error) {
     console.error(error);
-    return '';
+    return {};
   }
 }
