@@ -5,6 +5,7 @@ import "./globals.css";
 import { UserProvider } from "@/src/contexts/UserContext";
 import { VoiceClientProvider } from "@/src/contexts/VoiceClientContext";
 import { HeaderProvider } from "@/src/contexts/HeaderContext";
+import { APP_TITLE } from "@/src/models/constants";
 
 export default function RootLayout({
   children,
@@ -13,6 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <title>{APP_TITLE}</title>
+      </head>
       <body>
         <UserProvider>
           <VoiceClientProvider>
