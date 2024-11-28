@@ -26,7 +26,7 @@ export interface UserPreferences {
 export const defaultUserPreferences: UserPreferences = {
   languageId: 'en',
   voiceId: DEFAULT_VOICE_ID,
-  vadStopSecs: 0.8,
+  vadStopSecs: 1.1,
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
