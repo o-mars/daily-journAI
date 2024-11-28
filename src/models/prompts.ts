@@ -1,3 +1,7 @@
+import { BotType, User } from "@/src/models/user";
+import { UserPreferences } from "@/src/models/user.preferences";
+import { ResponseDepth } from "@/src/models/user.preferences";
+
 const LLM_AUDIO_OUTPUT_INSTRUCTIONS = "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.";
 const LLM_AUDIO_INPUT_INSTRUCTIONS = "They are also speaking to you, and their response is being converted to text before being sent to you.";
 export const LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS = LLM_AUDIO_OUTPUT_INSTRUCTIONS + ' ' + LLM_AUDIO_INPUT_INSTRUCTIONS;
@@ -21,3 +25,88 @@ export const LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the fol
 const LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE = "The user is venting their feelings to you, and you're here to help them with this process.";
 const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_INSTRUCTIONS = "Say hello, before asking them what's been bothering them.";
 export const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE = LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE + ' ' + LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_INSTRUCTIONS;
+
+export const LLM_INNER_ECHO_COMPLETE_SYSTEM_PROMPT = [
+  LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS,
+  LLM_INNER_ECHO_SYSTEM_PROMPT_PURPOSE,
+  LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
+].join(' ');
+
+export const LLM_VENTING_MACHINE_COMPLETE_SYSTEM_PROMPT = [
+  LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS,
+  LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE,
+  LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
+].join(' ');
+
+export function generateSystemMessage(preferences: UserPreferences, botType: BotType) {
+  const chunks = [];
+  chunks.push(`Try to model your response such that when spoken out, it has a ${preferences.botPreferences[botType].style} style.`);
+  chunks.push(`Try to model your response such that when spoken out, it has a ${preferences.botPreferences[botType].tone} tone.`);
+  if (preferences.botPreferences[botType].responseDepth === 'shorter' as ResponseDepth) chunks.push(`Try keeping your responses relatively brief where possible`);
+  return chunks;
+}
+
+export function generateSystemMessagesForInnerEcho(user: User) {
+  const systemPromptChunks = [
+    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS
+  ];
+
+  generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
+
+  if (user.isNewUser) {
+    const introductionMessage = [
+      LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
+    ];
+    introductionMessage.forEach(message => systemPromptChunks.push(message));
+  } 
+  else {
+    systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE);
+    if (user.journalEntries.length > 0) {
+      systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE);
+      user.journalEntries.filter(entry => !!entry.summary).forEach(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
+    }
+  } 
+
+  return systemPromptChunks;
+}
+
+export function generateSystemMessagesForVentingMachine(user: User) {
+  const systemPromptChunks = [
+    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
+  ];
+
+  generateSystemMessage(user.preferences, 'venting-machine').forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
+
+  if (user.isNewUser) {
+    const introductionMessage = [
+      LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
+    ];
+    introductionMessage.forEach(message => systemPromptChunks.push(message));
+  } 
+  else {
+    systemPromptChunks.push(LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE);
+  } 
+
+  return systemPromptChunks;
+}
+
+export function generateSystemMessageForBotType(user: User, botType: BotType) {
+  switch (botType) {
+    case 'inner-echo':
+      return generateSystemMessagesForInnerEcho(user).join(' ');
+    case 'venting-machine':
+      return generateSystemMessagesForVentingMachine(user).join(' ');
+    default:
+      return generateSystemMessagesForInnerEcho(user).join(' ');
+  }
+}

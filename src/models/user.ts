@@ -1,6 +1,6 @@
 import { JournalEntry, toJournalEntries } from "@/src/models/journal.entry";
-import { LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE, LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS, LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS, LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS, LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE } from "@/src/models/prompts";
-import { UserPreferences, defaultUserPreferences, generateSystemMessage, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
+import { generateSystemMessagesForInnerEcho, generateSystemMessagesForVentingMachine } from "@/src/models/prompts";
+import { UserPreferences, defaultUserPreferences, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
 
 export type BotType = 'inner-echo' | 'venting-machine';
@@ -40,28 +40,7 @@ export function createUser(userId: string, createdAt: Date): User {
 }
 
 export function generateConfigForInnerEcho(user: User) {
-  const systemPromptChunks = [
-    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
-    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS
-  ];
-
-  generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
-
-  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
-
-  if (user.isNewUser) {
-    const introductionMessage = [
-      LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
-    ];
-    introductionMessage.forEach(message => systemPromptChunks.push(message));
-  } 
-  else {
-    systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE);
-    if (user.journalEntries.length > 0) {
-      systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE);
-      user.journalEntries.filter(entry => !!entry.summary).forEach(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
-    }
-  } 
+  const systemPromptChunks = generateSystemMessagesForInnerEcho(user);
 
   const config = [
     getVadConfig(user.preferences, 'inner-echo'),
@@ -76,24 +55,7 @@ export function generateConfigForInnerEcho(user: User) {
 }
 
 export function generateConfigForVentingMachine(user: User) {
-  const systemPromptChunks = [
-    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
-    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
-  ];
-
-  generateSystemMessage(user.preferences, 'venting-machine').forEach(prefChunk => systemPromptChunks.push(prefChunk));
-
-  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
-
-  if (user.isNewUser) {
-    const introductionMessage = [
-      LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
-    ];
-    introductionMessage.forEach(message => systemPromptChunks.push(message));
-  } 
-  else {
-    systemPromptChunks.push(LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE);
-  } 
+  const systemPromptChunks = generateSystemMessagesForVentingMachine(user);
 
   const config = [
     getVadConfig(user.preferences, 'venting-machine'),
