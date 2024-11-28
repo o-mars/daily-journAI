@@ -19,16 +19,12 @@ const WelcomeScreen: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to {APP_TITLE}</h1>
-      
-      <p className="mb-4 text-center">
-        Your personal journaling assistant.
-      </p>
-      
+
       <p style={{ marginTop: '16px' }} className="mb-4 text-center">
-        Providing you a safe and supportive space for your thoughts.
+        Providing you a safe and supportive space to talk about your feelings.
       </p>
       <p className="mb-4 text-center">
-        Explore and reflect on your experiences, emotions, or anything else on your mind.
+        Need to get something off your chest? This is a judgment-free space to vent out all your thoughts.
       </p>
       
       <div style={{ marginTop: '24px' }} className="bg-red-900 p-4 rounded-lg mb-4">
@@ -37,7 +33,7 @@ const WelcomeScreen: React.FC = () => {
           <br />
           Your data is never shared, sold, or given to third parties under any circumstances.
           <br />
-          Data might be accessed by our team, but only to improve the user experience.
+          Data might be accessed by our team in order to improve the user experience.
           <br />
           By proceeding, you are consenting to this policy.
         </p>
