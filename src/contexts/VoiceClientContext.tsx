@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { RTVIClient, LLMHelper, FunctionCallParams, RTVIEvent, LLMFunctionCallData } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
-import { defaultUser, generateConfig } from "@/src/models/user";
+import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
 
@@ -143,7 +143,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
-    const config = generateConfig(user) ?? generateConfig(defaultUser);
+    const config = generateConfigWithBotType(user, 'inner-echo') ?? generateConfigWithBotType(defaultUser, 'inner-echo');
 
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),

@@ -1,6 +1,9 @@
 import { JournalEntry, toJournalEntries } from "@/src/models/journal.entry";
+import { LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE, LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS, LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS, LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS, LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE } from "@/src/models/prompts";
 import { UserPreferences, defaultUserPreferences, generateSystemMessage, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
+
+export type BotType = 'inner-echo' | 'venting-machine';
 
 export interface UserProfile {
   name?: string;
@@ -36,29 +39,26 @@ export function createUser(userId: string, createdAt: Date): User {
   };
 }
 
-export function generateConfig(user: User) {
+export function generateConfigForInnerEcho(user: User) {
   const systemPromptChunks = [
-    "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
-    "They are also speaking to you, and their response is being converted to text before being sent to you.",
-    `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase such as "It sounds like".`
+    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS
   ];
 
   generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
-  systemPromptChunks.push("When ending the conversation, invoke the function `disconnect_voice_client` with no additional text or explanation. Do not include any conversational text in the function call message.");
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
 
   if (user.isNewUser) {
     const introductionMessage = [
-      `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`,
+      LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
     ];
     introductionMessage.forEach(message => systemPromptChunks.push(message));
   } 
   else {
-    systemPromptChunks.push("You are a journalling assistant, but don't tell them that unless they ask.");
-    systemPromptChunks.push("Say hello, before asking them about how they're feeling, and help them explore this feeling.");
+    systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE);
     if (user.journalEntries.length > 0) {
-      systemPromptChunks.push(`Here are the summaries of the last couple of conversations the user has had with you.`);
-      systemPromptChunks.push(`Only reference them if the user says something that might relate to it. Focus on how the user is presently feeling.`);
+      systemPromptChunks.push(LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE);
       user.journalEntries.filter(entry => !!entry.summary).forEach(entry => systemPromptChunks.push("past conversation summary: " + entry.summary));
     }
   } 
@@ -70,9 +70,53 @@ export function generateConfig(user: User) {
     getSttConfig(user.preferences),
   ];
 
-  console.log('config: ', config);
+  console.log('inner echo config: ', config);
 
   return config;
+}
+
+export function generateConfigForVentingMachine(user: User) {
+  const systemPromptChunks = [
+    LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
+    LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
+  ];
+
+  generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
+
+  if (user.isNewUser) {
+    const introductionMessage = [
+      LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
+    ];
+    introductionMessage.forEach(message => systemPromptChunks.push(message));
+  } 
+  else {
+    systemPromptChunks.push(LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE);
+  } 
+
+  const config = [
+    getVadConfig(user.preferences),
+    getTtsConfig(user.preferences),
+    getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
+    getSttConfig(user.preferences),
+  ];
+
+  console.log('venting machineconfig: ', config);
+
+  return config;
+}
+
+export function generateConfigWithBotType(user: User, botType: BotType) {
+  switch (botType) {
+    case 'inner-echo':
+      return generateConfigForInnerEcho(user);
+    case 'venting-machine':
+      return generateConfigForVentingMachine(user);
+    default:
+      return generateConfigForInnerEcho(user);
+      // throw new Error(`Unknown bot type: ${botType}`);
+  }
 }
 
 export function toUser(document: DocumentData): User {
