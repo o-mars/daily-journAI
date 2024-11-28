@@ -1,6 +1,6 @@
 import { JournalEntry, toJournalEntries } from "@/src/models/journal.entry";
 import { LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE, LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE, LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS, LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS, LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS, LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE, LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE } from "@/src/models/prompts";
-import { UserPreferences, defaultUserPreferences, generateSystemMessage, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig, defaultVentingMachineUserPreferences } from "@/src/models/user.preferences";
+import { UserPreferences, defaultUserPreferences, generateSystemMessage, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
 
 export type BotType = 'inner-echo' | 'venting-machine';
@@ -45,7 +45,7 @@ export function generateConfigForInnerEcho(user: User) {
     LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS
   ];
 
-  generateSystemMessage(user.preferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
+  generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
   systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
 
@@ -64,10 +64,10 @@ export function generateConfigForInnerEcho(user: User) {
   } 
 
   const config = [
-    getVadConfig(user.preferences),
-    getTtsConfig(user.preferences),
+    getVadConfig(user.preferences, 'inner-echo'),
+    getTtsConfig(user.preferences, 'inner-echo'),
     getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
-    getSttConfig(user.preferences),
+    getSttConfig(user.preferences, 'inner-echo'),
   ];
 
   console.log('inner echo config: ', config);
@@ -81,7 +81,7 @@ export function generateConfigForVentingMachine(user: User) {
     LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
   ];
 
-  generateSystemMessage(defaultVentingMachineUserPreferences).forEach(prefChunk => systemPromptChunks.push(prefChunk));
+  generateSystemMessage(user.preferences, 'venting-machine').forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
   systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
 
@@ -96,10 +96,10 @@ export function generateConfigForVentingMachine(user: User) {
   } 
 
   const config = [
-    getVadConfig(user.preferences),
-    getTtsConfig(user.preferences),
+    getVadConfig(user.preferences, 'venting-machine'),
+    getTtsConfig(user.preferences, 'venting-machine'),
     getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
-    getSttConfig(user.preferences),
+    getSttConfig(user.preferences, 'venting-machine'),
   ];
 
   console.log('venting machineconfig: ', config);

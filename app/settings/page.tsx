@@ -12,6 +12,8 @@ import { defaultUser } from "@/src/models/user";
 import { COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
+const BOT_TYPE = 'venting-machine';
+
 export default function Settings() {
   const { user, updateUser } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
@@ -40,9 +42,9 @@ export default function Settings() {
   }, [user]);
 
   useEffect(() => {
-    const voices = VOICES.filter(voice => voice.languageId === localUser.preferences.languageId);
+    const voices = VOICES.filter(voice => voice.languageId === localUser.preferences.botPreferences[BOT_TYPE].languageId);
     setFilteredVoices(voices);
-  }, [localUser.preferences.languageId]);
+  }, [localUser.preferences.botPreferences]);
 
   const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -51,7 +53,7 @@ export default function Settings() {
     if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
     } else if (id === 'voiceId' || id === 'languageId') {
-      newLocalUser.preferences[id] = value;
+      newLocalUser.preferences.botPreferences[BOT_TYPE][id] = value;
       
       if (id === 'voiceId' && value) {
         const audio = new Audio(`/audio/${value}.wav`);
@@ -63,7 +65,7 @@ export default function Settings() {
       }
     } else if (id === 'vadStopSecs') {
       const numValue = parseFloat(value);
-      newLocalUser.preferences.vadStopSecs = numValue;
+      newLocalUser.preferences.botPreferences[BOT_TYPE][id] = numValue;
     }
     
     setLocalUser(newLocalUser);
@@ -142,7 +144,7 @@ export default function Settings() {
                   <label htmlFor="voiceId" className="block mb-2">Voice</label>
                   <select
                     id="voiceId"
-                    value={localUser.preferences.voiceId}
+                    value={localUser.preferences.botPreferences[BOT_TYPE].voiceId}
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
@@ -159,7 +161,7 @@ export default function Settings() {
                   <label htmlFor="languageId" className="block mb-2">Language</label>
                   <select
                     id="languageId"
-                    value={localUser.preferences.languageId}
+                    value={localUser.preferences.botPreferences[BOT_TYPE].languageId}
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
@@ -174,7 +176,7 @@ export default function Settings() {
 
                 <div className="form-group">
                   <label htmlFor="vadStopSecs" className="block mb-2">
-                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.vadStopSecs}s</span>
+                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[BOT_TYPE].vadStopSecs}s</span>
                   </label>
                   <input
                     type="range"
@@ -182,7 +184,7 @@ export default function Settings() {
                     min={0.2}
                     max={2}
                     step={0.1}
-                    value={localUser.preferences.vadStopSecs}
+                    value={localUser.preferences.botPreferences[BOT_TYPE].vadStopSecs}
                     onChange={handleChange}
                     className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
