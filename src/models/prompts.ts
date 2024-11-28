@@ -18,6 +18,6 @@ export const LLM_INNER_ECHO_SYSTEM_PROMPT_SUMMARY_MESSAGE = LLM_INNER_ECHO_SYSTE
 
 export const LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the following: "I'm here to listen, what's bothering you?"`;
 
-const LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE = "The user is venting their feelings to you, and you need to help them with this process.";
-const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_INSTRUCTIONS = "Say hello, before asking them what's been bothering them and that you're here to listen.";
+const LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE = "The user is venting their feelings to you, and you're here to help them with this process.";
+const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_INSTRUCTIONS = "Say hello, before asking them what's been bothering them.";
 export const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE = LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE + ' ' + LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_INSTRUCTIONS;

@@ -1,7 +1,7 @@
 import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
 import { DEFAULT_VOICE_ID } from "@/src/models/constants";
-export type ConversationStyle = "empathetic" | "reflective" | "Neutral" | "inquisitive" | "Motivational" | "Playful";
+export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
 export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
 export type VocabularyType = "simple" | "regular" | "formal" | "slang";
@@ -23,7 +23,7 @@ export interface UserPreferences {
   quirks: string[];
 }
 
-export const defaultUserPreferences: UserPreferences = {
+export const defaultInnerEchoUserPreferences: UserPreferences = {
   languageId: 'en',
   voiceId: DEFAULT_VOICE_ID,
   vadStopSecs: 1.1,
@@ -33,16 +33,36 @@ export const defaultUserPreferences: UserPreferences = {
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
-  style: 'reflective',
+  style: 'empathetic',
   tone: 'reflective',
   responseDepth: 'regular',
   vocabulary: 'regular',
   quirks: [],
 };
 
+export const defaultVentingMachineUserPreferences: UserPreferences = {
+  languageId: 'en',
+  voiceId: DEFAULT_VOICE_ID,
+  vadStopSecs: 0.9,
+  ttsService: 'cartesia',
+  ttsModel: 'sonic-english',
+  llmModel: 'gpt-4o-mini',
+  llmService: 'openai',
+  sttModel: 'nova-2-general',
+  sttService: 'deepgram',
+  style: 'conversational',
+  tone: 'inquisitive',
+  responseDepth: 'regular',
+  vocabulary: 'regular',
+  quirks: [],
+};
+
+export const defaultUserPreferences = defaultInnerEchoUserPreferences;
+
 export function generateSystemMessage(preferences: UserPreferences) {
   const chunks = [];
   chunks.push(`Try to model your response such that when spoken out, it has a ${preferences.style} style.`);
+  chunks.push(`Try to model your response such that when spoken out, it has a ${preferences.tone} tone.`);
   if (preferences.responseDepth === 'shorter' as ResponseDepth) chunks.push(`Try keeping your responses relatively brief where possible`);
   return chunks;
 }

@@ -143,7 +143,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
-    const config = generateConfigWithBotType(user, 'inner-echo') ?? generateConfigWithBotType(defaultUser, 'inner-echo');
+    const config = generateConfigWithBotType(user, 'venting-machine') ?? generateConfigWithBotType(defaultUser, 'venting-machine');
 
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
