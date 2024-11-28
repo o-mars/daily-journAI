@@ -1,5 +1,6 @@
 import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 import { defaultUser } from "@/src/models/user";
+import { generateSystemMessageForBotType } from "@/src/models/prompts";
 import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
 
 // [POST] /api
@@ -24,17 +25,10 @@ export async function POST(request: Request) {
   i.e. this isn't a simple problem.. you need to do function calling / know what happens when the call ends / do RTVI Event watching server side
   */
 
-  const prompt = [
-    "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.",
-    "They are also speaking to you, and their response is being converted to text before being sent to you.",
-    `Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase. e.g. "It sounds like"`,
-    "Try to model your response such that when spoken out, it has a reflective style.",
-    "You are a journalling assistant, but don't tell them that unless they ask.",
-    "Say hello, before asking them about how they're feeling, and help them explore this feeling.",
-  ];
+  const prompt = generateSystemMessageForBotType(defaultUser, DEFAULT_BOT_TYPE);
 
   const ttsConfig = getTtsConfig(defaultUser.preferences, DEFAULT_BOT_TYPE);
-  const llmConfig = getLlmConfig(defaultUser.preferences, prompt.join(' '));
+  const llmConfig = getLlmConfig(defaultUser.preferences, prompt);
   const services = getServices(defaultUser.preferences);
 
   const payload = {
