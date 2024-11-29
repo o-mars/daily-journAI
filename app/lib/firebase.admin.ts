@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 
-import { defaultUser, toUser, User } from "@/src/models/user";
+import { BotType, defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
 import { generateSummary, generateTitle, generateTransformedEntry } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
@@ -57,7 +57,7 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
   }
 }
 
-export async function addJournalEntry(userId: string, conversation: JournalConversationEntry[]): Promise<JournalEntry> {
+export async function addJournalEntry(userId: string, botType: BotType, conversation: JournalConversationEntry[]): Promise<JournalEntry> {
   try {
     const [summary, title, transformedEntry] = await Promise.all([
       generateSummary(conversation),
@@ -76,7 +76,8 @@ export async function addJournalEntry(userId: string, conversation: JournalConve
       transformedEntry,
       startTime, 
       endTime, 
-      createdAt: FieldValue.serverTimestamp() 
+      createdAt: FieldValue.serverTimestamp(),
+      type: botType
     });
 
     const document = await journalEntryDocRef.get();
