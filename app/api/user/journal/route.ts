@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { addJournalEntry, auth, getJournalEntries } from '../../../lib/firebase.admin';
-import { JournalConversationEntry } from '@/src/models/journal.entry';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
@@ -32,9 +31,9 @@ export async function POST(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const conversation: JournalConversationEntry[] = await request.json();
+    const { conversation, botType } = await request.json();
 
-    const response = await addJournalEntry(userId, conversation);
+    const response = await addJournalEntry(userId, botType, conversation);
 
     return NextResponse.json(response);
   } catch (error) {

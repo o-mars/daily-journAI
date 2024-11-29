@@ -17,6 +17,7 @@ export interface JournalEntry {
   summary?: string;
   title?: string;
   transformedEntry?: string;
+  type?: string; // bot type
 }
 
 export function toJournalEntry(document: DocumentData): JournalEntry {

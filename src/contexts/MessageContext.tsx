@@ -4,6 +4,7 @@ import { JournalConversationEntry } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
 import { saveJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
+import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 
 interface MessageContextType {
   messages: JournalConversationEntry[];
@@ -48,7 +49,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (didUserInteract) {
       const messagesToSave = [...messages];
       setMessages([]);
-      await saveJournalEntry(messagesToSave);
+      await saveJournalEntry(messagesToSave, DEFAULT_BOT_TYPE);
       await syncLocalUser();
     } else {
       setMessages([]);
