@@ -36,7 +36,7 @@ export const innerEchoBotPreferences: BotPreferences = {
   responseDepth: 'regular',
   vocabulary: 'regular',
   voiceId: DEFAULT_VOICE_ID,
-  vadStopSecs: 1.1,
+  vadStopSecs: 1.3,
 };
 
 export const ventingMachineBotPreferences: BotPreferences = {
@@ -46,7 +46,7 @@ export const ventingMachineBotPreferences: BotPreferences = {
   responseDepth: 'regular',
   vocabulary: 'regular',
   voiceId: DEFAULT_VOICE_ID,
-  vadStopSecs: 0.9,
+  vadStopSecs: 1.1,
 };
 
 export const defaultInnerEchoUserPreferences: UserPreferences = {

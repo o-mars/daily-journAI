@@ -8,6 +8,7 @@ export const LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS = LLM_AUDIO_OUTPUT_INST
 
 export const LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS = "Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase such as 'It sounds like'.";
 export const LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS = "When ending the conversation, invoke the function `disconnect_voice_client` with no additional text or explanation. Do not include any conversational text in the function call message.";
+export const LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS = "If asked to say goodbye or end the conversation, let the user know that you are not able to do this, and that they should hang up if they no longer want to speak.";
 
 export const LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`;
 
@@ -103,10 +104,10 @@ export function generateSystemMessagesForVentingMachine(user: User) {
 export function generateSystemMessageForBotType(user: User, botType: BotType) {
   switch (botType) {
     case 'inner-echo':
-      return generateSystemMessagesForInnerEcho(user).join(' ');
+      return generateSystemMessagesForInnerEcho(user);
     case 'venting-machine':
-      return generateSystemMessagesForVentingMachine(user).join(' ');
+      return generateSystemMessagesForVentingMachine(user);
     default:
-      return generateSystemMessagesForInnerEcho(user).join(' ');
+      return generateSystemMessagesForInnerEcho(user);
   }
 }
