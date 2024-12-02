@@ -2,6 +2,29 @@ import { DocumentData } from "firebase/firestore";
 
 type role = 'user' | 'assistant';
 
+export interface JournalEntryMetadata {
+  userId: string;
+
+  type: string;
+  duration: number;
+
+  userEntries: number;
+  assistantEntries: number;
+
+  inputLength: number;
+  outputLength: number;
+}
+
+export const defaultJournalEntryMetadata: JournalEntryMetadata = {
+  userId: '',
+  type: '',
+  duration: 0,
+  userEntries: 0,
+  assistantEntries: 0,
+  inputLength: 0,
+  outputLength: 0,
+};
+
 export interface JournalConversationEntry {
   from: role;
   text: string;
@@ -12,12 +35,18 @@ export interface JournalEntry {
   id: string;
   createdAt: Date;
   conversation: JournalConversationEntry[];
+
   startTime?: Date;
   endTime?: Date;
   summary?: string;
+
   title?: string;
   transformedEntry?: string;
+
   type?: string; // bot type
+
+  // lastUpdatedAt?: Date;
+  metadata?: JournalEntryMetadata;
 }
 
 export function toJournalEntry(document: DocumentData): JournalEntry {
@@ -32,6 +61,9 @@ export function toJournalEntry(document: DocumentData): JournalEntry {
     ...(!!document.summary && { summary: document.summary }),
     ...(!!document.title && { title: document.title }),
     ...(!!document.transformedEntry && { transformedEntry: document.transformedEntry }),
+    ...(!!document.type && { type: document.type }),
+    ...(!!document.metadata && { metadata: document.metadata }),
+    ...(!!document.lastUpdatedAt && { lastUpdatedAt: document.lastUpdatedAt }),
   }
 
   return entry;

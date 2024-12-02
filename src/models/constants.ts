@@ -14,6 +14,8 @@ export const APP_TITLE = 'Venting Machine';
 
 export const DEFAULT_BOT_TYPE = 'venting-machine';
 
+export const METRICS_JOURNAL_ENTRIES_PATH = 'metrics-journal-entry';
+
 export const LANGUAGES: Record<string, Language> = {
   'en': { id: 'en', name: 'English' }
 };

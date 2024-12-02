@@ -1,22 +1,22 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from "react";
 import { useRTVIClientEvent } from "realtime-ai-react";
-import { JournalConversationEntry } from "@/src/models/journal.entry";
+import { defaultJournalEntryMetadata, JournalConversationEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
 import { saveJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 
-interface MessageContextType {
+interface JournalEntryContextType {
   messages: JournalConversationEntry[];
   addMessage: (message: JournalConversationEntry) => void;
   isTextInputVisible: boolean;
   toggleTextInputVisibility: () => void;
 }
 
-const MessageContext = createContext<MessageContextType | undefined>(undefined);
+const JournalEntryContext = createContext<JournalEntryContextType | undefined>(undefined);
 
-export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { syncLocalUser } = useUser();
+export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { syncLocalUser, user } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
   const [isTextInputVisible, setIsTextInputVisible] = useState(false);
@@ -41,6 +41,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     const text = botTextStream.current.join('');
     botTextStream.current = [];
     if (text === '') return;
+    
     setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   });
 
@@ -48,8 +49,26 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     const didUserInteract = messages.some(message => message.from === 'user');
     if (didUserInteract) {
       const messagesToSave = [...messages];
+      const durationInSeconds = messages.length > 0 ? 
+        Math.floor((new Date().getTime() - messages[0].sentAt.getTime()) / 1000) : 
+        0;
+      const assistantEntries = messages.filter(message => message.from === 'assistant');
+      const userEntries = messages.filter(message => message.from === 'user');
+
+      const finalMetadata: JournalEntryMetadata = {
+        ...defaultJournalEntryMetadata,
+        userId: user!.userId,
+        assistantEntries: assistantEntries.length,
+        userEntries: userEntries.length,
+        duration: durationInSeconds,
+        type: DEFAULT_BOT_TYPE,
+        inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
+        outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
+      };
+
       setMessages([]);
-      await saveJournalEntry(messagesToSave, DEFAULT_BOT_TYPE);
+
+      await saveJournalEntry(messagesToSave, finalMetadata);
       await syncLocalUser();
     } else {
       setMessages([]);
@@ -65,16 +84,16 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   return (
-    <MessageContext.Provider value={{ messages, addMessage, isTextInputVisible, toggleTextInputVisibility }}>
+    <JournalEntryContext.Provider value={{ messages, addMessage, isTextInputVisible, toggleTextInputVisibility }}>
       {children}
-    </MessageContext.Provider>
+    </JournalEntryContext.Provider>
   );
 };
 
-export const useMessageContext = () => {
-  const context = useContext(MessageContext);
+export const useJournalEntryContext = () => {
+  const context = useContext(JournalEntryContext);
   if (!context) {
-    throw new Error("useMessageContext must be used within a MessageProvider");
+    throw new Error("useJournalEntryContext must be used within a JournalEntryProvider");
   }
   return context;
 }; 

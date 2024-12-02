@@ -11,6 +11,15 @@ interface JournalEntryListProps {
 export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: JournalEntryListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   
+  const formatDate = (date: Date | undefined): string => {
+    if (!date) return '';
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(date));
+  };
+
   const paginatedEntries = entries
     .slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -27,7 +36,6 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
 
   return (
     <div className="journal-entries">
-      <h2>Journal Entries</h2>
       <div className="entry-list">
         {paginatedEntries.map(entry => (
           <div 
@@ -39,7 +47,7 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
           >
             <div className="bubble-content">
               <div className="entry-text">{getEntryDisplayText(entry)}</div>
-              <div className="entry-date">{new Date(entry.createdAt).toLocaleDateString()}</div>
+              <div className="entry-date">{formatDate(entry.endTime)}</div>
             </div>
           </div>
         ))}
@@ -64,4 +72,5 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
       )}
     </div>
   );
-} 
+}
+
