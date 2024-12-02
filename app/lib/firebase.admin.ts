@@ -1,9 +1,10 @@
 import admin from "firebase-admin";
 
-import { BotType, defaultUser, toUser, User } from "@/src/models/user";
-import { JournalConversationEntry, JournalEntry, toJournalEntry } from "@/src/models/journal.entry";
+import { defaultUser, toUser, User } from "@/src/models/user";
+import { JournalConversationEntry, JournalEntry, toJournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { generateSummary, generateTitle, generateTransformedEntry } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
+import { publishJournalEntryMetrics } from "@/app/lib/firebase.admin.metrics";
 
 
 if (!admin.apps.length) {
@@ -57,7 +58,11 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
   }
 }
 
-export async function addJournalEntry(userId: string, botType: BotType, conversation: JournalConversationEntry[]): Promise<JournalEntry> {
+export async function addJournalEntry(
+  userId: string, 
+  conversation: JournalConversationEntry[],
+  metadata: JournalEntryMetadata
+): Promise<JournalEntry> {
   try {
     const [summary, title, transformedEntry] = await Promise.all([
       generateSummary(conversation),
@@ -77,8 +82,13 @@ export async function addJournalEntry(userId: string, botType: BotType, conversa
       startTime, 
       endTime, 
       createdAt: FieldValue.serverTimestamp(),
-      type: botType
+      metadata: {
+        ...metadata,
+        userId
+      }
     });
+    
+    void publishJournalEntryMetrics(metadata);
 
     const document = await journalEntryDocRef.get();
     console.log('created journalEntry: ', document.data());
@@ -95,8 +105,8 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    const usersMoodCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
-    const querySnapshot = await usersMoodCollectionRef
+    const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
+    const querySnapshot = await usersJournalEntriesCollectionRef
       .where("createdAt", ">=", oneWeekAgo)
       .where("summary", "!=", "None")
       .orderBy("createdAt", "desc")
@@ -119,8 +129,8 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    const usersMoodCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
-    const querySnapshot = await usersMoodCollectionRef
+    const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
+    const querySnapshot = await usersJournalEntriesCollectionRef
       .where("summary", "!=", "None")
       .orderBy("createdAt", "desc")
       .get();

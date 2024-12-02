@@ -137,12 +137,15 @@ export function getLlmConfig(preferences: UserPreferences, systemMessage: string
           type: "function",
           function: {
             name: "disconnect_voice_client",
-            description: "Disconnects the voice client after the conversation ends.",
+            description: "Ends the conversation. Must be called using proper function call format, not mentioned in text.",
             parameters: {
               type: "object",
               properties: {},
               required: [],
             },
+            examples: [
+              { "function": "disconnect_voice_client" }
+            ]
           },
         },
       ]},

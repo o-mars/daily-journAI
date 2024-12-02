@@ -1,5 +1,5 @@
-import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
-import { BotType, toUser, User } from "@/src/models/user";
+import { JournalConversationEntry, JournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
+import { toUser, User } from "@/src/models/user";
 import { getAuth } from "firebase/auth";
 
 export const USER_PATH = 'test';
@@ -72,7 +72,10 @@ export async function saveUpdatedUser(data: Partial<User>) {
   }
 }
 
-export async function saveJournalEntry(conversation: JournalConversationEntry[], botType: BotType) {
+export async function saveJournalEntry(
+  conversation: JournalConversationEntry[], 
+  metadata: JournalEntryMetadata
+) {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
@@ -83,7 +86,7 @@ export async function saveJournalEntry(conversation: JournalConversationEntry[],
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ conversation, botType })
+      body: JSON.stringify({ conversation, metadata })
     });
 
     if (!response.ok) throw new Error(`Failed to save journal entry: ${response.statusText}`);

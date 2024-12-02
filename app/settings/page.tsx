@@ -6,11 +6,11 @@ import VoiceControls from "../../src/components/VoiceControls";
 import StatusIndicator, { StatusType } from '@/src/components/StatusIndicator';
 
 import { useUser } from "@/src/contexts/UserContext";
-import { MessageProvider } from "@/src/contexts/MessageContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
 import { COUNTRY_ICONS, DEFAULT_BOT_TYPE, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
+import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 
 
 export default function Settings() {
@@ -109,7 +109,7 @@ export default function Settings() {
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
 
-        <MessageProvider>
+        <JournalEntryProvider>
           <main className="flex-grow overflow-auto pt-8 p-4">
             <div className="max-w-2xl mx-auto space-y-6 text-white">
               <div className="space-y-4">
@@ -205,7 +205,7 @@ export default function Settings() {
           <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
             <VoiceControls />
           </footer>
-        </MessageProvider>
+        </JournalEntryProvider>
       </div>
   );
 }

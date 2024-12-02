@@ -31,9 +31,9 @@ export async function POST(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const { conversation, botType } = await request.json();
+    const { conversation, metadata } = await request.json();
 
-    const response = await addJournalEntry(userId, botType, conversation);
+    const response = await addJournalEntry(userId, conversation, metadata);
 
     return NextResponse.json(response);
   } catch (error) {

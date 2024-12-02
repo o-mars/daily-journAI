@@ -2,8 +2,8 @@ import React from "react";
 import Image from "next/image";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import TextMessageInput from "./TextMessageInput";
-import { useMessageContext } from "@/src/contexts/MessageContext";
 import { RTVIClientAudio, VoiceVisualizer } from "realtime-ai-react";
+import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 
 const VoiceControls: React.FC = () => {
   const {
@@ -17,7 +17,7 @@ const VoiceControls: React.FC = () => {
     toggleSpeakerEnabled,
   } = useVoiceClient()!;
 
-  const { toggleTextInputVisibility } = useMessageContext();
+  const { toggleTextInputVisibility } = useJournalEntryContext();
 
   const spinnerStyle = {
     border: '4px solid rgba(255, 255, 255, 0.1)',

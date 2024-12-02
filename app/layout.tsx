@@ -1,11 +1,11 @@
 "use client";
 
-import { MessageProvider } from "@/src/contexts/MessageContext";
 import "./globals.css";
 import { UserProvider } from "@/src/contexts/UserContext";
 import { VoiceClientProvider } from "@/src/contexts/VoiceClientContext";
 import { HeaderProvider } from "@/src/contexts/HeaderContext";
 import { APP_TITLE } from "@/src/models/constants";
+import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 
 export default function RootLayout({
   children,
@@ -20,11 +20,11 @@ export default function RootLayout({
         </head>
         <UserProvider>
           <VoiceClientProvider>
-            <MessageProvider>
+            <JournalEntryProvider>
               <HeaderProvider>
                 {children}
               </HeaderProvider>
-            </MessageProvider>
+            </JournalEntryProvider>
           </VoiceClientProvider>
         </UserProvider>
       </body>

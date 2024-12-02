@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { useMessageContext } from "@/src/contexts/MessageContext";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
+import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 
 interface ConversationProps {
   messages?: JournalConversationEntry[];
 }
 
 const Conversation: React.FC<ConversationProps> = ({ messages: staticMessages }) => {
-  const { messages: liveMessages, isTextInputVisible } = useMessageContext();
+  const { messages: liveMessages, isTextInputVisible } = useJournalEntryContext();
   const messages = staticMessages || liveMessages;  // Use static messages if provided, otherwise live
   const scrollRef = useRef<HTMLDivElement>(null);
 
