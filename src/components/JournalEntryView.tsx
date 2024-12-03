@@ -3,6 +3,7 @@ import { useState } from "react";
 import Conversation from "./Conversation";
 import { TransformedEntryView } from "./TransformedEntryView";
 import '@/src/styles/JournalEntryView.css';
+import Image from "next/image";
 
 interface JournalEntryViewProps {
   entry: JournalEntry;
@@ -23,34 +24,37 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
     entry.transformedEntry ? 'transformed' : 'conversation'
   );
 
-  console.log(entry);
-
   return (
     <div className="journal-entry-view">
-      <header>
-        <div className="header-left">
-          <button className="back-button" onClick={onBack}>← Back</button>
-          <h2>{entry.title || getEntryDisplayText(entry)}</h2>
-        </div>
-        {entry.transformedEntry && (
-          <button 
-            className="toggle-view-button"
-            onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
-          >
-            {activeTab === 'conversation' ? 'View Edited Entry' : 'View Conversation'}
-          </button>
-        )}
-      </header>
-
       <div className="content">
         <div className="content-card">
-          {activeTab === 'conversation' ? (
-            <Conversation messages={entry.conversation} />
-          ) : entry.transformedEntry ? (
-            <TransformedEntryView text={entry.transformedEntry!} />
-          ) : (
-            <p>No transformed entry available</p>
-          )}
+          <div className="content-card-header">
+            <button className="back-button" onClick={onBack}>
+              <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
+            </button>
+            <div className="content-card-header-title">
+              {entry.title || getEntryDisplayText(entry)}
+            </div>
+            <div className="content-card-header-action">
+              {entry.transformedEntry && (
+                <button 
+                  className="toggle-view-button"
+                  onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+                >
+                  {activeTab === 'conversation' ? 'View Edited Entry' : 'View Conversation'}
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="content-card-body">
+            {activeTab === 'conversation' ? (
+              <Conversation messages={entry.conversation} />
+            ) : entry.transformedEntry ? (
+              <TransformedEntryView text={entry.transformedEntry!} />
+            ) : (
+              <p>No transformed entry available</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

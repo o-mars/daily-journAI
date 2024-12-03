@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
-type HeaderView = 'main' | 'settings' | 'feedback' | 'journals';
+type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'journal-detail';
 
 interface HeaderContextType {
-  isMenuOpen: boolean;
+  isShowingMenuOptions: boolean;
   currentView: HeaderView;
   lastJournalEntryId: string;
   setLastJournalEntryId: (value: string) => void;
@@ -13,25 +13,42 @@ interface HeaderContextType {
   goBack: () => void;
 }
 
+function getCurrentViewFromPath(pathName: string): HeaderView {
+  const paths = pathName.split('/');
+  if (paths[1] === 'journals' && paths[2]) {
+    return 'journal-detail';
+  }
+  return (paths[1] as HeaderView) || 'main';
+}
+
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 
 export function HeaderProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathName = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<HeaderView>(
-    (pathName.split('/')[1] as HeaderView) || 'main'
-  );
+  const [currentView, setCurrentView] = useState<HeaderView>(getCurrentViewFromPath(pathName));
   const [previousView, setPreviousView] = useState<HeaderView | null>(null);
+
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
 
+  const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(false);
+
   useEffect(() => {
-    setCurrentView((pathName.split('/')[1] as HeaderView) || 'main');
+    const nextView = getCurrentViewFromPath(pathName);
+    setCurrentView(nextView);
+    
+    const searchParams = new URLSearchParams(window.location.search);
+    const menuParam = searchParams.get('isShowingMenuOptions');
+    if (menuParam !== null) {
+      setIsShowingMenuOptions(menuParam === 'true');
+    } else {
+      setIsShowingMenuOptions(nextView === 'settings');
+    }
   }, [pathName]);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (currentView === 'settings') {
+    setIsShowingMenuOptions(!isShowingMenuOptions);
+    if (currentView === 'settings' || currentView === 'feedback') {
       goBack();
     }
   };
@@ -62,7 +79,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   return (
     <HeaderContext.Provider 
       value={{ 
-        isMenuOpen,
+        isShowingMenuOptions,
         currentView,
         lastJournalEntryId,
         setLastJournalEntryId,

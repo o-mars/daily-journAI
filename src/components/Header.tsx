@@ -6,13 +6,12 @@ import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 
-
 const flipFeature = false;
 
 const Header: React.FC = () => {
   const { user } = useUser();
   const { 
-    isMenuOpen, 
+    isShowingMenuOptions,
     currentView,
     lastJournalEntryId,
     setLastJournalEntryId,
@@ -41,7 +40,7 @@ const Header: React.FC = () => {
     } else {
       navigateToView('feedback', { 
         entryId: lastJournalEntryId, 
-        menuOpen: isMenuOpen.toString() 
+        isShowingMenuOptions: isShowingMenuOptions.toString() 
       });
     }
   };
@@ -51,7 +50,7 @@ const Header: React.FC = () => {
       toggleMenu();
     } else {
       navigateToView('settings', { 
-        menuOpen: isMenuOpen.toString() 
+        isShowingMenuOptions: isShowingMenuOptions.toString() 
       });
     }
   };
@@ -59,26 +58,30 @@ const Header: React.FC = () => {
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
       <div className="flex flex-grow-0">
-        {!isMenuOpen && currentView !== 'settings' ? (
+
+        {!isShowingMenuOptions ? (
           <button className="w-8" onClick={toggleMenu}>
             <Image width={32} height={32} src="/icons/menu.svg" alt="Menu" />
           </button>
         ) : (
+          <button className="w-8 mr-4" onClick={toggleMenu}>
+            <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
+          </button>
+        )}
+
+        {isShowingMenuOptions && (
           <>
-            <button className="w-8 mr-4" onClick={toggleMenu}>
-              <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
-            </button>
             <button className="w-7 mr-4" onClick={handleSettingsClick}>
               <Image 
-                width={24} 
-                height={24} 
-                src="/icons/settings.svg" 
-                alt="Settings" 
-                className={`${currentView === 'settings' ? '' : 'opacity-50'}`} 
-              />
-            </button>
-            <button className="w-7" onClick={handleLogoutClick}>
-              <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout" />
+                  width={24} 
+                  height={24} 
+                  src="/icons/settings.svg" 
+                  alt="Settings" 
+                  className={`${currentView === 'settings' ? '' : 'opacity-50'}`} 
+                />
+              </button>
+              <button className="w-7" onClick={handleLogoutClick}>
+                <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout" />
             </button>
           </>
         )}
@@ -97,24 +100,24 @@ const Header: React.FC = () => {
           />
         </button>
         {currentView === 'journals' && flipFeature && (
-          <button className="w-7 mr-2" onClick={() => navigateToView('main')}>
-            <Image 
-              width={20} 
-              height={20} 
-              src="/icons/plus.svg" 
+          <button className="w-7 mr-4" onClick={() => navigateToView('main')}>
+            <Image
+              width={24}
+              height={24}
+              src="/icons/plus.svg"
               alt="New"
-              className="opacity-50 hover:opacity-100" 
+              className="opacity-50 hover:opacity-100"
             />
           </button>
         )}
-        {currentView === 'main' && flipFeature && (
+        {(currentView === 'main' || currentView === 'journal-detail') && flipFeature && (
           <button className="w-7 mr-4" onClick={() => navigateToView('journals')}>
-            <Image 
-              width={26} 
-              height={26} 
-              src="/icons/bookmark.png" 
+            <Image
+              width={26}
+              height={26}
+              src="/icons/bookmark.png"
               alt="Read"
-              className="opacity-50 hover:opacity-100" 
+              className="opacity-50 hover:opacity-100"
             />
           </button>
         )}
