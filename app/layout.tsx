@@ -14,10 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <title>{APP_TITLE}</title>
+      </head>
       <body>
-        <head>
-          <title>{APP_TITLE}</title>
-        </head>
         <UserProvider>
           <VoiceClientProvider>
             <JournalEntryProvider>
