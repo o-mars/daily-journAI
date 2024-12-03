@@ -59,8 +59,6 @@ export function generateSystemMessagesForInnerEcho(user: User) {
 
   generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
 
-  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
-
   if (user.isNewUser) {
     const introductionMessage = [
       LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
@@ -85,8 +83,6 @@ export function generateSystemMessagesForVentingMachine(user: User) {
   ];
 
   generateSystemMessage(user.preferences, 'venting-machine').forEach(prefChunk => systemPromptChunks.push(prefChunk));
-
-  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS);
 
   if (user.isNewUser) {
     const introductionMessage = [

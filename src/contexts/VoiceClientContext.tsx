@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { RTVIClient, LLMHelper, FunctionCallParams, RTVIEvent, LLMFunctionCallData } from "realtime-ai";
+import { RTVIClient, RTVIEvent } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
@@ -21,59 +21,69 @@ interface VoiceClientContextType {
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
-const DisconnectHandler: React.FC<{ onDisconnect: () => void, voiceClient: RTVIClient | null }> = ({ onDisconnect, voiceClient }) => {
-  const disconnectFlag = useRef<boolean>(false);
-  const ttsInProgress = useRef<boolean>(false);
-  const waitForTtsTimeout = useRef<NodeJS.Timeout>();
+const IDLE_TIMEOUT = 12500;
+
+const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
+  const [isBotSpeaking, setIsBotSpeaking] = useState(false);
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const idleTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const clearIdleTimer = useCallback(() => {
+    if (idleTimer.current) {
+      console.debug('Clearing idle timer');
+      clearTimeout(idleTimer.current);
+    }
+  }, []);
+
+  const startIdleTimer = useCallback(() => {
+    clearIdleTimer();
+
+    if (!isBotSpeaking && !isUserSpeaking) {
+      console.debug(`Starting idle timer for ${IDLE_TIMEOUT}ms`);
+      idleTimer.current = setTimeout(() => {
+        console.debug('Idle timeout reached, disconnecting.');
+        onDisconnect();
+      }, IDLE_TIMEOUT);
+    }
+  }, [isBotSpeaking, isUserSpeaking, onDisconnect, clearIdleTimer]);
+
+  useRTVIClientEvent(RTVIEvent.UserStartedSpeaking, () => {
+    setIsUserSpeaking(true);
+  });
+
+  useRTVIClientEvent(RTVIEvent.UserTranscript, () => {
+    setIsUserSpeaking(true);
+  });
+
+  useRTVIClientEvent(RTVIEvent.UserStoppedSpeaking, () => {
+    setIsUserSpeaking(false);
+  });
 
   useRTVIClientEvent(RTVIEvent.BotTtsStarted, () => {
-    ttsInProgress.current = true;
+    setIsBotSpeaking(true);
   });
 
   useRTVIClientEvent(RTVIEvent.BotTtsStopped, () => {
-    ttsInProgress.current = false;
-    
-    if (disconnectFlag.current) {
-      console.log('Disconnecting post TTS.');
-      disconnectFlag.current = false;
-      waitAndDisconnect(1500);
-    }
+    setIsBotSpeaking(false);
   });
-
-  useRTVIClientEvent(RTVIEvent.LLMFunctionCall, (data: LLMFunctionCallData) => {
-    if (data.function_name === 'disconnect_voice_client') {
-      console.log('LLM: disconnect_voice_client');
-      disconnectFlag.current = true;
-
-      if (!ttsInProgress.current) {
-        waitForTtsTimeout.current = setTimeout(async () => {
-          if (!ttsInProgress.current) {
-            console.log('No TTS, disconnecting.');
-            await voiceClient?.action({
-              service: "tts",
-              action: "say",
-              arguments: [{ name: "text", value: "Bye now!" }],
-            })
-            disconnectFlag.current = false;
-            waitAndDisconnect(2000);
-          }
-        }, 500);
-      }
-    }
-  });
-
-  const waitAndDisconnect = async (ms: number) => {
-    await new Promise(resolve => setTimeout(resolve, ms));
-    onDisconnect();
-  };
 
   useEffect(() => {
     return () => {
-      if (waitForTtsTimeout.current) {
-        clearTimeout(waitForTtsTimeout.current);
+      if (idleTimer.current) {
+        clearTimeout(idleTimer.current);
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (isBotSpeaking || isUserSpeaking) {
+      clearIdleTimer();
+    } else if (!isBotSpeaking && !isUserSpeaking) {
+      startIdleTimer();
+    }
+
+    return () => {};
+  }, [isBotSpeaking, isUserSpeaking, startIdleTimer, clearIdleTimer]);
 
   return null;
 };
@@ -165,33 +175,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     });
 
-    const llmHelper = newVoiceClient.registerHelper(
-      "llm",
-      new LLMHelper({
-        callbacks: {
-          onLLMFunctionCall(func) {
-            if (func.function_name === "disconnect_voice_client") {
-              return { success: true, message: "Voice client should disconnect soon." };
-            }
-          },
-        },
-      })
-    ) as LLMHelper;
-  
-    llmHelper.handleFunctionCall(async (fn: FunctionCallParams) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const args = fn.arguments as any;
-      if (fn.functionName === "get_weather" && args.location) {
-        const response = await fetch(
-          `/api/weather?location=${encodeURIComponent(args.location)}`
-        );
-        const json = await response.json();
-        return json;
-      } else {
-        return { error: `unknown function call: ${fn.functionName}` };
-      }
-    });
-
     setVoiceClient(newVoiceClient);
 
     return () => {
@@ -214,7 +197,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       toggleSpeakerEnabled
     }}>
       <BaseRTVIClientProvider client={voiceClient!}>
-        <DisconnectHandler onDisconnect={disconnect} voiceClient={voiceClient} />
+        <DisconnectHandler onDisconnect={disconnect} />
         {children}
       </BaseRTVIClientProvider>
     </VoiceClientContext.Provider>

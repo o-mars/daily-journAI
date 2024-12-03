@@ -10,6 +10,7 @@ const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -21,8 +22,17 @@ const Signup: React.FC = () => {
   }, [router]);
 
   const handleSignup = async () => {
+    setErrorMessage("");
+    if (email === "" || email.indexOf("@") === -1 || email.lastIndexOf(".") === -1 || email.lastIndexOf(".") === (email.length - 1)) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters long");
+      return;
+    }
     if (password !== confirmPassword) {
-      alert("Passwords don't match!");
+      setErrorMessage("Passwords don't match!");
       return;
     }
 
@@ -31,7 +41,7 @@ const Signup: React.FC = () => {
       router.push('/main');
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Failed to create account: " + (error as Error).message);
+      setErrorMessage("Failed to create account: " + (error as Error).message);
     }
   };
 
@@ -45,6 +55,12 @@ const Signup: React.FC = () => {
         <div className="text-center">
           <h1 className="text-5xl font-bold text-white mb-2">{APP_TITLE}</h1>
         </div>
+
+        {errorMessage && (
+          <div className="bg-red-500 text-white p-4 rounded-md">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
           <div className="space-y-4">
