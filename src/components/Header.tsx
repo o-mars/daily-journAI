@@ -38,8 +38,8 @@ const Header: React.FC = () => {
     if (currentView === 'feedback') {
       goBack();
     } else {
-      navigateToView('feedback', { 
-        entryId: lastJournalEntryId, 
+      navigateToView('feedback', {
+        entryId: lastJournalEntryId,
         isShowingMenuOptions: isShowingMenuOptions.toString() 
       });
     }
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
     if (currentView === 'settings') {
       toggleMenu();
     } else {
-      navigateToView('settings', { 
+      navigateToView('settings', {
         isShowingMenuOptions: isShowingMenuOptions.toString() 
       });
     }

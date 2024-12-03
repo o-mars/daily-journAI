@@ -132,23 +132,6 @@ export function getLlmConfig(preferences: UserPreferences, systemMessage: string
       { name: "model", value: preferences.llmModel },
       { name: 'temperature', value: 0.7 },
       { name: "initial_messages", value: [{ role: "system", content: systemMessage }]},
-      { name: "tools", value: [
-        {
-          type: "function",
-          function: {
-            name: "disconnect_voice_client",
-            description: "Ends the conversation. Must be called using proper function call format, not mentioned in text.",
-            parameters: {
-              type: "object",
-              properties: {},
-              required: [],
-            },
-            examples: [
-              { "function": "disconnect_voice_client" }
-            ]
-          },
-        },
-      ]},
       { name: "run_on_config", value: true }
     ],
   }

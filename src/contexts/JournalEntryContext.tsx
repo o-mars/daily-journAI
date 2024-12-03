@@ -41,7 +41,7 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
     const text = botTextStream.current.join('');
     botTextStream.current = [];
     if (text === '') return;
-    
+
     setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   });
 

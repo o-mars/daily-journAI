@@ -20,9 +20,7 @@ const getEntryDisplayText = (entry: JournalEntry) => {
 };
 
 export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
-  const [activeTab, setActiveTab] = useState<'conversation' | 'transformed'>(
-    entry.transformedEntry ? 'transformed' : 'conversation'
-  );
+  const [activeTab, setActiveTab] = useState<'conversation' | 'transformed'>('conversation');
 
   return (
     <div className="journal-entry-view">
