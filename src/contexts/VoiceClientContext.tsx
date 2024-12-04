@@ -23,7 +23,7 @@ interface VoiceClientContextType {
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
 const IDLE_TIMEOUT = 12500;
-const TTS_DISCONNECT_TIMEOUT = 2500;
+const TTS_DISCONNECT_TIMEOUT = 3000;
 
 const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
   const isBotSpeaking = useRef(false);
@@ -125,7 +125,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
   const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
-  console.log('VoiceClientProvider rendered');
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
