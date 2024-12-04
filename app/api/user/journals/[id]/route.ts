@@ -1,7 +1,8 @@
 import { auth, getJournalEntry } from '@/app/lib/firebase.admin';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+
+export async function GET(request: Request, { params }: { params: Record<string, string> }) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
 
   if (!token) {
