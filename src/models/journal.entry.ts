@@ -1,3 +1,4 @@
+import { JOURNAL_ENTRY_TITLE_DEFAULT, SUMMARY_NONE } from "@/src/models/constants";
 import { DocumentData } from "firebase/firestore";
 
 type role = 'user' | 'assistant';
@@ -23,6 +24,14 @@ export const defaultJournalEntryMetadata: JournalEntryMetadata = {
   assistantEntries: 0,
   inputLength: 0,
   outputLength: 0,
+};
+
+export const defaultJournalEntry: JournalEntry = {
+  id: '',
+  createdAt: new Date(),
+  conversation: [],
+  summary: SUMMARY_NONE,
+  title: JOURNAL_ENTRY_TITLE_DEFAULT,
 };
 
 export interface JournalConversationEntry {

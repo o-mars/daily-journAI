@@ -2,8 +2,6 @@ import { JournalConversationEntry, JournalEntry, JournalEntryMetadata } from "@/
 import { toUser, User } from "@/src/models/user";
 import { getAuth } from "firebase/auth";
 
-export const USER_PATH = 'test';
-
 export async function fetchUser(userId: string): Promise<User> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
@@ -32,7 +30,7 @@ export async function fetchJournalEntries(): Promise<JournalEntry[]> {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
 
-    const response = await fetch('/api/user/journal', {
+    const response = await fetch('/api/user/journals', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -47,6 +45,29 @@ export async function fetchJournalEntries(): Promise<JournalEntry[]> {
   } catch (error) {
     console.error("Error fetching journal entries:", error);
     throw new Error('Failed to get journal entries');
+  }
+}
+
+export async function fetchJournalEntry(entryId: string): Promise<JournalEntry> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user/journals/${entryId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to get journal entry: ${response.statusText}`);
+
+    const result: JournalEntry = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching journal entry:", error);
+    throw new Error('Failed to get journal entry');
   }
 }
 
@@ -80,7 +101,7 @@ export async function saveJournalEntry(
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
 
-    const response = await fetch('/api/user/journal', {
+    const response = await fetch('/api/user/journals', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

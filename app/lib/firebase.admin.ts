@@ -107,6 +107,7 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
 
     const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersJournalEntriesCollectionRef
+      .select("summary", "title", "startTime", "endTime", "createdAt", "metadata")
       .where("createdAt", ">=", oneWeekAgo)
       .where("summary", "!=", "None")
       .orderBy("createdAt", "desc")
@@ -124,23 +125,34 @@ export async function getRecentJournalEntries(userId: string): Promise<JournalEn
   }
 }
 
+export async function getJournalEntry(userId: string, entryId: string): Promise<JournalEntry> {
+  try {
+    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}/${entryId}`);
+    const journalEntryDoc = await usersJournalEntryDocumentRef.get();
+
+    const journalEntry = toJournalEntry({ id: journalEntryDoc.id, ...journalEntryDoc.data() });
+    return journalEntry;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
   try {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersJournalEntriesCollectionRef
+      .select("summary", "title", "startTime", "endTime", "createdAt", "metadata")
       .where("summary", "!=", "None")
       .orderBy("createdAt", "desc")
       .get();
 
-    const recentJournalEntries: JournalEntry[] = [];
+    const journalEntries: JournalEntry[] = [];
     querySnapshot.forEach((doc) => {
-      recentJournalEntries.push(toJournalEntry({ id: doc.id, ...doc.data() }));
+      journalEntries.push(toJournalEntry({ id: doc.id, ...doc.data() }));
     });
 
-    return recentJournalEntries;
+    return journalEntries;
   } catch (error) {
     throw error;
   }
