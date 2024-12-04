@@ -6,6 +6,7 @@ import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
 import { DEFAULT_BOT_TYPE } from '@/src/models/constants';
+import { LLM_GOODBYE_PROMPTS } from '@/src/models/prompts';
 
 interface VoiceClientContextType {
   voiceClient: RTVIClient | null;
@@ -22,68 +23,96 @@ interface VoiceClientContextType {
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
 const IDLE_TIMEOUT = 12500;
+const TTS_DISCONNECT_TIMEOUT = 3000;
 
 const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
-  const [isBotSpeaking, setIsBotSpeaking] = useState(false);
-  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const isBotSpeaking = useRef(false);
+  const isUserSpeaking = useRef(false);
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
+  const disconnectTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const clearIdleTimer = useCallback(() => {
+  const clearIdleTimer = () => {
     if (idleTimer.current) {
       console.debug('Clearing idle timer');
       clearTimeout(idleTimer.current);
     }
-  }, []);
+  };
 
-  const startIdleTimer = useCallback(() => {
+  const startIdleTimer = () => {
     clearIdleTimer();
 
-    if (!isBotSpeaking && !isUserSpeaking) {
+    if (!isBotSpeaking.current && !isUserSpeaking.current) {
       console.debug(`Starting idle timer for ${IDLE_TIMEOUT}ms`);
       idleTimer.current = setTimeout(() => {
         console.debug('Idle timeout reached, disconnecting.');
         onDisconnect();
       }, IDLE_TIMEOUT);
     }
-  }, [isBotSpeaking, isUserSpeaking, onDisconnect, clearIdleTimer]);
+  };
 
   useRTVIClientEvent(RTVIEvent.UserStartedSpeaking, () => {
-    setIsUserSpeaking(true);
+    isUserSpeaking.current = true;
+    if (disconnectTimer.current) {
+      clearInterval(disconnectTimer.current);
+      disconnectTimer.current = null;
+      console.debug('Cancelling disconnect as user continued speaking');
+    }
+    clearIdleTimer();
   });
 
   useRTVIClientEvent(RTVIEvent.UserTranscript, () => {
-    setIsUserSpeaking(true);
+    isUserSpeaking.current = true;
+    clearIdleTimer();
   });
 
   useRTVIClientEvent(RTVIEvent.UserStoppedSpeaking, () => {
-    setIsUserSpeaking(false);
+    isUserSpeaking.current = false;
+    startIdleTimer();
   });
 
   useRTVIClientEvent(RTVIEvent.BotTtsStarted, () => {
-    setIsBotSpeaking(true);
+    isBotSpeaking.current = true;
+    clearIdleTimer();
   });
 
   useRTVIClientEvent(RTVIEvent.BotTtsStopped, () => {
-    setIsBotSpeaking(false);
+    isBotSpeaking.current = false;
+    startIdleTimer();
+  });
+
+  const checkForDisconnect = (message: string) => {
+    if (LLM_GOODBYE_PROMPTS.some(prompt => message.includes(prompt))) {
+      console.debug('Goodbye prompt detected, waiting to disconnect.');
+
+      if (disconnectTimer.current) return;
+
+      disconnectTimer.current = setInterval(() => {
+        if (!isBotSpeaking.current && !isUserSpeaking.current) {
+          console.debug('Disconnecting after silence.');
+          onDisconnect();
+          clearInterval(disconnectTimer.current!);
+          disconnectTimer.current = null;
+        }
+      }, TTS_DISCONNECT_TIMEOUT);
+    }
+  };
+
+  useRTVIClientEvent(RTVIEvent.BotLlmText, (message) => {
+    checkForDisconnect(message.text);
+  });
+  useRTVIClientEvent(RTVIEvent.BotTranscript, (message) => {
+    checkForDisconnect(message.text);
+  });
+  useRTVIClientEvent(RTVIEvent.BotTtsText, (message) => {
+    checkForDisconnect(message.text);
   });
 
   useEffect(() => {
     return () => {
-      if (idleTimer.current) {
-        clearTimeout(idleTimer.current);
-      }
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      if (disconnectTimer.current) clearInterval(disconnectTimer.current);
     };
   }, []);
-
-  useEffect(() => {
-    if (isBotSpeaking || isUserSpeaking) {
-      clearIdleTimer();
-    } else if (!isBotSpeaking && !isUserSpeaking) {
-      startIdleTimer();
-    }
-
-    return () => {};
-  }, [isBotSpeaking, isUserSpeaking, startIdleTimer, clearIdleTimer]);
 
   return null;
 };
