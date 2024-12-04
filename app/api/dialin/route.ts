@@ -1,6 +1,6 @@
 import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 import { defaultUser } from "@/src/models/user";
-import { generateSystemMessageForBotType, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS, LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS } from "@/src/models/prompts";
+import { generateSystemMessageForBotType, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS, LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS } from "@/src/models/prompts";
 import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
 
 // [POST] /api
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
   const prompt = generateSystemMessageForBotType(defaultUser, DEFAULT_BOT_TYPE);
   const finalPrompt = [...prompt, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS]
-    .filter(instruction => instruction !== LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS)
+    .filter(instruction => instruction !== LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS)
     .join(' ');
 
   const ttsConfig = getTtsConfig(defaultUser.preferences, DEFAULT_BOT_TYPE);
