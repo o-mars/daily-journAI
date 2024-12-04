@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { useRTVIClient } from "realtime-ai-react";
 import { LLMHelper } from "realtime-ai";
 import Image from "next/image";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
+import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
 
 const TextMessageInput: React.FC = () => {
   const [inputText, setInputText] = useState("");
-  const voiceClient = useRTVIClient();
   const { addMessage } = useJournalEntryContext();
+  const { voiceClient } = useVoiceClient()!;
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
