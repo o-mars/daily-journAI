@@ -29,7 +29,7 @@ const Conversation: React.FC<ConversationProps> = ({ messages: staticMessages })
         paddingTop: '16px',
         borderRadius: '8px',
         overflowY: 'scroll',
-        height: `calc(100vh - ${isTextInputVisible ? 170 : 120}px)`,
+        height: staticMessages ? 'auto' : `calc(100vh - ${isTextInputVisible ? 170 : 120}px)`,
         flexGrow: 1
       }}
       data-conversation-content
