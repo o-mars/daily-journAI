@@ -7,7 +7,16 @@ const LLM_AUDIO_INPUT_INSTRUCTIONS = "They are also speaking to you, and their r
 export const LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS = LLM_AUDIO_OUTPUT_INSTRUCTIONS + ' ' + LLM_AUDIO_INPUT_INSTRUCTIONS;
 
 export const LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS = "Vary your language and expressions to keep the conversation engaging. Avoid starting responses with the same phrase such as 'It sounds like'.";
-export const LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS = "To end the conversation, you must use the provided function tool by outputting a JSON function call in this exact format: {\"function\": \"disconnect_voice_client\"}. Do not write any text about the function or include the function name in your response text.";
+
+export const LLM_GOODBYE_PROMPTS = [
+  "- Goodbye.",
+  "- Bye now.",
+  "- Take care.",
+  "- Talk again soon.",
+];
+
+export const LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS = "To end the conversation, you must use the provided function tool by outputting a JSON function call in this exact format: {\"function\": \"disconnect_voice_client\"}. Do not write any text about the function or include the function name in your response text.";
+export const LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS = `Once the conversation has wrapped up, respond with exactly one of the following and nothing else: "${LLM_GOODBYE_PROMPTS.join('", "')}". Make sure to include the hiphen`;
 export const LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS = "If asked to say goodbye or end the conversation, let the user know that you are not able to do this, and that they should hang up if they no longer want to speak.";
 
 export const LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`;
@@ -30,7 +39,7 @@ export const LLM_VENTING_MACHINE_SYSTEM_PROMPT_GREETING_MESSAGE = LLM_VENTING_MA
 export const LLM_INNER_ECHO_COMPLETE_SYSTEM_PROMPT = [
   LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
   LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
-  LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS,
   LLM_INNER_ECHO_SYSTEM_PROMPT_PURPOSE,
   LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
 ].join(' ');
@@ -38,7 +47,7 @@ export const LLM_INNER_ECHO_COMPLETE_SYSTEM_PROMPT = [
 export const LLM_VENTING_MACHINE_COMPLETE_SYSTEM_PROMPT = [
   LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS,
   LLM_SYSTEM_PROMPT_VARIANCE_INSTRUCTIONS,
-  LLM_SYSTEM_PROMPT_DISCONNECT_INSTRUCTIONS,
+  LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS,
   LLM_VENTING_MACHINE_SYSTEM_PROMPT_PURPOSE,
   LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
 ].join(' ');
@@ -58,6 +67,8 @@ export function generateSystemMessagesForInnerEcho(user: User) {
   ];
 
   generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS);
 
   if (user.isNewUser) {
     const introductionMessage = [
@@ -83,6 +94,8 @@ export function generateSystemMessagesForVentingMachine(user: User) {
   ];
 
   generateSystemMessage(user.preferences, 'venting-machine').forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS);
 
   if (user.isNewUser) {
     const introductionMessage = [
