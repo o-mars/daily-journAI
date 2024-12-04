@@ -6,8 +6,6 @@ import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 
-const flipFeature = false;
-
 const Header: React.FC = () => {
   const { user } = useUser();
   const { 
@@ -99,7 +97,7 @@ const Header: React.FC = () => {
             className={`${currentView === 'feedback' ? '' : 'opacity-50'}`}
           />
         </button>
-        {currentView === 'journals' && flipFeature && (
+        {(currentView === 'journals'|| currentView === 'journal-detail') && (
           <button className="w-7 mr-4" onClick={() => navigateToView('main')}>
             <Image
               width={24}
@@ -110,12 +108,12 @@ const Header: React.FC = () => {
             />
           </button>
         )}
-        {(currentView === 'main' || currentView === 'journal-detail') && flipFeature && (
+        {(currentView === 'main') && (
           <button className="w-7 mr-4" onClick={() => navigateToView('journals')}>
             <Image
               width={26}
               height={26}
-              src="/icons/bookmark.png"
+              src="/icons/book-white.png"
               alt="Read"
               className="opacity-50 hover:opacity-100"
             />

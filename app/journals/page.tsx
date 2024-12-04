@@ -1,6 +1,5 @@
 "use client";
 
-import VoiceControls from "../../src/components/VoiceControls";
 import Header from "@/src/components/Header";
 import { JournalEntryList } from "@/src/components/JournalEntryList";
 import { useUser } from "@/src/contexts/UserContext";
@@ -21,13 +20,9 @@ export default function Journals() {
         <Header />
 
         <JournalEntryProvider>
-          <main className="flex-grow overflow-auto p-2">
+          <main className="">
             <JournalEntryList entries={journalEntries} onEntrySelect={handleEntrySelect} />
           </main>
-
-          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-            <VoiceControls />
-          </footer>
         </JournalEntryProvider>
       </div>
   );

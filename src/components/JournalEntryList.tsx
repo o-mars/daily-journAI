@@ -1,16 +1,17 @@
 import { JournalEntry } from "@/src/models/journal.entry";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import '@/src/styles/JournalEntryList.css';
 
 interface JournalEntryListProps {
   entries: JournalEntry[];
   onEntrySelect: (entry: JournalEntry) => void;
-  pageSize?: number;
 }
 
-export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: JournalEntryListProps) {
+export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const [pageSize, setPageSize] = useState(10); // Default page size
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const formatDate = (date: Date | undefined): string => {
     if (!date) return '';
     return new Intl.DateTimeFormat('en-US', {
@@ -19,9 +20,6 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
       day: 'numeric',
     }).format(new Date(date));
   };
-
-  const paginatedEntries = entries
-    .slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const getEntryDisplayText = (entry: JournalEntry) => {
     if (entry.title) return entry.title;
@@ -32,10 +30,29 @@ export function JournalEntryList({ entries, onEntrySelect, pageSize = 10 }: Jour
     return new Date(entry.createdAt).toLocaleDateString();
   };
 
-  console.log(entries);
+  useEffect(() => {
+    const updatePageSize = () => {
+      if (containerRef.current) {
+        const fixedHeaderHeight = 90 + 68;
+        const entryHeight = 78;
+        const containerHeight = containerRef.current.clientHeight;
+        const newPageSize = Math.floor((containerHeight - fixedHeaderHeight) / entryHeight);
+        setPageSize(newPageSize);
+      }
+    };
+
+    updatePageSize(); // Initial calculation
+    window.addEventListener('resize', updatePageSize); // Update on resize
+
+    return () => {
+      window.removeEventListener('resize', updatePageSize); // Cleanup
+    };
+  }, []);
+
+  const paginatedEntries = entries.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
-    <div className="journal-entries">
+    <div ref={containerRef} className="journal-entries">
       <div className="entry-list">
         {paginatedEntries.map(entry => (
           <div 
