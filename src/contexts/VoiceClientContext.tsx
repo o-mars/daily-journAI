@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { RTVIClient, RTVIEvent } from "realtime-ai";
+import { LLMHelper, RTVIClient, RTVIEvent } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
@@ -195,6 +195,13 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         onConfig: (config) => console.log('config: ', config),
       }
     });
+
+    newVoiceClient.registerHelper(
+      "llm",
+      new LLMHelper({
+        callbacks: {},
+      })
+    ) as LLMHelper;
 
     setVoiceClient(newVoiceClient);
 
