@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import VoiceControls from "../../src/components/VoiceControls";
 import Conversation from "@/src/components/Conversation";
 import Header from "@/src/components/Header";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
-export default function Dashboard() {
+function Dashboard() {
   const searchParams = useSearchParams();
   const autoConnect = useMemo(() => searchParams.get("autoConnect") === "true", [searchParams]);
   const hasAutoConnected = useRef(false);
@@ -17,9 +17,9 @@ export default function Dashboard() {
     if (autoConnect && !hasAutoConnected.current) {
       hasAutoConnected.current = true;
       const searchParams = new URLSearchParams(window.location.search);
-      searchParams.delete('autoConnect');
+      searchParams.delete("autoConnect");
       const newUrl = `/main?${searchParams.toString()}`;
-      window.history.replaceState({}, '', newUrl);
+      window.history.replaceState({}, "", newUrl);
 
       if (!isStarted && !isLoading) connect();
     }
@@ -37,5 +37,13 @@ export default function Dashboard() {
         <VoiceControls />
       </footer>
     </div>
+  );
+}
+
+export default function MainPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Dashboard />
+    </Suspense>
   );
 }
