@@ -49,8 +49,6 @@ export function generateConfigForInnerEcho(user: User) {
     getSttConfig(user.preferences, 'inner-echo'),
   ];
 
-  console.log('inner echo config: ', config);
-
   return config;
 }
 
@@ -63,8 +61,6 @@ export function generateConfigForVentingMachine(user: User) {
     getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
     getSttConfig(user.preferences, 'venting-machine'),
   ];
-
-  console.log('venting machineconfig: ', config);
 
   return config;
 }

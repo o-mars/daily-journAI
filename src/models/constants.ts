@@ -6,6 +6,7 @@ export const MAX_JOURNAL_ENTRIES = 3;
 export const USER_PATH = 'users';
 export const JOURNAL_ENTRIES_PATH = 'journalEntries';
 export const SUMMARY_NONE = 'None';
+export const JOURNAL_ENTRY_TITLE_DEFAULT = 'Journal Entry';
 
 export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';

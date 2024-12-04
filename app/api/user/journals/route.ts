@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { addJournalEntry, auth, getJournalEntries } from '../../../lib/firebase.admin';
+import { addJournalEntry, auth, getJournalEntries } from '@/app/lib/firebase.admin';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
