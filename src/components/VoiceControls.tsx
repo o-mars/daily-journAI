@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import TextMessageInput from "./TextMessageInput";
-import { RTVIClientAudio, VoiceVisualizer } from "realtime-ai-react";
+import { VoiceVisualizer } from "realtime-ai-react";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 
 const VoiceControls: React.FC = () => {
@@ -37,7 +37,6 @@ const VoiceControls: React.FC = () => {
 
   return (
     <>
-      <RTVIClientAudio />
       {!isMicEnabled && <TextMessageInput />}
       <div style={{ display: 'flex', width: '100%', paddingBottom: '8px', justifyContent: 'center' }}>
         <style>{spinnerKeyframes}</style>

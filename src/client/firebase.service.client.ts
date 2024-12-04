@@ -38,7 +38,7 @@ export async function fetchJournalEntries(): Promise<JournalEntry[]> {
       },
     });
 
-    if (!response.ok) throw new Error(`Failed to get recent journal entries: ${response.statusText}`);
+    if (!response.ok) throw new Error(`Failed to get journal entries: ${response.statusText}`);
 
     const result: JournalEntry[] = await response.json();
     return result;

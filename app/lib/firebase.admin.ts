@@ -102,8 +102,7 @@ export async function addJournalEntry(
 
 export async function getRecentJournalEntries(userId: string): Promise<JournalEntry[]> {
   try {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersJournalEntriesCollectionRef
@@ -139,11 +138,10 @@ export async function getJournalEntry(userId: string, entryId: string): Promise<
 
 export async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
   try {
-
     const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const querySnapshot = await usersJournalEntriesCollectionRef
       .select("summary", "title", "startTime", "endTime", "createdAt", "metadata")
-      .where("summary", "!=", "None")
+      .where("metadata.userEntries", ">", 1)
       .orderBy("createdAt", "desc")
       .get();
 

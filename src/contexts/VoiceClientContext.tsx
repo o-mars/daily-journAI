@@ -124,7 +124,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isLoading, setIsLoading] = useState(false);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
-  const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
@@ -145,13 +144,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setIsLoading(false);
     }
   }, [disconnect, voiceClient]);
-
-  useEffect(() => {
-    if (voiceClient && user && user.isNewUser && user.profile.isAnonymous && !hasConnectedOnce) {
-      connect();
-      setHasConnectedOnce(true);
-    }
-  }, [user, voiceClient, connect, hasConnectedOnce]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {

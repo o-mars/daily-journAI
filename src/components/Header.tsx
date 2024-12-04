@@ -5,6 +5,7 @@ import { APP_TITLE, ONE_HOUR_MS } from "@/src/models/constants";
 import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
+import { RTVIClientAudio } from "realtime-ai-react";
 
 const Header: React.FC = () => {
   const { user } = useUser();
@@ -29,7 +30,7 @@ const Header: React.FC = () => {
 
   const handleLogoutClick = async () => {
     await signOut(auth);
-    navigateToView('main');
+    navigateToView('login');
   };
 
   const handleFeedbackClick = () => {
@@ -55,6 +56,8 @@ const Header: React.FC = () => {
 
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
+      <RTVIClientAudio />
+
       <div className="flex flex-grow-0">
 
         {!isShowingMenuOptions ? (
@@ -98,11 +101,11 @@ const Header: React.FC = () => {
           />
         </button>
         {(currentView === 'journals'|| currentView === 'journal-detail') && (
-          <button className="w-7 mr-4" onClick={() => navigateToView('main')}>
+          <button className="w-7 mr-4" onClick={() => navigateToView('main', { autoConnect: 'true' })}>
             <Image
               width={24}
               height={24}
-              src="/icons/plus.svg"
+              src="/icons/feather-phone.svg"
               alt="New"
               className="opacity-50 hover:opacity-100"
             />
