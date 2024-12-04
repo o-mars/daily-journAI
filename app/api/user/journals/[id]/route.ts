@@ -1,8 +1,8 @@
 import { auth, getJournalEntry } from '@/app/lib/firebase.admin';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function GET(request: Request, { params }: { params: Record<string, string> }) {
+export async function GET(request: NextRequest) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
 
   if (!token) {
@@ -12,7 +12,15 @@ export async function GET(request: Request, { params }: { params: Record<string,
   try {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
-    const { id } = params;
+
+    const { pathname } = request.nextUrl;
+
+    const parts = pathname.split('/');
+    const id = parts[parts.length - 1];
+  
+    if (!id) {
+      return NextResponse.json({ error: 'ID not found' }, { status: 400 });
+    }
 
     const response = await getJournalEntry(userId, id);
 
