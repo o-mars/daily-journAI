@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
-type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'journal-detail';
+type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'journal-detail' | 'login';
 
 interface HeaderContextType {
   isShowingMenuOptions: boolean;

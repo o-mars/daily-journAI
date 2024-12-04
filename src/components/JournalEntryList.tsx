@@ -54,6 +54,12 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
   return (
     <div ref={containerRef} className="journal-entries">
       <div className="entry-list">
+        {entries.length === 0 && (
+          <div className="entry-bubble">
+            No entries found
+          </div>
+        )}
+
         {paginatedEntries.map(entry => (
           <div 
             key={entry.id} 
