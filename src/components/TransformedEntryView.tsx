@@ -1,8 +1,36 @@
 interface TransformedEntryViewProps {
   text: string;
+  onChange?: (text: string) => void;
 }
+export function TransformedEntryView({ text, onChange }: TransformedEntryViewProps) {
+  if (onChange) {
+    return (
+      <textarea
+        className="transformed-entry"
+        value={text}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: '100%',
+          minHeight: '100%',
+          padding: '1.5rem',
+          border: 'none',
+          resize: 'none',
+          background: 'none',
+          fontFamily: 'inherit',
+          fontSize: 'inherit',
+          lineHeight: 'inherit',
+          outline: 'none', // Remove default outline
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.border = '1px solid #444'; // Change border color on focus
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.border = 'none'; // Reset border color on blur
+        }}
+      />
+    );
+  }
 
-export function TransformedEntryView({ text }: TransformedEntryViewProps) {
   return (
     <div className="transformed-entry" style={{
       padding: '1.5rem',
