@@ -192,3 +192,14 @@ export async function deleteJournalEntry(userId: string, entryId: string): Promi
     throw error;
   }
 }
+
+export async function updateJournalEntry(userId: string, entryId: string, updates: Partial<JournalEntry>): Promise<void> {
+  try {
+    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}/${entryId}`);
+    await usersJournalEntryDocumentRef.update(updates);
+    console.log(`Updated journal entry with ID: ${entryId}`);
+  } catch (error) {
+    console.error("Error updating journal entry:", error);
+    throw error;
+  }
+}

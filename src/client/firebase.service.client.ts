@@ -160,3 +160,25 @@ export async function deleteJournalEntry(entryId: string): Promise<void> {
     console.error("Error deleting journal entry:", error);
   }
 }
+
+export async function updateJournalEntry(entryId: string, updates: Partial<JournalEntry>) {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user/journals/${entryId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updates)
+    });
+
+    if (!response.ok) throw new Error(`Failed to update journal entry: ${response.statusText}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating journal entry:", error);
+    throw error;
+  }
+}
