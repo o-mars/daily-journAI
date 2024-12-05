@@ -141,3 +141,22 @@ export async function submitFeedback(entryId: string, rating: number, comment: s
     console.error("Error submitting feedback:", error);
   }
 }
+
+export async function deleteJournalEntry(entryId: string): Promise<void> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user/journals/${entryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to delete journal entry: ${response.statusText}`);
+  } catch (error) {
+    console.error("Error deleting journal entry:", error);
+  }
+}
