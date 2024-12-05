@@ -181,3 +181,14 @@ export async function submitFeedback(userId: string, rating: number, comment: st
     return false;
   }
 }
+
+export async function deleteJournalEntry(userId: string, entryId: string): Promise<void> {
+  try {
+    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}/${entryId}`);
+    await usersJournalEntryDocumentRef.delete();
+    console.log(`Deleted journal entry with ID: ${entryId}`);
+  } catch (error) {
+    console.error("Error deleting journal entry:", error);
+    throw error;
+  }
+}
