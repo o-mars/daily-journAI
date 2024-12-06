@@ -9,7 +9,7 @@ export interface Branding {
 
 export const innerEchoBranding: Branding = {
   appName: 'Inner Echo',
-  appIcon: '/inner-echo-logo.jpg',
+  appIcon: '/journal-bot-logo.jpg',
   appWelcomeMessage: 'Explore and reflect on your experiences, emotions, or anything else on your mind.',
   botType: 'inner-echo',
 };
@@ -55,6 +55,6 @@ export const brands: Record<string, Branding> = {
   'journalbot.xyz': journalBotBranding,
   'www.journalbot.xyz': journalBotBranding,
 
-  'localhost': cloudCompanionBranding,
-  '127.0.0.1': journalBotBranding,
+  'localhost': innerEchoBranding,
+  '127.0.0.1': innerEchoBranding,
 };
