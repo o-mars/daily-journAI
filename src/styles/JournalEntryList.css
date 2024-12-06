@@ -53,21 +53,27 @@
 }
 
 .pagination button {
-  padding: 8px 16px;
-  background-color: #007bff;
+  padding: 8px;
+  background-color: #2a2a2a;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  &:hover {
+    background-color: #6a6a6a;
+  }
 }
 
 .pagination button:disabled {
+  opacity: 0;
   background-color: #ccc;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .pagination span {
-  color: #333;
+  color: #eee;
+  user-select: none;
+  min-width: 64px;
 }
 
 .entry-bubble button {

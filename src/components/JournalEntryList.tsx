@@ -4,6 +4,7 @@ import '@/src/styles/JournalEntryList.css';
 import ConfirmationModal from './ConfirmationModal';
 import { deleteJournalEntry } from '@/src/client/firebase.service.client';
 import { useUser } from "@/src/contexts/UserContext";
+import Image from 'next/image';
 
 interface JournalEntryListProps {
   entries: JournalEntry[];
@@ -111,14 +112,14 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => p - 1)}
             >
-              Previous
+              <Image src="/icons/feather-chevron-left.svg" alt="Previous" width={24} height={24} />
             </button>
             <span>Page {currentPage}</span>
             <button
               disabled={currentPage * pageSize >= entries.length}
               onClick={() => setCurrentPage(p => p + 1)}
             >
-              Next
+              <Image src="/icons/feather-chevron-right.svg" alt="Next" width={24} height={24} />
             </button>
           </div>
         )}
