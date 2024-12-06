@@ -40,9 +40,12 @@ export const defaultBranding: Branding = innerEchoBranding;
 export const brands: Record<string, Branding> = {
   'inner-echo.onrender.com': innerEchoBranding,
   'ventingmachine.xyz': ventingMachineBranding,
+  'www.ventingmachine.xyz': ventingMachineBranding,
   'venting-machine.onrender.com': ventingMachineBranding,
   'cloudcompanion.xyz': cloudCompanionBranding,
+  'www.cloudcompanion.xyz': cloudCompanionBranding,
   'journalbot.xyz': journalBotBranding,
+  'www.journalbot.xyz': journalBotBranding,
   'localhost': cloudCompanionBranding,
   '127.0.0.1': journalBotBranding,
 };
