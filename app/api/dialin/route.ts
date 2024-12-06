@@ -1,7 +1,7 @@
-import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
 import { defaultUser } from "@/src/models/user";
 import { generateSystemMessageForBotType, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS, LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS } from "@/src/models/prompts";
 import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
+import { defaultBranding } from "@/src/models/brand";
 
 // [POST] /api
 export async function POST(request: Request) {
@@ -25,12 +25,12 @@ export async function POST(request: Request) {
   i.e. this isn't a simple problem.. you need to do function calling / know what happens when the call ends / do RTVI Event watching server side
   */
 
-  const prompt = generateSystemMessageForBotType(defaultUser, DEFAULT_BOT_TYPE);
+  const prompt = generateSystemMessageForBotType(defaultUser, defaultBranding.botType);
   const finalPrompt = [...prompt, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS]
     .filter(instruction => instruction !== LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS)
     .join(' ');
 
-  const ttsConfig = getTtsConfig(defaultUser.preferences, DEFAULT_BOT_TYPE);
+  const ttsConfig = getTtsConfig(defaultUser.preferences, defaultBranding.botType);
   const llmConfig = getLlmConfig(defaultUser.preferences, finalPrompt);
   const services = getServices(defaultUser.preferences);
 

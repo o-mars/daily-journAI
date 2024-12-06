@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase.config';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { APP_TITLE } from '@/src/models/constants';
+import { useHeader } from '@/src/contexts/HeaderContext';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +12,7 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { branding } = useHeader();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -53,7 +54,7 @@ const Signup: React.FC = () => {
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-2">{APP_TITLE}</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">{branding.appName}</h1>
         </div>
 
         {errorMessage && (

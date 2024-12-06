@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
-import { APP_TITLE, ONE_HOUR_MS } from "@/src/models/constants";
+import { ONE_HOUR_MS } from "@/src/models/constants";
 import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
@@ -9,7 +9,8 @@ import { RTVIClientAudio } from "realtime-ai-react";
 
 const Header: React.FC = () => {
   const { user } = useUser();
-  const { 
+  const {
+    branding,
     isShowingMenuOptions,
     currentView,
     lastJournalEntryId,
@@ -88,7 +89,7 @@ const Header: React.FC = () => {
         )}
       </div>
       <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-4xl font-bold">
-        {currentView === 'settings' ? 'Settings' : APP_TITLE}
+        {currentView === 'settings' ? 'Settings' : branding.appName}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         <button className="w-7 mr-4" onClick={handleFeedbackClick}>

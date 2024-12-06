@@ -11,10 +11,6 @@ export const JOURNAL_ENTRY_TITLE_DEFAULT = 'Loading Journal Entry...';
 export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';
 
-export const APP_TITLE = 'Inner Echo';
-
-export const DEFAULT_BOT_TYPE = 'inner-echo';
-
 export const METRICS_JOURNAL_ENTRIES_PATH = 'metrics-journal-entry';
 
 export const LANGUAGES: Record<string, Language> = {
