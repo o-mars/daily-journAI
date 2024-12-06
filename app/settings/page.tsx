@@ -8,12 +8,13 @@ import StatusIndicator, { StatusType } from '@/src/components/StatusIndicator';
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
-import { COUNTRY_ICONS, DEFAULT_BOT_TYPE, LANGUAGES, VOICES } from "@/src/models/constants";
+import { COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
-
+import { useHeader } from "@/src/contexts/HeaderContext";
 
 export default function Settings() {
+  const { branding } = useHeader();
   const { user, updateUser } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
 
@@ -41,9 +42,9 @@ export default function Settings() {
   }, [user]);
 
   useEffect(() => {
-    const voices = VOICES.filter(voice => voice.languageId === localUser.preferences.botPreferences[DEFAULT_BOT_TYPE].languageId);
+    const voices = VOICES.filter(voice => voice.languageId === localUser.preferences.botPreferences[branding.botType].languageId);
     setFilteredVoices(voices);
-  }, [localUser.preferences.botPreferences]);
+  }, [localUser.preferences.botPreferences, branding.botType]);
 
   const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -52,7 +53,7 @@ export default function Settings() {
     if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
     } else if (id === 'voiceId' || id === 'languageId') {
-      newLocalUser.preferences.botPreferences[DEFAULT_BOT_TYPE][id] = value;
+      newLocalUser.preferences.botPreferences[branding.botType][id] = value;
 
       if (id === 'voiceId' && value) {
         const audio = new Audio(`/audio/${value}.wav`);
@@ -64,7 +65,7 @@ export default function Settings() {
       }
     } else if (id === 'vadStopSecs') {
       const numValue = parseFloat(value);
-      newLocalUser.preferences.botPreferences[DEFAULT_BOT_TYPE][id] = numValue;
+      newLocalUser.preferences.botPreferences[branding.botType][id] = numValue;
     }
     
     setLocalUser(newLocalUser);
@@ -103,7 +104,7 @@ export default function Settings() {
         setIsSaving(false);
       }
     }, 1000);
-  }, [localUser, isSaving, user, updateUser]);
+  }, [localUser, isSaving, user, updateUser, branding.botType]);
 
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
@@ -143,7 +144,7 @@ export default function Settings() {
                   <label htmlFor="voiceId" className="block mb-2">Voice</label>
                   <select
                     id="voiceId"
-                    value={localUser.preferences.botPreferences[DEFAULT_BOT_TYPE].voiceId}
+                    value={localUser.preferences.botPreferences[branding.botType].voiceId}
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
@@ -160,7 +161,7 @@ export default function Settings() {
                   <label htmlFor="languageId" className="block mb-2">Language</label>
                   <select
                     id="languageId"
-                    value={localUser.preferences.botPreferences[DEFAULT_BOT_TYPE].languageId}
+                    value={localUser.preferences.botPreferences[branding.botType].languageId}
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
@@ -175,7 +176,7 @@ export default function Settings() {
 
                 <div className="form-group">
                   <label htmlFor="vadStopSecs" className="block mb-2">
-                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[DEFAULT_BOT_TYPE].vadStopSecs}s</span>
+                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
                   </label>
                   <input
                     type="range"
@@ -183,7 +184,7 @@ export default function Settings() {
                     min={0.2}
                     max={2}
                     step={0.1}
-                    value={localUser.preferences.botPreferences[DEFAULT_BOT_TYPE].vadStopSecs}
+                    value={localUser.preferences.botPreferences[branding.botType].vadStopSecs}
                     onChange={handleChange}
                     className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}

@@ -1,12 +1,14 @@
+"use client";
+
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { LLMHelper, RTVIClient, RTVIEvent } from "realtime-ai";
+import { RTVIClient, RTVIEvent } from "realtime-ai";
 import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
 import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
-import { DEFAULT_BOT_TYPE } from '@/src/models/constants';
 import { LLM_GOODBYE_PROMPTS } from '@/src/models/prompts';
+import { useHeader } from '@/src/contexts/HeaderContext';
 
 interface VoiceClientContextType {
   voiceClient: RTVIClient | null;
@@ -118,12 +120,14 @@ const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnec
 };
 
 export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { branding } = useHeader();
   const { user } = useUser();
   const [voiceClient, setVoiceClient] = useState<RTVIClient | null>(null);
   const [isStarted, setIsStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
+  const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
@@ -144,6 +148,13 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setIsLoading(false);
     }
   }, [disconnect, voiceClient]);
+
+  useEffect(() => {
+    if (voiceClient && user && user.isNewUser && user.profile.isAnonymous && !hasConnectedOnce) {
+      connect();
+      setHasConnectedOnce(true);
+    }
+  }, [user, voiceClient, connect, hasConnectedOnce]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
@@ -175,7 +186,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!user) return;
 
     const services = getServices(user.preferences) ?? getServices(defaultUser.preferences);
-    const config = generateConfigWithBotType(user, DEFAULT_BOT_TYPE) ?? generateConfigWithBotType(defaultUser, DEFAULT_BOT_TYPE);
+    const config = generateConfigWithBotType(user, branding.botType) ?? generateConfigWithBotType(defaultUser, branding.botType);
 
     const newVoiceClient = new RTVIClient({
       transport: new DailyTransport(),
@@ -196,13 +207,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     });
 
-    newVoiceClient.registerHelper(
-      "llm",
-      new LLMHelper({
-        callbacks: {},
-      })
-    ) as LLMHelper;
-
     setVoiceClient(newVoiceClient);
 
     return () => {
@@ -210,7 +214,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         newVoiceClient.disconnect();
       }
     };
-  }, [user]);
+  }, [user, branding.botType]);
 
   return (
     <VoiceClientContext.Provider value={{

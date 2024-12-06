@@ -1,11 +1,25 @@
-"use client";
-
 import "./globals.css";
 import { UserProvider } from "@/src/contexts/UserContext";
 import { VoiceClientProvider } from "@/src/contexts/VoiceClientContext";
 import { HeaderProvider } from "@/src/contexts/HeaderContext";
-import { APP_TITLE } from "@/src/models/constants";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
+import { Metadata } from 'next';
+import { headers } from "next/headers";
+import { brands } from "@/src/models/brand";
+import { defaultBranding } from "@/src/models/brand";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const hostname = (await headers()).get('host');
+  const portlessHostname = hostname?.split(':')[0];
+  const branding = portlessHostname ? brands[portlessHostname] || defaultBranding : defaultBranding;
+
+  return {
+    title: branding.appName,
+    icons: {
+      icon: branding.appIcon,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -14,20 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <title>{APP_TITLE}</title>
-      </head>
-      <body>
-        <UserProvider>
+      <UserProvider>
+        <HeaderProvider>
           <VoiceClientProvider>
             <JournalEntryProvider>
-              <HeaderProvider>
+              <body>
                 {children}
-              </HeaderProvider>
+              </body>
             </JournalEntryProvider>
           </VoiceClientProvider>
-        </UserProvider>
-      </body>
+        </HeaderProvider>
+      </UserProvider>
     </html>
   );
 }

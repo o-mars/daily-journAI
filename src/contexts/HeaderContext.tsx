@@ -1,5 +1,9 @@
+"use client";
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { brands, defaultBranding } from '@/src/models/brand';
+import { Branding } from '@/src/models/brand';
 
 type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'journal-detail' | 'login';
 
@@ -7,6 +11,7 @@ interface HeaderContextType {
   isShowingMenuOptions: boolean;
   currentView: HeaderView;
   lastJournalEntryId: string;
+  branding: Branding;
   setLastJournalEntryId: (value: string) => void;
   toggleMenu: () => void;
   navigateToView: (view: HeaderView, params?: Record<string, string>) => void;
@@ -28,10 +33,16 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const pathName = usePathname();
   const [currentView, setCurrentView] = useState<HeaderView>(getCurrentViewFromPath(pathName));
   const [previousView, setPreviousView] = useState<HeaderView | null>(null);
+  const [branding, setBranding] = useState<Branding>(defaultBranding);
 
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
 
   const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(false);
+
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    setBranding(brands[hostname] || defaultBranding);
+  }, []);
 
   useEffect(() => {
     const nextView = getCurrentViewFromPath(pathName);
@@ -79,6 +90,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   return (
     <HeaderContext.Provider 
       value={{ 
+        branding,
         isShowingMenuOptions,
         currentView,
         lastJournalEntryId,

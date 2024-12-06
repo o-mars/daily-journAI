@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInAnonymously } from "firebase/auth";
 import { auth } from "@/firebase.config";
-import { APP_TITLE } from "@/src/models/constants";
+import { useHeader } from "@/src/contexts/HeaderContext";
+
 const WelcomeScreen: React.FC = () => {
+  const { branding } = useHeader();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -18,13 +20,13 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to {APP_TITLE}</h1>
+      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to {branding.appName}</h1>
 
       <p style={{ marginTop: '16px' }} className="mb-4 text-center">
-        Providing you a safe and supportive space to talk about your feelings.
+        Providing you a safe and supportive space for your thoughts.
       </p>
       <p className="mb-4 text-center">
-        Need to get something off your chest? This is a judgment-free space to vent out all your thoughts.
+        {branding.appWelcomeMessage}
       </p>
       
       <div style={{ marginTop: '24px' }} className="bg-red-900 p-4 rounded-lg mb-4">

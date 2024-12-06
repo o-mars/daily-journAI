@@ -1,10 +1,12 @@
+"use client";
+
 import React, { createContext, useContext, useState, useRef, ReactNode } from "react";
 import { useRTVIClientEvent } from "realtime-ai-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
 import { saveJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
-import { DEFAULT_BOT_TYPE } from "@/src/models/constants";
+import { useHeader } from "@/src/contexts/HeaderContext";
 
 interface JournalEntryContextType {
   messages: JournalConversationEntry[];
@@ -16,6 +18,7 @@ interface JournalEntryContextType {
 const JournalEntryContext = createContext<JournalEntryContextType | undefined>(undefined);
 
 export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { branding } = useHeader();
   const { syncLocalUser, user } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
@@ -61,7 +64,7 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
         assistantEntries: assistantEntries.length,
         userEntries: userEntries.length,
         duration: durationInSeconds,
-        type: DEFAULT_BOT_TYPE,
+        type: branding.botType,
         inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
         outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
       };
