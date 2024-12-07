@@ -20,6 +20,7 @@ interface VoiceClientContextType {
   disconnect: () => void;
   toggleMicEnabled: () => void;
   toggleSpeakerEnabled: () => void;
+  resetIdleTimer: () => void;
 }
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
@@ -27,7 +28,10 @@ const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 const IDLE_TIMEOUT = 12500;
 const TTS_DISCONNECT_TIMEOUT = 3000;
 
-const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
+const DisconnectHandler: React.FC<{ 
+  onDisconnect: () => void,
+  onResetIdle: (callback: () => void) => void 
+}> = ({ onDisconnect, onResetIdle }) => {
   const isBotSpeaking = useRef(false);
   const isUserSpeaking = useRef(false);
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
@@ -116,6 +120,12 @@ const DisconnectHandler: React.FC<{ onDisconnect: () => void }> = ({ onDisconnec
     };
   }, []);
 
+  useEffect(() => {
+    onResetIdle(() => {
+      startIdleTimer();
+    });
+  }, [onResetIdle]);
+
   return null;
 };
 
@@ -128,6 +138,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
   const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
+  const resetIdleTimerCallback = useRef<(() => void) | null>(null);
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
@@ -177,6 +188,10 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const toggleSpeakerEnabled = () => {
     setIsSpeakerEnabled(prev => !prev);
   };
+
+  const resetIdleTimer = useCallback(() => {
+    resetIdleTimerCallback.current?.();
+  }, []);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
@@ -233,10 +248,14 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       connect,
       disconnect,
       toggleMicEnabled,
-      toggleSpeakerEnabled
+      toggleSpeakerEnabled,
+      resetIdleTimer
     }}>
       <BaseRTVIClientProvider client={voiceClient!}>
-        <DisconnectHandler onDisconnect={disconnect} />
+        <DisconnectHandler 
+          onDisconnect={disconnect}
+          onResetIdle={callback => resetIdleTimerCallback.current = callback}
+        />
         {children}
       </BaseRTVIClientProvider>
     </VoiceClientContext.Provider>

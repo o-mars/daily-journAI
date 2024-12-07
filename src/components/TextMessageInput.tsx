@@ -8,7 +8,12 @@ import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 const TextMessageInput: React.FC = () => {
   const [inputText, setInputText] = useState("");
   const { addMessage } = useJournalEntryContext();
-  const { voiceClient } = useVoiceClient()!;
+  const { voiceClient, resetIdleTimer } = useVoiceClient()!;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
+    resetIdleTimer();
+  };
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
@@ -36,7 +41,7 @@ const TextMessageInput: React.FC = () => {
       <input
         type="text"
         value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
+        onChange={handleInputChange}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             handleSend();
