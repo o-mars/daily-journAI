@@ -25,7 +25,7 @@ interface VoiceClientContextType {
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
-const IDLE_TIMEOUT = 12500;
+const IDLE_TIMEOUT = 30000;
 const TTS_DISCONNECT_TIMEOUT = 3000;
 
 const DisconnectHandler: React.FC<{ 
@@ -180,6 +180,20 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
 
   }, [isSpeakerEnabled, voiceClient]);
+
+  useEffect(() => {
+    if (voiceClient && voiceClient.connected) {
+      voiceClient.enableMic(isMicEnabled);
+    }
+  }, [isMicEnabled, voiceClient]);
+
+  useEffect(() => {
+    if (voiceClient && voiceClient.connected) {
+      const botTrack = voiceClient.tracks().bot?.audio;
+      if (botTrack) botTrack.enabled = isSpeakerEnabled;
+      voiceClient.enableMic(isMicEnabled);
+    }
+  }, [voiceClient?.connected]);
 
   const toggleMicEnabled = () => {
     setIsMicEnabled(prev => !prev);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { LLMHelper } from "realtime-ai";
 import Image from "next/image";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
@@ -7,8 +7,15 @@ import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
 const TextMessageInput: React.FC = () => {
   const [inputText, setInputText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const { addMessage } = useJournalEntryContext();
   const { voiceClient, resetIdleTimer } = useVoiceClient()!;
+
+  useEffect(() => {
+    if (voiceClient?.connected) {
+      inputRef.current?.focus();
+    }
+  }, [voiceClient?.connected]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
@@ -39,6 +46,7 @@ const TextMessageInput: React.FC = () => {
   return (
     <div className="flex items-center pb-2">
       <input
+        ref={inputRef}
         type="text"
         value={inputText}
         onChange={handleInputChange}

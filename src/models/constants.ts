@@ -13,6 +13,8 @@ export const DEFAULT_LANGUAGE_ID = 'en';
 
 export const METRICS_JOURNAL_ENTRIES_PATH = 'metrics-journal-entry';
 
+export const EMAIL_STORAGE_KEY = 'innerecho:email';
+
 export const LANGUAGES: Record<string, Language> = {
   'en': { id: 'en', name: 'English' }
 };
