@@ -5,6 +5,8 @@ import { useHeader } from '@/src/contexts/HeaderContext';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
 import { CHECK_EMAIL_MESSAGE } from '@/src/models/constants';
 import { useUser } from '@/src/contexts/UserContext';
+import Image from "next/image";
+
 
 const CheckEmailPage = () => {
   const { branding } = useHeader();
@@ -34,7 +36,7 @@ const CheckEmailPage = () => {
         />
 
         <div className="text-center w-full h-auto">
-          <img src={branding.appIcon} alt={`${branding.appName} Logo`} />
+          <Image src={branding.appIcon} alt="Logo" style={{ width: '100%', height: '100%' }} width={100} height={100} priority/>
         </div>
       </div>
     </main>

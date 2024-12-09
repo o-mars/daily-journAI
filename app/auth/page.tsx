@@ -151,7 +151,7 @@ function AuthForm() {
       router.push('/check-email');
     }, 5000);
 
-  }, [email, searchParams]);
+  }, [email, searchParams, router]);
 
   const handleAuth = useCallback(async () => {
     if (!isValidEmail(email)) {
