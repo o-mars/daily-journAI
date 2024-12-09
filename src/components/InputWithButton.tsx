@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef } from "react";
+import React, { forwardRef } from "react";
 
 interface InputWithButtonProps {
   value: string;
@@ -46,5 +46,7 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
     );
   }
 );
+
+InputWithButton.displayName = "InputWithButton";
 
 export default InputWithButton;

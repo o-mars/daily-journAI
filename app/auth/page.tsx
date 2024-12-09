@@ -221,16 +221,21 @@ function AuthForm() {
   }, [email, password, confirmPassword, isValidEmail, isValidPassword, arePasswordsMatching]);
 
   const getActionButtonText = useMemo(() => {
+    if (authMode === 'signIn' && firebaseUserState?.isAnonymous) {
+      console.error('Sign In mode but already signed in as anonymous user.');
+    } else if (authMode !== 'signIn' && firebaseUserState?.isAnonymous) {
+      return 'Link Account';
+    }
     switch (authMode) {
       case 'emailLink': return 'Send Sign In Link';
       case 'signIn': return 'Sign In';
       case 'signUp': return 'Create Account';
     }
-  }, [authMode]);
+  }, [authMode, firebaseUserState]);
 
   const renderAuthOptions = useMemo(() => {
     return (
-      <div className="flex justify-evenly space-x-4 text-sm">
+      <div className={`flex ${!firebaseUserState ? 'justify-evenly' : ''} space-x-4 text-sm`}>
         {authMode !== 'emailLink' && (
           <button
             onClick={() => setAuthMode('emailLink')}
@@ -258,6 +263,20 @@ function AuthForm() {
       </div>
     );
   }, [authMode, firebaseUserState]);
+
+  const getRouteButtonText = useMemo(() => {
+    return !!firebaseUserState
+      ? 'Back to App'
+      : 'Continue without Sign In';
+  }, [firebaseUserState]);
+
+  const handleRouteAction = useCallback(() => {
+    if (!!firebaseUserState) {
+      handlePostAuthRedirect();
+    } else {
+      router.push('/welcome');
+    }
+  }, [firebaseUserState, handlePostAuthRedirect, router]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
@@ -327,6 +346,13 @@ function AuthForm() {
           </button>
 
           {renderAuthOptions}
+
+          <button
+            onClick={handleRouteAction}
+            className="text-sm font-medium text-indigo-400 hover:text-indigo-300 hover:underline focus:outline-none"
+          >
+            {getRouteButtonText}
+          </button>
         </div>
       </div>
     </main>
