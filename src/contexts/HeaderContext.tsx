@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { brands, defaultBranding } from '@/src/models/brand';
 import { Branding } from '@/src/models/brand';
 
-type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'journal-detail' | 'login';
+type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
 
 interface HeaderContextType {
   isShowingMenuOptions: boolean;
@@ -21,7 +21,7 @@ interface HeaderContextType {
 function getCurrentViewFromPath(pathName: string): HeaderView {
   const paths = pathName.split('/');
   if (paths[1] === 'journals' && paths[2]) {
-    return 'journal-detail';
+    return 'journals/:journalEntryId';
   }
   return (paths[1] as HeaderView) || 'main';
 }
@@ -68,16 +68,22 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
     setPreviousView(currentView);
     setCurrentView(view);
 
-    let url = `/${view}`;
-    if (params) {
-      const searchParams = new URLSearchParams();
-      Object.entries(params).forEach(([key, value]) => {
-        searchParams.append(key, value);
-      });
-      url += `?${searchParams.toString()}`;
+    if (view === 'journals/:journalEntryId' && params?.journalEntryId) {
+      setLastJournalEntryId(params.journalEntryId);
+      router.push(`/journals/${params.journalEntryId}`);
+    } else {
+      let url = `/${view}`;
+      if (params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          searchParams.append(key, value);
+        });
+        url += `?${searchParams.toString()}`;
+      }
+  
+      router.push(url);
     }
 
-    router.push(url);
   };
 
   const goBack = () => {

@@ -37,14 +37,14 @@ const DisconnectHandler: React.FC<{
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
   const disconnectTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const clearIdleTimer = () => {
+  const clearIdleTimer = useCallback(() => {
     if (idleTimer.current) {
       console.debug('Clearing idle timer');
       clearTimeout(idleTimer.current);
     }
-  };
+  }, []);
 
-  const startIdleTimer = () => {
+  const startIdleTimer = useCallback(() => {
     clearIdleTimer();
 
     if (!isBotSpeaking.current && !isUserSpeaking.current) {
@@ -54,7 +54,7 @@ const DisconnectHandler: React.FC<{
         onDisconnect();
       }, IDLE_TIMEOUT);
     }
-  };
+  }, [clearIdleTimer, onDisconnect]);
 
   useRTVIClientEvent(RTVIEvent.UserStartedSpeaking, () => {
     isUserSpeaking.current = true;
@@ -86,7 +86,7 @@ const DisconnectHandler: React.FC<{
     startIdleTimer();
   });
 
-  const checkForDisconnect = (message: string) => {
+  const checkForDisconnect = useCallback((message: string) => {
     if (LLM_GOODBYE_PROMPTS.some(prompt => message.includes(prompt))) {
       console.debug('Goodbye prompt detected, waiting to disconnect.');
 
@@ -101,7 +101,7 @@ const DisconnectHandler: React.FC<{
         }
       }, TTS_DISCONNECT_TIMEOUT);
     }
-  };
+  }, [onDisconnect]);
 
   useRTVIClientEvent(RTVIEvent.BotLlmText, (message) => {
     checkForDisconnect(message.text);
@@ -124,7 +124,7 @@ const DisconnectHandler: React.FC<{
     onResetIdle(() => {
       startIdleTimer();
     });
-  }, [onResetIdle]);
+  }, [onResetIdle, startIdleTimer]);
 
   return null;
 };
@@ -137,7 +137,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isLoading, setIsLoading] = useState(false);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
-  const [hasConnectedOnce, setHasConnectedOnce] = useState(false);
   const resetIdleTimerCallback = useRef<(() => void) | null>(null);
 
   const disconnect = useCallback(() => {
@@ -159,13 +158,6 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setIsLoading(false);
     }
   }, [disconnect, voiceClient]);
-
-  useEffect(() => {
-    if (voiceClient && user && user.isNewUser && user.profile.isAnonymous && !hasConnectedOnce) {
-      connect();
-      setHasConnectedOnce(true);
-    }
-  }, [user, voiceClient, connect, hasConnectedOnce]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
@@ -193,15 +185,15 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (botTrack) botTrack.enabled = isSpeakerEnabled;
       voiceClient.enableMic(isMicEnabled);
     }
-  }, [voiceClient?.connected]);
+  }, [voiceClient?.connected, isMicEnabled, isSpeakerEnabled]);
 
-  const toggleMicEnabled = () => {
+  const toggleMicEnabled = useCallback(() => {
     setIsMicEnabled(prev => !prev);
-  };
+  }, []);
 
-  const toggleSpeakerEnabled = () => {
+  const toggleSpeakerEnabled = useCallback(() => {
     setIsSpeakerEnabled(prev => !prev);
-  };
+  }, []);
 
   const resetIdleTimer = useCallback(() => {
     resetIdleTimerCallback.current?.();

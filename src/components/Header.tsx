@@ -31,7 +31,7 @@ const Header: React.FC = () => {
 
   const handleLogoutClick = async () => {
     await signOut(auth);
-    navigateToView('login');
+    navigateToView('auth');
   };
 
   const handleFeedbackClick = () => {
@@ -101,7 +101,7 @@ const Header: React.FC = () => {
             className={`${currentView === 'feedback' ? '' : 'opacity-50'}`}
           />
         </button>
-        {(currentView === 'journals'|| currentView === 'journal-detail') && (
+        {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
           <button className="w-7 mr-4" onClick={() => navigateToView('main', { autoConnect: 'true' })}>
             <Image
               width={24}

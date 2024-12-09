@@ -18,7 +18,7 @@ interface JournalEntryContextType {
 const JournalEntryContext = createContext<JournalEntryContextType | undefined>(undefined);
 
 export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { branding } = useHeader();
+  const { branding, navigateToView } = useHeader();
   const { syncLocalUser, user } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
@@ -69,10 +69,18 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
         outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
       };
 
-      setMessages([]);
-
-      await saveJournalEntry(messagesToSave, finalMetadata);
+      const response = await saveJournalEntry(messagesToSave, finalMetadata);
       await syncLocalUser();
+      setMessages([]);
+      if (user?.profile.isAnonymous) {
+        navigateToView('auth', {
+          journalEntryId: response.id,
+        });
+      } else {
+        navigateToView('journals/:journalEntryId', {
+          journalEntryId: response.id,
+        });
+      }
     } else {
       setMessages([]);
     }
