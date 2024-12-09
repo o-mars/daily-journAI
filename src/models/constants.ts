@@ -8,6 +8,7 @@ export const JOURNAL_ENTRIES_PATH = 'journalEntries';
 export const SUMMARY_NONE = 'None';
 export const JOURNAL_ENTRY_TITLE_DEFAULT = 'Loading Journal Entry...';
 
+export const CHECK_EMAIL_MESSAGE = "Check your email for the sign-in link!";
 export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';
 

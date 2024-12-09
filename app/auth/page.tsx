@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthState
          signOut} from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHeader } from '@/src/contexts/HeaderContext';
-import { EMAIL_STORAGE_KEY } from '@/src/models/constants';
+import { CHECK_EMAIL_MESSAGE, EMAIL_STORAGE_KEY } from '@/src/models/constants';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
 import { useUser } from '@/src/contexts/UserContext';
@@ -132,6 +132,7 @@ function AuthForm() {
 
   useEffect(() => {
     if (isInitialized && hasSignInLink && email && isValidEmail(email)) {
+      setHasSignInLink(false);
       completeEmailLinkSignIn();
     }
   }, [isInitialized, hasSignInLink, email, completeEmailLinkSignIn, isValidEmail]);
@@ -141,12 +142,17 @@ function AuthForm() {
     console.log('sending sign in link to: ', email, linkUrl);
     const actionCodeSettings: ActionCodeSettings = { url: linkUrl, handleCodeInApp: true };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    statusRef.current?.pushMessage({ type: 'info', text: "Check your email for the sign-in link!" });
+    statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
 
     if (authUnsubscribe.current) {
       authUnsubscribe.current();
       console.debug('unsubscribed from auth changes, this tab can be closed');
     }
+
+    setTimeout(() => {
+      router.push('/check-email');
+    }, 5000);
+
   }, [email, searchParams]);
 
   const handleAuth = useCallback(async () => {
