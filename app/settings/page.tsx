@@ -12,11 +12,15 @@ import { COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
+import InputWithButton from "@/src/components/InputWithButton";
+import { useRouter } from "next/navigation";
 
 export default function Settings() {
   const { branding } = useHeader();
   const { user, updateUser, isInitialized } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
+
+  const router = useRouter();
 
   const isDisabled = isLoading || isStarted || !isInitialized;
 
@@ -141,6 +145,19 @@ export default function Settings() {
                     disabled={isDisabled}
                   />
                 </div> */}
+
+                <div className="form-group">
+                  <label htmlFor="email" className="block mb-2">Email</label>
+                  <InputWithButton
+                    value={localUser.profile.email || ''}
+                    onChange={() => {}}
+                    readOnly={true}
+                    onButtonClick={() => { router.push('/auth') }}
+                    placeholder="Please link your email to retain your data"
+                    buttonLabel="Add"
+                    shouldShowButton={!localUser.profile.email || localUser.profile.email === ''}
+                  />
+                </div>
 
                 <div className="form-group">
                   <label htmlFor="voiceId" className="block mb-2">Voice</label>

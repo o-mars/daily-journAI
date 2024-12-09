@@ -3,6 +3,7 @@ import { LLMHelper } from "realtime-ai";
 import Image from "next/image";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
+import InputWithButton from "./InputWithButton";
 
 
 const TextMessageInput: React.FC = () => {
@@ -17,8 +18,8 @@ const TextMessageInput: React.FC = () => {
     }
   }, [voiceClient?.connected]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
+  const handleInputChange = (value: string) => {
+    setInputText(value);
     resetIdleTimer();
   };
 
@@ -44,24 +45,19 @@ const TextMessageInput: React.FC = () => {
   if (!voiceClient || !voiceClient.connected) return null;
 
   return (
-    <div className="flex items-center pb-2">
-      <input
-        ref={inputRef}
-        type="text"
-        value={inputText}
-        onChange={handleInputChange}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            handleSend();
-          }
-        }}
-        placeholder="Type your message..."
-        className="flex-grow p-2 border rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-      />
-      <button onClick={handleSend} className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-        <Image src="/icons/feather-send.svg" alt="Send" width={28} height={28} />
-      </button>
-    </div>
+    <InputWithButton
+      ref={inputRef}
+      value={inputText}
+      onChange={handleInputChange}
+      onButtonClick={handleSend}
+      placeholder="Type your message..."
+      buttonLabel={<Image src="/icons/feather-send.svg" alt="Send" width={28} height={28} />}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          handleSend();
+        }
+      }}
+    />
   );
 };
 
