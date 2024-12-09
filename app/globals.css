@@ -23,3 +23,9 @@ body {
 nextjs-portal {
   display: none;
 }
+
+@media (max-width: 640px) {
+  .hidden-on-small {
+    display: none;
+  }
+}

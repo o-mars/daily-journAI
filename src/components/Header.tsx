@@ -88,7 +88,9 @@ const Header: React.FC = () => {
           </>
         )}
       </div>
-      <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-4xl font-bold select-none">
+      <h1 className={`absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-4xl font-bold select-none ${
+        isShowingMenuOptions ? 'hidden-on-small' : ''
+      }`}>
         {currentView === 'settings' ? 'Settings' : branding.appName}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
