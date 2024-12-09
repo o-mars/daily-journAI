@@ -59,7 +59,7 @@ function AuthForm() {
 
   const handleUpdateUser = useCallback(async () => {
     statusRef.current?.pushMessage({ type: 'loading', text: "Updating user..." });
-    console.log('updating user to: ', email);
+    console.debug('updating user with email: ', email);
     
     const clonedUser = {
       ...user,
@@ -71,10 +71,9 @@ function AuthForm() {
     };
 
     await updateUser(clonedUser);
-    console.log('updated user to: ', clonedUser);
+    console.debug('updated user');
     statusRef.current?.pushMessage({ type: 'success', text: "Updated user!" });
     await syncLocalUser();
-    console.log('synced local user');
   }, [email, user, updateUser, syncLocalUser]);
 
   const isValidEmail = useCallback((email: string) => {
@@ -110,16 +109,15 @@ function AuthForm() {
           statusRef.current?.pushMessage({ type: 'success', text: "Linked account with email!" });
           console.log(`linked ${firebaseUser.current.uid} with email ${email}`);
           await handleUpdateUser();
-          console.log('successfully updated user, redirecting...');
           handlePostAuthRedirect();
         } catch (error) {
           console.error("Error linking account with email:", error);
           statusRef.current?.pushMessage({ type: 'error', text: "Failed to link account with email: " + (error as Error).message });
         }
       } else {
-        console.log('signing in with email link');
-        const credentialedUser = await signInWithEmailLink(auth, email, window.location.href);
-        console.log('signed in as user: ', credentialedUser);
+        console.debug('signing in with email link');
+        await signInWithEmailLink(auth, email, window.location.href);
+        console.debug('signed in as user: ', email);
         statusRef.current?.pushMessage({ type: 'success', text: "Signed in! Redirecting..." });
         handlePostAuthRedirect();
       }
@@ -139,7 +137,7 @@ function AuthForm() {
 
   const handleSendMagicLink = useCallback(async () => {
     const linkUrl = `${window.location.origin}/auth?${searchParams.toString()}&userId=${firebaseUser.current?.uid}`;
-    console.log('sending sign in link to: ', email, linkUrl);
+    console.debug('sending sign in link to: ', email, linkUrl);
     const actionCodeSettings: ActionCodeSettings = { url: linkUrl, handleCodeInApp: true };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
@@ -204,12 +202,9 @@ function AuthForm() {
           statusRef.current?.pushMessage({ type: 'loading', text: "Created account!" });
           console.log('created account');
         }
-        console.log('updating user');
         await handleUpdateUser();
-        console.log('updated user');
         const successMessage = firebaseUser.current?.isAnonymous ? "Successfully linked account with email!" : "Successfully created account!";
         statusRef.current?.pushMessage({ type: 'success', text: successMessage });
-        console.log('redirecting');
         handlePostAuthRedirect();
       }
     } catch (error) {
