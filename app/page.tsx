@@ -14,7 +14,7 @@ export default function Home() {
     if (!isInitialized) return;
     if (!user) router.push("/welcome");
     // else if (user.profile.isAnonymous || !user.profile.email) router.push("/auth");
-    if (user?.isNewUser) router.push("/main");
+    else if (user?.isNewUser) router.push("/main");
     else router.push("/journals");
   }, [router, user, isInitialized]);
 

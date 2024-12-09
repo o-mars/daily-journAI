@@ -37,11 +37,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUserId(currentUser.uid);
-    }
-
     return () => unsubscribe();
   }, []);
 
