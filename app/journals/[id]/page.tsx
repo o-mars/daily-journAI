@@ -6,9 +6,11 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { defaultJournalEntry, JournalEntry } from "@/src/models/journal.entry";
 import { fetchJournalEntry } from "@/src/client/firebase.service.client";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function JournalEntryPage() {
   const params = useParams();
+  const { isInitialized } = useUser();
   const [entry, setEntry] = useState<JournalEntry>(defaultJournalEntry);
   const router = useRouter();
 
@@ -19,8 +21,10 @@ export default function JournalEntryPage() {
       setEntry(fetchedEntry);
     };
 
-    fetchEntry();
-  }, [params.id, entry]);
+    if (isInitialized) {
+      fetchEntry();
+    }
+  }, [params.id, entry, isInitialized]);
 
   if (!entry) {
     return null;

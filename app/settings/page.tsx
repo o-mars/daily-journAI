@@ -15,10 +15,10 @@ import { useHeader } from "@/src/contexts/HeaderContext";
 
 export default function Settings() {
   const { branding } = useHeader();
-  const { user, updateUser } = useUser();
+  const { user, updateUser, isInitialized } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
 
-  const isDisabled = isLoading || isStarted;
+  const isDisabled = isLoading || isStarted || !isInitialized;
 
   const statusRef = useRef<StatusIndicatorHandle>(null);
 
@@ -107,7 +107,6 @@ export default function Settings() {
         
         await updateUser(clonedUser);
         statusRef.current?.pushMessage({ type: 'success', text: 'Saved successfully' });
-        console.log('saved successfully');
       } catch (error) {
         console.error(error);
         statusRef.current?.pushMessage({ type: 'error', text: 'Failed to save changes' });
@@ -198,8 +197,8 @@ export default function Settings() {
                   <input
                     type="range"
                     id="vadStopSecs"
-                    min={0.2}
-                    max={2}
+                    min={0.8}
+                    max={2.4}
                     step={0.1}
                     value={localUser.preferences.botPreferences[branding.botType].vadStopSecs}
                     onChange={handleChange}

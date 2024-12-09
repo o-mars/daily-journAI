@@ -4,8 +4,11 @@ import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import TextMessageInput from "./TextMessageInput";
 import { VoiceVisualizer } from "realtime-ai-react";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
+import { useUser } from "@/src/contexts/UserContext";
 
 const VoiceControls: React.FC = () => {
+  const { isInitialized } = useUser();
+
   const {
     isStarted,
     isLoading,
@@ -59,8 +62,9 @@ const VoiceControls: React.FC = () => {
           </div>
         }
         <button style={{ width: '28px', height: '28px', marginLeft: '32px', marginRight: '32px', justifyContent: 'center' }}
-                onClick={() => isStarted ? disconnect() : connect()}>
-          {isLoading ? (
+                onClick={() => isStarted ? disconnect() : connect()}
+                disabled={!isInitialized}>
+          {isLoading || !isInitialized ? (
             <div style={spinnerStyle}></div>
           ) : (
             <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />

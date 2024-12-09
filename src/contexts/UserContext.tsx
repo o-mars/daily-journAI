@@ -14,7 +14,8 @@ const UserContext = createContext<{
   journalEntries: JournalEntry[];
   syncLocalUser: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
-}>({ user: null, isLoading: true, error: null, journalEntries: [], syncLocalUser: async () => {}, updateUser: async () => {} });
+  isInitialized: boolean;
+}>({ user: null, isLoading: true, error: null, journalEntries: [], syncLocalUser: async () => {}, updateUser: async () => {}, isInitialized: false });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -31,10 +33,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setUserId(null);
         setUser(null);
+        setIsInitialized(true);
       }
     });
 
-    // Check initial auth state
     const currentUser = auth.currentUser;
     if (currentUser) {
       setUserId(currentUser.uid);
@@ -45,7 +47,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const syncLocalUser = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      const error = new Error('Cannot sync local user: No userId found');
+      console.error(error);
+      setError(error.message);
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const [newUser, userJournals] = await Promise.all([
@@ -65,15 +73,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!userId) return;
-
     syncLocalUser();
 
-    return () => {
-    };
+    return () => { };
   }, [userId, syncLocalUser]);
 
+  useEffect(() => {
+    if (userId && !user) {
+      setIsInitialized(false);
+    }
+    if (userId && user && user.userId !== userId) {
+      setIsInitialized(false);
+    }
+    if (userId && user && user.userId === userId) {
+      setIsInitialized(true);
+    }
+  }, [userId, user]);
+
   const updateUser = useCallback(async (data: Partial<User>) => {
-    if (!userId || !user) return;
+    if (!userId || !user) {
+      const error = new Error('Cannot update user: No active user or userId found');
+      console.error(error);
+      setError(error.message);
+      return;
+    }
     
     try {
       setIsLoading(true);
@@ -98,7 +121,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userId, user]);
 
   return (
-    <UserContext.Provider value={{ user, isLoading, error, journalEntries, syncLocalUser, updateUser }}>
+    <UserContext.Provider value={{
+      user,
+      isLoading,
+      error,
+      journalEntries,
+      syncLocalUser,
+      updateUser,
+      isInitialized
+    }}>
       {children}
     </UserContext.Provider>
   );

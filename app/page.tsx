@@ -2,25 +2,21 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "../firebase.config";
-import { onAuthStateChanged } from "firebase/auth";
 import { useHeader } from "@/src/contexts/HeaderContext";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Home() {
+  const { user, isInitialized } = useUser();
   const { branding } = useHeader();
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/main");
-      } else {
-        router.push("/welcome");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+    if (!isInitialized) return;
+    if (!user) router.push("/welcome");
+    // else if (user.profile.isAnonymous || !user.profile.email) router.push("/auth");
+    if (user?.isNewUser) router.push("/main");
+    else router.push("/journals");
+  }, [router, user, isInitialized]);
 
   return (
     <>
