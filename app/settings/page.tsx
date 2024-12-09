@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 
 import VoiceControls from "../../src/components/VoiceControls";
-import StatusIndicator, { StatusType } from '@/src/components/StatusIndicator';
+import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
 
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
@@ -20,10 +20,8 @@ export default function Settings() {
 
   const isDisabled = isLoading || isStarted;
 
-  const [status, setStatus] = useState<{ type: StatusType; message: string }>({
-    type: null,
-    message: ''
-  });
+  const statusRef = useRef<StatusIndicatorHandle>(null);
+
   const [localUser, setLocalUser] = useState(defaultUser);
 
   const [filteredVoices, setFilteredVoices] = useState(VOICES);
@@ -31,6 +29,8 @@ export default function Settings() {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const [isSaving, setIsSaving] = useState(false);
+
+  // const [phoneNumber, setPhoneNumber] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -46,12 +46,26 @@ export default function Settings() {
     setFilteredVoices(voices);
   }, [localUser.preferences.botPreferences, branding.botType]);
 
+  // const isValidPhoneNumber = (phoneNumber: string) => {
+  //   const phoneRegex = /^\+?\d{1,3}[-\s]?\d{3}[-\s]?\d{3}[-\s]?\d{4}$/; // Regex for phone number format
+  //   return phoneRegex.test(phoneNumber.trim()) || phoneNumber.trim() === "";
+  // };
+
   const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     const newLocalUser = { ...localUser };
     
     if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
+    } else if (id === 'phone') {
+      // const formattedValue = value.replace(/[^+\d\s-]/g, '');
+      // setPhoneNumber(formattedValue);
+      // const isValid = isValidPhoneNumber(formattedValue.trim());
+      // console.log('formattedValue', formattedValue, isValid);
+      // if (isValid && formattedValue.trim() !== newLocalUser.profile.phone) {
+      //   newLocalUser.profile.phone = formattedValue.trim();
+      //   setPhoneNumber("");
+      // }
     } else if (id === 'voiceId' || id === 'languageId') {
       newLocalUser.preferences.botPreferences[branding.botType][id] = value;
 
@@ -79,11 +93,11 @@ export default function Settings() {
       setIsSaving(true);
       try {
         if (!user) {
-          setStatus({ type: 'error', message: 'User not logged in' });
+          statusRef.current?.pushMessage({ type: 'error', text: 'User not logged in' });
           return;
         }
 
-        setStatus({ type: 'loading', message: 'Saving...' });
+        statusRef.current?.pushMessage({ type: 'loading', text: 'Saving...' });
         
         const clonedUser = { 
           ...user,
@@ -92,10 +106,11 @@ export default function Settings() {
         };
         
         await updateUser(clonedUser);
-        setStatus({ type: 'success', message: 'Saved successfully' });
+        statusRef.current?.pushMessage({ type: 'success', text: 'Saved successfully' });
+        console.log('saved successfully');
       } catch (error) {
         console.error(error);
-        setStatus({ type: 'error', message: 'Failed to save changes' });
+        statusRef.current?.pushMessage({ type: 'error', text: 'Failed to save changes' });
         setLocalUser({
           ...defaultUser,
           ...user
@@ -114,8 +129,9 @@ export default function Settings() {
           <main className="flex-grow overflow-auto pt-8 p-4">
             <div className="max-w-2xl mx-auto space-y-6 text-white">
               <div className="space-y-4">
-                <div className="form-group">
-                  <label htmlFor="name" className="block mb-2">Name</label>
+
+                {/* <div className="form-group">
+                  <label htmlFor="name" className="block mb-2">Display Name</label>
                   <input
                     type="text"
                     id="name"
@@ -123,19 +139,6 @@ export default function Settings() {
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your name"
-                    disabled={isDisabled}
-                  />
-                </div>
-
-                {/* <div className="form-group">
-                  <label htmlFor="city" className="block mb-2">City</label>
-                  <input
-                    type="text"
-                    id="city"
-                    value={localUser.profile.city || ''}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="Enter your city"
                     disabled={isDisabled}
                   />
                 </div> */}
@@ -157,6 +160,20 @@ export default function Settings() {
                   </select>
                 </div>
 
+
+                {/* <div className="form-group">
+                  <label htmlFor="phone" className="block mb-2">Phone Number</label>
+                  <input
+                    type="text"
+                    id="phone"
+                    value={phoneNumber}
+                    onChange={handleChange}
+                    className={`w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed ${phoneNumber === '' ? '' : 'border-red-500'}`}
+                    placeholder={localUser.profile.phone || 'Enter your phone number'}
+                    disabled={isDisabled}
+                  />
+                </div>
+ */}
                 <div className="form-group">
                   <label htmlFor="languageId" className="block mb-2">Language</label>
                   <select
@@ -193,10 +210,7 @@ export default function Settings() {
 
                 <div className="flex items-center justify-between">
                   <StatusIndicator
-                    status={status.type}
-                    message={status.message}
-                    duration={1200}
-                    onStatusClear={() => setStatus({ type: null, message: '' })}
+                    ref={statusRef}
                   />
                 </div>
               </div>

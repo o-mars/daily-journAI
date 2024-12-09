@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { submitFeedback } from "@/src/client/firebase.service.client";
 import { useRouter } from "next/navigation";
-import StatusIndicator, { StatusType } from "@/src/components/StatusIndicator";
+import StatusIndicator, { StatusIndicatorHandle } from "@/src/components/StatusIndicator";
 
 interface FeedbackProps {
   lastJournalEntryId: string;
@@ -11,20 +11,16 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
   const router = useRouter();
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
-  const [status, setStatus] = useState<{ type: StatusType; message: string }>({
-    type: null,
-    message: ''
-  });
+  const statusRef = useRef<StatusIndicatorHandle>(null);
 
-  
   const handleSubmit = async () => {
-    setStatus({ type: 'loading', message: 'Sending feedback...' });
+    statusRef.current?.pushMessage({ type: 'loading', text: 'Sending feedback...' });
     try {
       await submitFeedback(lastJournalEntryId, rating, comment);
-      setStatus({ type: 'success', message: 'Feedback submitted!' });
+      statusRef.current?.pushMessage({ type: 'success', text: 'Feedback submitted!' });
     } catch (error) {
       console.error(error);
-      setStatus({ type: 'error', message: 'Error submitting feedback' });
+      statusRef.current?.pushMessage({ type: 'error', text: 'Error submitting feedback' });
     } finally {
       setTimeout(() => {
         router.back();
@@ -69,10 +65,8 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
         </div>
         <div className="mt-4">
           <StatusIndicator
-            status={status.type}
-            message={status.message}
-            duration={1200}
-            onStatusClear={() => setStatus({ type: null, message: '' })}
+            ref={statusRef}
+            className="text-white"
           />
         </div>
       </div>
