@@ -30,7 +30,7 @@ export default function JournalEntryPage() {
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
       <main className="flex-grow overflow-auto p-2">
-        <JournalEntryView entry={entry} onBack={() => router.back() } />
+        <JournalEntryView entry={entry} onBack={() => router.push('/journals') } />
       </main>
     </div>
   );
