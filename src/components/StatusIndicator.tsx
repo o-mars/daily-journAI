@@ -95,7 +95,6 @@ const StatusIndicator = React.forwardRef<StatusIndicatorHandle, Props>(function 
   }, []);
 
   if (!currentMessage?.text) return null;
-
   return (
     <div
       className={`flex flex-rowstatus-indicator w-full rounded-md bg-transparent ${
@@ -106,9 +105,9 @@ const StatusIndicator = React.forwardRef<StatusIndicatorHandle, Props>(function 
           : currentMessage.type === "error"
           ? "text-red-500"
           : "text-yellow-400"
-      } p-3 transition-opacity duration-300 ${
+      } transition-opacity duration-300 ${
         currentMessage ? "opacity-100" : "opacity-0"
-      } ${className}`}
+      } ${className} text-sm`} // Added text-sm for smaller font size
     >
       {currentMessage.type === "loading" && (
         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

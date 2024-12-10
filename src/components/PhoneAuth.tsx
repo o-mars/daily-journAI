@@ -4,7 +4,8 @@ import StatusIndicator, { StatusIndicatorHandle } from './StatusIndicator';
 import { useUser } from '@/src/contexts/UserContext';
 import { PHONE_STORAGE_KEY } from '@/src/models/constants';
 import { auth } from '@/firebase.config';
-import { errorMessages, linkPhoneCredential, signInWithPhone, validatePhoneNumber } from '@/src/services/authService';
+import { errorMessages, linkPhoneCredential, signInWithPhone } from '@/src/services/authService';
+import { isAllowedCountryCode, isValidPhoneNumber, listenForOTP } from '@/src/services/phoneService';
 import { FirebaseError } from 'firebase/app';
 
 interface PhoneAuthProps {
@@ -74,10 +75,18 @@ export default function PhoneAuth({ mode, onSuccess, testMode = false }: PhoneAu
 
 
   const handleSendCode = useCallback(async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
+    if (!isValidPhoneNumber(phoneNumber)) {
       statusRef.current?.pushMessage({ 
         type: 'error', 
         text: 'Please enter a valid phone number (e.g., +12345678900)' 
+      });
+      return;
+    }
+
+    if (!isAllowedCountryCode(phoneNumber)) {
+      statusRef.current?.pushMessage({
+        type: 'info',
+        text: 'Unsupported country code, please use email instead.'
       });
       return;
     }
@@ -172,70 +181,93 @@ export default function PhoneAuth({ mode, onSuccess, testMode = false }: PhoneAu
     }
   }, [confirmationResult, verificationCode, mode, onSuccess, updateUser, resetRecaptcha]);
 
+  useEffect(() => {
+    if (confirmationResult) {
+      const ac = new AbortController();
+      
+      listenForOTP(ac.signal).then(code => {
+        console.log('OTP received:', code);
+        if (code) {
+          setVerificationCode(code);
+          handleVerifyCode();
+        }
+      });
+
+      return () => {
+        ac.abort();
+      };
+    }
+  }, [confirmationResult, handleVerifyCode]);
+
   const isPhoneValid = useMemo(() => {
-    return validatePhoneNumber(phoneNumber);
+    return isValidPhoneNumber(phoneNumber);
   }, [phoneNumber]);
 
   return (
-    <div className="h-[240px] relative flex flex-col">
-      <div className="flex-1">
-        <div className="pt-6">
-          <label htmlFor="phone-input" className="block text-sm font-medium text-gray-300">
-            {confirmationResult ? 'Verification Code' : 'Phone Number'}
-          </label>
-          {confirmationResult ? (
-            <input
-              ref={verificationInputRef}
-              id="phone-input"
-              type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
-              placeholder="Enter verification code"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleVerifyCode();
-              }}
-            />
-          ) : (
-            <input
-              ref={phoneInputRef}
-              id="phone-input"
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
-              placeholder="+1234567890"
-            />
-          )}
-        </div>
+    <>
+      <div className="relative flex flex-col">
+        <div className="flex-1">
+          <div className="pt-4">
+            <label htmlFor="phone-input" className="block text-sm font-medium text-gray-300">
+              {confirmationResult ? 'Verification Code' : 'Phone Number'}
+            </label>
+            {confirmationResult ? (
+              <input
+                ref={verificationInputRef}
+                id="phone-input"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+                placeholder="Enter verification code"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleVerifyCode();
+                }}
+              />
+            ) : (
+              <input
+                ref={phoneInputRef}
+                id="phone-input"
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+                placeholder="+1234567890"
+              />
+            )}
+          </div>
 
-        <button
-          onClick={confirmationResult ? handleVerifyCode : handleSendCode}
-          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          disabled={(!isPhoneValid && !confirmationResult) || isLoading}
-        >
-          {isLoading ? (
-            <span className="flex items-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {confirmationResult ? 'Verifying...' : 'Sending Verification Code...'}
-            </span>
-          ) : (
-            confirmationResult ? 'Verify Phone' : 'Connect Phone'
-          )}
-        </button>
+          <button
+            onClick={confirmationResult ? handleVerifyCode : handleSendCode}
+            className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={(!isPhoneValid && !confirmationResult) || isLoading}
+          >
+            {isLoading ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {confirmationResult ? 'Verifying...' : 'Sending Verification Code...'}
+              </span>
+            ) : (
+              confirmationResult ? 'Verify Phone' : 'Connect Phone'
+            )}
+          </button>
 
-        <div className="mt-6">
-          <StatusIndicator ref={statusRef} />
+          <div className="mt-6 min-h-[20px]">
+            <StatusIndicator ref={statusRef} />
+          </div>
         </div>
       </div>
 
       <div 
         id="recaptcha-container" 
-        className={`${showRecaptcha ? 'block' : 'hidden'} absolute bottom-0 left-1/2 transform -translate-x-1/2`} 
+        className={`${showRecaptcha ? 'block' : 'hidden'} fixed left-1/2 transform -translate-x-1/2`} 
+        style={{ top: 'calc(50% + 160px)' }}
       />
-    </div>
+    </>
   );
 } 

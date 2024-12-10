@@ -46,30 +46,34 @@ export default function EmailAuth({
   }, [email]);
 
   return (
-    <>
-      <StatusIndicator ref={statusRef} />
+    <div className="relative flex flex-col">
+      <div className="flex-1">
+        <div className="pt-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+            placeholder="you@example.com"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
-          placeholder="you@example.com"
-        />
+        <button
+          onClick={handleAuth}
+          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={!isFormValid}
+        >
+          Connect Email
+        </button>
+
+        <div className="mt-6 min-h-[20px]">
+        <StatusIndicator ref={statusRef} />
+        </div>
       </div>
-
-      <button
-        onClick={handleAuth}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        disabled={!isFormValid}
-      >
-        Connect Email
-      </button>
-    </>
+    </div>
   );
 } 

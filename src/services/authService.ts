@@ -20,11 +20,6 @@ export const isValidEmail = (email: string | undefined): boolean => {
   return !!email && email.indexOf("@") !== -1 && email.lastIndexOf(".") !== -1 && email.lastIndexOf(".") !== (email.length - 1) && email.length > 4;
 };
 
-export const validatePhoneNumber = (phone: string) => {
-  const phoneRegex = /^\+[1-9]\d{1,14}$/;
-  return phoneRegex.test(phone);
-};
-
 export const linkPhoneCredential = async (user: User, verificationId: string, code: string) => {
   const credential = PhoneAuthProvider.credential(verificationId, code);
   return await linkWithCredential(user, credential);

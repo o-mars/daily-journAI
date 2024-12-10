@@ -6,11 +6,13 @@ import VoiceControls from "../../src/components/VoiceControls";
 import Conversation from "@/src/components/Conversation";
 import Header from "@/src/components/Header";
 import Modal from "@/src/components/Modal";
-import PhoneAuth from "@/src/components/PhoneAuth";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { useUser } from "@/src/contexts/UserContext";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 import { useRouter } from "next/navigation";
+import Auth from "@/src/components/Auth";
+import { auth } from "@/firebase.config";
+import { PHONE_AUTH_TEST_MODE } from "@/src/models/constants";
 
 function Dashboard() {
   const router = useRouter();
@@ -77,9 +79,10 @@ function Dashboard() {
         onClose={() => setShowAuthModal(false)}
         title="Connect Your Phone"
       >
-        <PhoneAuth 
-          mode="link" 
+        <Auth
+          firebaseUser={auth?.currentUser}
           onSuccess={handleAuthSuccess}
+          testMode={PHONE_AUTH_TEST_MODE}
         />
       </Modal>
     </div>

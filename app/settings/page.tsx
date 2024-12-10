@@ -8,14 +8,15 @@ import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusI
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
-import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
+import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, PHONE_AUTH_TEST_MODE, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
 import Modal from '@/src/components/Modal';
-import PhoneAuth from "@/src/components/PhoneAuth";
+import Auth from "@/src/components/Auth";
+import { auth } from "@/firebase.config";
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -149,6 +150,33 @@ export default function Settings() {
                 </div> */}
 
                 <div className="form-group">
+                  <label htmlFor="phone" className="block mb-2">Phone Number</label>
+                  <InputWithButton
+                    value={localUser.profile.phone || ''}
+                    onChange={() => {}}
+                    readOnly={true}
+                    onButtonClick={() => setShowPhoneModal(true)}
+                    placeholder="Enter your phone number"
+                    buttonLabel="Connect"
+                    shouldShowButton={!localUser.profile.phone}
+                  />
+                  <Modal
+                    isOpen={showPhoneModal}
+                    onClose={() => setShowPhoneModal(false)}
+                    title="Connect"
+                  >
+                    <Auth
+                      firebaseUser={auth?.currentUser}
+                      onSuccess={() => {
+                        setShowPhoneModal(false);
+                      }}
+                      testMode={PHONE_AUTH_TEST_MODE}
+                    />
+                  </Modal>
+                </div>
+
+
+                <div className="form-group">
                   <label htmlFor="email" className="block mb-2">Email</label>
                   <InputWithButton
                     value={localUser.profile.email || emailToConnect}
@@ -157,7 +185,7 @@ export default function Settings() {
                     }}
                     readOnly={!!localUser.profile.email && localUser.profile.email !== ''}
                     onButtonClick={handleSendMagicLink}
-                    placeholder="Enter your email address"
+                    placeholder="you@example.com"
                     buttonLabel="Connect"
                     shouldShowButton={!isValidEmail(localUser.profile.email)}
                     disabled={!isValidEmail(emailToConnect)}
@@ -181,34 +209,7 @@ export default function Settings() {
                   </select>
                 </div>
 
-
-                <div className="form-group">
-                  <label htmlFor="phone" className="block mb-2">Phone Number</label>
-                  <InputWithButton
-                    value={localUser.profile.phone || ''}
-                    onChange={() => {}}
-                    readOnly={true}
-                    onButtonClick={() => setShowPhoneModal(true)}
-                    placeholder="Enter your phone number"
-                    buttonLabel="Connect"
-                    shouldShowButton={!localUser.profile.phone}
-                  />
-                  <Modal
-                    isOpen={showPhoneModal}
-                    onClose={() => setShowPhoneModal(false)}
-                    title="Connect Phone Number"
-                  >
-                    <PhoneAuth
-                      testMode={true}
-                      mode="link"
-                      onSuccess={() => {
-                        setShowPhoneModal(false);
-                      }} 
-                    />
-                  </Modal>
-                </div>
-
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="languageId" className="block mb-2">Language</label>
                   <select
                     id="languageId"
@@ -223,7 +224,7 @@ export default function Settings() {
                       </option>
                     ))}
                   </select>
-                </div>
+                </div> */}
 
                 <div className="form-group">
                   <label htmlFor="vadStopSecs" className="block mb-2">
@@ -242,7 +243,7 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between min-h-[20px]">
                   <StatusIndicator
                     ref={statusRef}
                   />

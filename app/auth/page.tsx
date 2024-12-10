@@ -6,8 +6,8 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useHeader } from '@/src/contexts/HeaderContext';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
-import EmailAuth from '@/src/components/EmailAuth';
-import PhoneAuth from '@/src/components/PhoneAuth';
+import Auth from '@/src/components/Auth';
+import { PHONE_AUTH_TEST_MODE } from '@/src/models/constants';
 
 function AuthForm() {
   const router = useRouter();
@@ -16,7 +16,6 @@ function AuthForm() {
   const firebaseUser = useRef<User | null>(null);
   const authUnsubscribe = useRef<(() => void) | null>(null);
   const [firebaseUserState, setFirebaseUserState] = useState<User | null>(null);
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
 
   useEffect(() => {
     authUnsubscribe.current = onAuthStateChanged(auth, async (user) => {
@@ -36,7 +35,7 @@ function AuthForm() {
   const getRouteButtonText = useMemo(() => {
     return !!firebaseUserState
       ? 'Back to App'
-      : 'Continue without Sign In';
+      : 'Continue without login';
   }, [firebaseUserState]);
 
   const handleRouteAction = useCallback(() => {
@@ -46,27 +45,6 @@ function AuthForm() {
       router.push('/welcome');
     }
   }, [firebaseUserState, handlePostAuthRedirect, router]);
-
-  const renderAuthMethods = useMemo(() => (
-    <div className="flex justify-center space-x-4 mb-4">
-      <button
-        onClick={() => setAuthMethod('email')}
-        className={`px-4 py-2 rounded ${
-          authMethod === 'email' ? 'bg-indigo-600' : 'bg-gray-700'
-        }`}
-      >
-        Email
-      </button>
-      <button
-        onClick={() => setAuthMethod('phone')}
-        className={`px-4 py-2 rounded ${
-          authMethod === 'phone' ? 'bg-indigo-600' : 'bg-gray-700'
-        }`}
-      >
-        Phone
-      </button>
-    </div>
-  ), [authMethod]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
@@ -81,13 +59,11 @@ function AuthForm() {
         />
 
         <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
-          {renderAuthMethods}
-
-          {authMethod === 'email' ? (
-            <EmailAuth firebaseUser={firebaseUserState} />
-          ) : (
-            <PhoneAuth mode="signIn" onSuccess={handlePostAuthRedirect} testMode={true} key={!firebaseUserState ? 'signIn' : firebaseUserState?.isAnonymous ? 'link' : 'signUp'}/>
-          )}
+          <Auth
+            firebaseUser={firebaseUserState}
+            onSuccess={handlePostAuthRedirect}
+            testMode={PHONE_AUTH_TEST_MODE}
+          />
 
           <button
             onClick={handleRouteAction}
