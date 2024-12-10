@@ -13,6 +13,7 @@ interface JournalEntryViewProps {
 }
 
 const getEntryDisplayText = (entry: JournalEntry) => {
+  if (entry.userTitle && entry.userTitle !== '') return entry.userTitle;
   if (entry.title) return entry.title;
   if (entry.summary) {
     const words = entry.summary.split(' ').slice(0, 10).join(' ');
@@ -46,7 +47,7 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
     setIsSaving(true);
     try {
       const updates: Partial<JournalEntry> = {};
-      if (editedTitle !== entry.title) updates.title = editedTitle;
+      if (editedTitle !== entry.userTitle) updates.userTitle = editedTitle;
       if (editedTransformedEntry !== entry.transformedEntry) updates.transformedEntry = editedTransformedEntry;
 
       await updateJournalEntry(entry.id!, updates);
@@ -125,7 +126,7 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
                   className="toggle-view-button"
                   onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
                 >
-                  {activeTab === 'conversation' ? 'View Edited Entry' : 'View Conversation'}
+                  {activeTab === 'conversation' ? 'View Notes' : 'View Conversation'}
                 </button>
               )}
             </div>
@@ -133,13 +134,11 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
           <div className="content-card-body">
             {activeTab === 'conversation' ? (
               <Conversation messages={entry.conversation} />
-            ) : editedTransformedEntry ? (
+            ) : (
               <TransformedEntryView
-                text={editedTransformedEntry}
+                text={editedTransformedEntry || ''}
                 onChange={handleTransformedEntryChange}
               />
-            ) : (
-              <p>No transformed entry available</p>
             )}
           </div>
         </div>
