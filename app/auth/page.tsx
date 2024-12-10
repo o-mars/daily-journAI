@@ -6,8 +6,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useHeader } from '@/src/contexts/HeaderContext';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
-import Auth from '@/src/components/Auth';
-import { PHONE_AUTH_TEST_MODE } from '@/src/models/constants';
+import EmailAuth from '@/src/components/EmailAuth';
 
 function AuthForm() {
   const router = useRouter();
@@ -59,11 +58,8 @@ function AuthForm() {
         />
 
         <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
-          <Auth
+          <EmailAuth
             firebaseUser={firebaseUserState}
-            onSuccess={handlePostAuthRedirect}
-            testMode={PHONE_AUTH_TEST_MODE}
-            recaptchaOffset={180}
           />
 
           <button

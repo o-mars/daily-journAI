@@ -4,8 +4,8 @@ import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings
 import { PhoneAuthProvider } from 'firebase/auth';
 import { linkWithCredential, signInWithCredential } from 'firebase/auth';
 
-export const sendMagicLink = async (email: string, userId?: string) => {
-  const linkUrl = `${window.location.origin}/auth/complete?userId=${userId}`;
+export const sendMagicLink = async (email: string, userId: string | null = null, journalEntryId: string | null = null) => {
+  const linkUrl = `${window.location.origin}/auth/complete?userId=${userId}&journalEntryId=${journalEntryId}`;
   console.debug('sending sign in link to: ', email, linkUrl);
   
   const actionCodeSettings: ActionCodeSettings = { 

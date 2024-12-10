@@ -6,10 +6,12 @@ import { isValidEmail, sendMagicLink } from '@/src/services/authService';
 
 interface EmailAuthProps {
   firebaseUser: User | null;
+  journalEntryId?: string | null;
 }
 
 export default function EmailAuth({
   firebaseUser,
+  journalEntryId = null,
 }: EmailAuthProps) {
   const [email, setEmail] = useState('');
   const statusRef = useRef<StatusIndicatorHandle>(null);
@@ -22,7 +24,7 @@ export default function EmailAuth({
   }, []);
 
   const handleSendMagicLink = useCallback(async () => {
-    await sendMagicLink(email, firebaseUser?.uid);
+    await sendMagicLink(email, firebaseUser?.uid, journalEntryId);
     statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
   }, [email, firebaseUser, statusRef]);
 

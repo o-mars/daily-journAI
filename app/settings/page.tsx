@@ -8,15 +8,15 @@ import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusI
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
-import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, PHONE_AUTH_TEST_MODE, VOICES } from "@/src/models/constants";
+import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
 import Modal from '@/src/components/Modal';
-import Auth from "@/src/components/Auth";
 import { auth } from "@/firebase.config";
+import EmailAuth from "@/src/components/EmailAuth";
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -149,7 +149,7 @@ export default function Settings() {
                   />
                 </div> */}
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="phone" className="block mb-2">Phone Number</label>
                   <InputWithButton
                     value={localUser.profile.phone || ''}
@@ -165,15 +165,11 @@ export default function Settings() {
                     onClose={() => setShowPhoneModal(false)}
                     title="Connect"
                   >
-                    <Auth
+                    <EmailAuth
                       firebaseUser={auth?.currentUser}
-                      onSuccess={() => {
-                        setShowPhoneModal(false);
-                      }}
-                      testMode={PHONE_AUTH_TEST_MODE}
                     />
                   </Modal>
-                </div>
+                </div> */}
 
 
                 <div className="form-group">

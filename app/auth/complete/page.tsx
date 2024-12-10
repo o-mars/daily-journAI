@@ -8,13 +8,15 @@ import { useHeader } from '@/src/contexts/HeaderContext';
 import { EMAIL_STORAGE_KEY } from '@/src/models/constants';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
 import { useUser } from '@/src/contexts/UserContext';
+import { isValidEmail } from '@/src/services/authService';
 
 function CompleteEmailAuth() {
   const [email, setEmail] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [continueUrl, setContinueUrl] = useState<string | null>(null);
+  const [extractedUserId, setExtractedUserId] = useState<string | null>(null);
+  const [extractedJournalId, setExtractedJournalId] = useState<string | null>(null);
 
   const { branding } = useHeader();
   const statusRef = useRef<StatusIndicatorHandle>(null);
@@ -25,12 +27,21 @@ function CompleteEmailAuth() {
   const [hasSignInLink, setHasSignInLink] = useState(false);
 
   useEffect(() => {
-    setContinueUrl(searchParams.get("continueUrl"));
+    const continueUrl = searchParams.get("continueUrl");
+    if (continueUrl) {
+      const decodedContinueUrl = decodeURIComponent(continueUrl);
+      const queryString = decodedContinueUrl.split('?')[1] || '';
+      const continueUrlSearchParams = new URLSearchParams(queryString);
+
+      setExtractedUserId(continueUrlSearchParams.get('userId'));
+      setExtractedJournalId(continueUrlSearchParams.get('journalEntryId'));
+    }
 
     const storedEmail = localStorage.getItem(EMAIL_STORAGE_KEY);
     if (storedEmail) {
       setEmail(storedEmail);
     }
+
     if (isSignInWithEmailLink(auth, window.location.href)) {
       setHasSignInLink(true);
     }
@@ -46,9 +57,8 @@ function CompleteEmailAuth() {
   }, [searchParams]);
 
   const handlePostAuthRedirect = useCallback(() => {
-    const journalId = searchParams.get('journalEntryId');
-    router.push(`/journals${journalId ? `/${journalId}` : ''}`);
-  }, [searchParams, router]);
+    router.push(`/journals${extractedJournalId ? `/${extractedJournalId}` : ''}`);
+  }, [extractedJournalId, router]);
 
   const handleUpdateUser = useCallback(async () => {
     statusRef.current?.pushMessage({ type: 'loading', text: "Updating user..." });
@@ -69,10 +79,6 @@ function CompleteEmailAuth() {
     await syncLocalUser();
   }, [email, user, updateUser, syncLocalUser]);
 
-  const isValidEmail = useCallback((email: string) => {
-    return email.indexOf("@") !== -1 && email.lastIndexOf(".") !== -1 && email.lastIndexOf(".") !== (email.length - 1) && email.length > 4;
-  }, []);
-
   const completeEmailLinkSignIn = useCallback(async () => {
     if (!email) {
       statusRef.current?.pushMessage({ type: 'info', text: "Please provide your email to complete sign-in!" });
@@ -80,12 +86,9 @@ function CompleteEmailAuth() {
     }
 
     try {
-      const continueUrlSearchParams = new URLSearchParams(continueUrl!);
-      // const journalEntryIdFromEmailLink = continueUrlSearchParams.get('journalEntryId');
-      const userIdFromEmailLink = continueUrlSearchParams.get('userId');
-
       if (!!firebaseUser.current) {
-        if (firebaseUser.current.uid !== userIdFromEmailLink) {
+        if (firebaseUser.current.uid !== extractedUserId) {
+          console.error('user id mismatch', firebaseUser.current.uid, extractedUserId);
           statusRef.current?.pushMessage({ type: 'error', text: "User ID mismatch, unable to link account!" });
           return;
         }
@@ -114,7 +117,7 @@ function CompleteEmailAuth() {
       console.error("Error completing email link sign-in:", error);
       statusRef.current?.pushMessage({ type: 'error', text: "Failed to complete sign-in: " + (error as Error).message });
     }
-  }, [email, continueUrl, handlePostAuthRedirect, handleUpdateUser]);
+  }, [email, extractedUserId, handlePostAuthRedirect, handleUpdateUser]);
 
   useEffect(() => {
     if (isInitialized && hasSignInLink && email && isValidEmail(email)) {
@@ -122,7 +125,7 @@ function CompleteEmailAuth() {
       setHasSignInLink(false);
       completeEmailLinkSignIn();
     }
-  }, [isInitialized, hasSignInLink, email, completeEmailLinkSignIn, isValidEmail]);
+  }, [isInitialized, hasSignInLink, email, completeEmailLinkSignIn]);
 
   const handleRouteAction = useCallback(() => {
     if (!!firebaseUserState) {

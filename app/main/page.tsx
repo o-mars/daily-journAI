@@ -10,9 +10,8 @@ import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { useUser } from "@/src/contexts/UserContext";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 import { useRouter } from "next/navigation";
-import Auth from "@/src/components/Auth";
 import { auth } from "@/firebase.config";
-import { PHONE_AUTH_TEST_MODE } from "@/src/models/constants";
+import EmailAuth from "@/src/components/EmailAuth";
 
 function Dashboard() {
   const router = useRouter();
@@ -79,10 +78,8 @@ function Dashboard() {
         onClose={() => setShowAuthModal(false)}
         title="Connect Your Phone"
       >
-        <Auth
+        <EmailAuth
           firebaseUser={auth?.currentUser}
-          onSuccess={handleAuthSuccess}
-          testMode={PHONE_AUTH_TEST_MODE}
         />
       </Modal>
     </div>
