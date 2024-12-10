@@ -98,15 +98,15 @@ const StatusIndicator = React.forwardRef<StatusIndicatorHandle, Props>(function 
 
   return (
     <div
-      className={`status-indicator ${
+      className={`status-indicator w-full rounded-md bg-transparent ${
         currentMessage.type === "loading"
-          ? "bg-gray-500"
+          ? "text-gray-500"
           : currentMessage.type === "success"
-          ? "bg-green-500"
+          ? "text-green-500"
           : currentMessage.type === "error"
-          ? "bg-red-500"
-          : "bg-yellow-600"
-      } text-white p-4 rounded-md transition-opacity duration-300 ${
+          ? "text-red-500"
+          : "text-yellow-400"
+      } p-3 transition-opacity duration-300 ${
         currentMessage ? "opacity-100" : "opacity-0"
       } ${className}`}
     >

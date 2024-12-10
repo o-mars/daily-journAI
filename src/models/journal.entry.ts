@@ -50,6 +50,7 @@ export interface JournalEntry {
   summary?: string;
 
   title?: string;
+  userTitle?: string;
   transformedEntry?: string;
 
   type?: string; // bot type
@@ -69,6 +70,7 @@ export function toJournalEntry(document: DocumentData): JournalEntry {
     ...(!!document.endTime && { endTime: document.endTime }),
     ...(!!document.summary && { summary: document.summary }),
     ...(!!document.title && { title: document.title }),
+    ...(!!document.userTitle && { userTitle: document.userTitle }),
     ...(!!document.transformedEntry && { transformedEntry: document.transformedEntry }),
     ...(!!document.type && { type: document.type }),
     ...(!!document.metadata && { metadata: document.metadata }),

@@ -9,6 +9,7 @@ export function TransformedEntryView({ text, onChange }: TransformedEntryViewPro
         className="transformed-entry"
         value={text}
         onChange={(e) => onChange(e.target.value)}
+        placeholder="Add notes here..."
         style={{
           width: '100%',
           minHeight: '100%',

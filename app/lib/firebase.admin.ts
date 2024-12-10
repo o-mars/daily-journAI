@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 
 import { defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
-import { generateSummary, generateTitle, generateTransformedEntry } from "@/app/lib/openai.admin";
+import { generateSummary, generateTitle } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
 import { publishJournalEntryMetrics } from "@/app/lib/firebase.admin.metrics";
 
@@ -64,10 +64,14 @@ export async function addJournalEntry(
   metadata: JournalEntryMetadata
 ): Promise<JournalEntry> {
   try {
-    const [summary, title, transformedEntry] = await Promise.all([
+    const [
+      summary,
+      title,
+      // transformedEntry
+    ] = await Promise.all([
       generateSummary(conversation),
       generateTitle(conversation),
-      generateTransformedEntry(conversation)
+      // generateTransformedEntry(conversation)
     ]);
 
     const startTime = conversation[0].sentAt;
@@ -75,12 +79,12 @@ export async function addJournalEntry(
     const { FieldValue } = admin.firestore;
     const journalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
     const journalEntryDocRef = await journalEntriesCollectionRef.add({ 
-      conversation, 
-      summary, 
+      conversation,
+      summary,
       title,
-      transformedEntry,
-      startTime, 
-      endTime, 
+      transformedEntry: '',
+      startTime,
+      endTime,
       createdAt: FieldValue.serverTimestamp(),
       metadata: {
         ...metadata,
