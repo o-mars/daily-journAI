@@ -121,14 +121,12 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
                   )}
                 </>
               )}
-              {entry.transformedEntry && (
-                <button 
-                  className="toggle-view-button"
-                  onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
-                >
-                  {activeTab === 'conversation' ? 'View Notes' : 'View Conversation'}
-                </button>
-              )}
+              <button 
+                className="toggle-view-button"
+                onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+              >
+                {activeTab === 'conversation' ? 'View Notes' : 'View Conversation'}
+              </button>
             </div>
           </div>
           <div className="content-card-body">
