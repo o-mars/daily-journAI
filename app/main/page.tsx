@@ -73,6 +73,7 @@ function Dashboard() {
       >
         <EmailAuth
           firebaseUser={auth?.currentUser}
+          journalEntryId={lastSavedJournalId || ''}
         />
       </Modal>
     </div>
