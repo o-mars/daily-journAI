@@ -6,6 +6,8 @@ import { auth } from "@/firebase.config";
 import { fetchUser, saveUpdatedUser, fetchJournalEntries } from "@/src/client/firebase.service.client";
 import { User } from "@/src/models/user";
 import { JournalEntry } from '@/src/models/journal.entry';
+import * as amplitude from '@amplitude/analytics-browser';
+
 
 const UserContext = createContext<{
   user: User | null;
@@ -28,6 +30,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      amplitude.setUserId(user?.uid);
       if (user) {
         setUserId(user.uid);
       } else {

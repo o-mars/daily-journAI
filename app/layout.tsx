@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { headers } from "next/headers";
 import { brands } from "@/src/models/brand";
 import { defaultBranding } from "@/src/models/brand";
+import { AmplitudeInitializer } from '@/src/components/AmplitudeInitializer';
 
 export async function generateMetadata(): Promise<Metadata> {
   const hostname = (await headers()).get('host');
@@ -28,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <AmplitudeInitializer />
       <UserProvider>
         <HeaderProvider>
           <VoiceClientProvider>
