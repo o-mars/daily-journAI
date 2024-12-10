@@ -9,6 +9,7 @@ interface InputWithButtonProps {
   readOnly?: boolean;
   shouldShowButton?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 }
 
 const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
@@ -22,6 +23,7 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
       readOnly = false,
       shouldShowButton = true,
       onKeyDown,
+      disabled = false,
     },
     ref
   ) => {
@@ -38,7 +40,13 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
           readOnly={readOnly}
         />
         {shouldShowButton && (
-          <button onClick={onButtonClick} className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <button 
+            onClick={onButtonClick} 
+            disabled={disabled}
+            className={`ml-2 p-2 bg-blue-500 text-white rounded ${
+              disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+            }`}
+          >
             {buttonLabel}
           </button>
         )}
