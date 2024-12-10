@@ -11,7 +11,7 @@ const VoiceControls: React.FC = () => {
 
   const {
     isStarted,
-    isLoading,
+    isLoading: isVoiceClientLoading,
     isMicEnabled,
     isSpeakerEnabled,
     connect,
@@ -20,7 +20,7 @@ const VoiceControls: React.FC = () => {
     toggleSpeakerEnabled,
   } = useVoiceClient()!;
 
-  const { toggleTextInputVisibility } = useJournalEntryContext();
+  const { toggleTextInputVisibility, isLoading: isJournalEntryLoading } = useJournalEntryContext();
 
   const spinnerStyle = {
     border: '4px solid rgba(255, 255, 255, 0.1)',
@@ -64,7 +64,7 @@ const VoiceControls: React.FC = () => {
         <button style={{ width: '28px', height: '28px', marginLeft: '32px', marginRight: '32px', justifyContent: 'center' }}
                 onClick={() => isStarted ? disconnect() : connect()}
                 disabled={!isInitialized}>
-          {isLoading || !isInitialized ? (
+          {isVoiceClientLoading || isJournalEntryLoading || !isInitialized ? (
             <div style={spinnerStyle}></div>
           ) : (
             <Image src={isStarted ? "/icons/call-end.svg" : "/icons/feather-phone.svg"} alt="Mic" width={28} height={28} />

@@ -13,16 +13,20 @@ interface JournalEntryContextType {
   addMessage: (message: JournalConversationEntry) => void;
   isTextInputVisible: boolean;
   toggleTextInputVisibility: () => void;
+  lastSavedJournalId: string | null;
+  isLoading: boolean;
 }
 
 const JournalEntryContext = createContext<JournalEntryContextType | undefined>(undefined);
 
 export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { branding, navigateToView } = useHeader();
+  const { branding } = useHeader();
   const { syncLocalUser, user } = useUser();
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
   const [isTextInputVisible, setIsTextInputVisible] = useState(false);
+  const [lastSavedJournalId, setLastSavedJournalId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useRTVIClientEvent(RTVIEvent.UserTranscript, (data: TranscriptData) => {
     if (!data.final) return;
@@ -51,35 +55,32 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
   useRTVIClientEvent(RTVIEvent.Disconnected, async () => {
     const didUserInteract = messages.some(message => message.from === 'user');
     if (didUserInteract) {
-      const messagesToSave = [...messages];
-      const durationInSeconds = messages.length > 0 ? 
-        Math.floor((new Date().getTime() - messages[0].sentAt.getTime()) / 1000) : 
-        0;
-      const assistantEntries = messages.filter(message => message.from === 'assistant');
-      const userEntries = messages.filter(message => message.from === 'user');
+      setIsLoading(true);
+      try {
+        const messagesToSave = [...messages];
+        const durationInSeconds = messages.length > 0 ? 
+          Math.floor((new Date().getTime() - messages[0].sentAt.getTime()) / 1000) : 
+          0;
+        const assistantEntries = messages.filter(message => message.from === 'assistant');
+        const userEntries = messages.filter(message => message.from === 'user');
 
-      const finalMetadata: JournalEntryMetadata = {
-        ...defaultJournalEntryMetadata,
-        userId: user!.userId,
-        assistantEntries: assistantEntries.length,
-        userEntries: userEntries.length,
-        duration: durationInSeconds,
-        type: branding.botType,
-        inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
-        outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
-      };
+        const finalMetadata: JournalEntryMetadata = {
+          ...defaultJournalEntryMetadata,
+          userId: user!.userId,
+          assistantEntries: assistantEntries.length,
+          userEntries: userEntries.length,
+          duration: durationInSeconds,
+          type: branding.botType,
+          inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
+          outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
+        };
 
-      const response = await saveJournalEntry(messagesToSave, finalMetadata);
-      await syncLocalUser();
-      setMessages([]);
-      if (user?.profile.isAnonymous) {
-        navigateToView('auth', {
-          journalEntryId: response.id,
-        });
-      } else {
-        navigateToView('journals/:journalEntryId', {
-          journalEntryId: response.id,
-        });
+        const response = await saveJournalEntry(messagesToSave, finalMetadata);
+        await syncLocalUser();
+        setMessages([]);
+        setLastSavedJournalId(response.id);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       setMessages([]);
@@ -95,7 +96,14 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   return (
-    <JournalEntryContext.Provider value={{ messages, addMessage, isTextInputVisible, toggleTextInputVisibility }}>
+    <JournalEntryContext.Provider value={{
+      messages,
+      addMessage,
+      isTextInputVisible,
+      toggleTextInputVisibility,
+      lastSavedJournalId,
+      isLoading
+    }}>
       {children}
     </JournalEntryContext.Provider>
   );
@@ -107,4 +115,4 @@ export const useJournalEntryContext = () => {
     throw new Error("useJournalEntryContext must be used within a JournalEntryProvider");
   }
   return context;
-}; 
+};
