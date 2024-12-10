@@ -57,7 +57,8 @@ function CompleteEmailAuth() {
   }, [searchParams]);
 
   const handlePostAuthRedirect = useCallback(() => {
-    router.push(`/journals${extractedJournalId ? `/${extractedJournalId}` : ''}`);
+    const suffix = extractedJournalId !== null && extractedJournalId !== '' ? `/${extractedJournalId}` : '';
+    router.push(`/journals${suffix}`);
   }, [extractedJournalId, router]);
 
   const handleUpdateUser = useCallback(async () => {
@@ -142,11 +143,6 @@ function CompleteEmailAuth() {
           <h1 className="text-5xl font-bold text-white mb-2">{branding.appName}</h1>
         </div>
 
-        <StatusIndicator
-          ref={statusRef}
-          className="text-white"
-        />
-
         <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-300">
@@ -161,6 +157,8 @@ function CompleteEmailAuth() {
                   placeholder="you@example.com"
             />
           </div>
+
+          <StatusIndicator ref={statusRef} />
 
           <button
             onClick={handleRouteAction}

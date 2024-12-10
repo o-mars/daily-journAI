@@ -23,7 +23,7 @@ export default function Auth({
   return (
     <div className="space-y-6">
       {method === 'email' ? (
-        <EmailAuth firebaseUser={firebaseUser} journalEntryId={lastSavedJournalId} />
+        <EmailAuth firebaseUser={firebaseUser} journalEntryId={lastSavedJournalId || ''} />
       ) : (
         <PhoneAuth 
           mode="signIn" 

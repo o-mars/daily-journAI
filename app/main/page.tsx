@@ -69,7 +69,7 @@ function Dashboard() {
       <Modal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        title="Connect Your Phone"
+        title="Save Journal Entry"
       >
         <EmailAuth
           firebaseUser={auth?.currentUser}

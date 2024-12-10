@@ -6,12 +6,12 @@ import { isValidEmail, sendMagicLink } from '@/src/services/authService';
 
 interface EmailAuthProps {
   firebaseUser: User | null;
-  journalEntryId?: string | null;
+  journalEntryId?: string;
 }
 
 export default function EmailAuth({
   firebaseUser,
-  journalEntryId = null,
+  journalEntryId = '',
 }: EmailAuthProps) {
   const [email, setEmail] = useState('');
   const statusRef = useRef<StatusIndicatorHandle>(null);
