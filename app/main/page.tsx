@@ -5,10 +5,18 @@ import { useSearchParams } from "next/navigation";
 import VoiceControls from "../../src/components/VoiceControls";
 import Conversation from "@/src/components/Conversation";
 import Header from "@/src/components/Header";
+import Modal from "@/src/components/Modal";
+import PhoneAuth from "@/src/components/PhoneAuth";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { useUser } from "@/src/contexts/UserContext";
+import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
+import { useRouter } from "next/navigation";
 
 function Dashboard() {
+  const router = useRouter();
+  const { user } = useUser();
+  const { lastSavedJournalId } = useJournalEntryContext();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const searchParams = useSearchParams();
   const [shouldAutoConnect, setShouldAutoConnect] = useState(false);
   const hasAutoConnected = useRef(false);
@@ -35,6 +43,23 @@ function Dashboard() {
     }
   }, [shouldAutoConnect, connect, isStarted, isLoading, isInitialized]);
 
+  useEffect(() => {
+    if (lastSavedJournalId) {
+      if (user?.profile.isAnonymous) {
+        setShowAuthModal(true);
+      } else {
+        router.push(`/journals/${lastSavedJournalId}`);
+      }
+    }
+  }, [lastSavedJournalId, user?.profile.isAnonymous, router]);
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    if (lastSavedJournalId) {
+      router.push(`/journals/${lastSavedJournalId}`);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
@@ -46,6 +71,17 @@ function Dashboard() {
       <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
         <VoiceControls />
       </footer>
+
+      <Modal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Connect Your Phone"
+      >
+        <PhoneAuth 
+          mode="link" 
+          onSuccess={handleAuthSuccess}
+        />
+      </Modal>
     </div>
   );
 }

@@ -8,19 +8,19 @@ import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusI
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
-import { COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
+import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import InputWithButton from "@/src/components/InputWithButton";
-import { useRouter } from "next/navigation";
+import { isValidEmail, sendMagicLink } from "@/src/services/authService";
+import Modal from '@/src/components/Modal';
+import PhoneAuth from "@/src/components/PhoneAuth";
 
 export default function Settings() {
   const { branding } = useHeader();
   const { user, updateUser, isInitialized } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
-
-  const router = useRouter();
 
   const isDisabled = isLoading || isStarted || !isInitialized;
 
@@ -34,7 +34,8 @@ export default function Settings() {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // const [phoneNumber, setPhoneNumber] = useState('');
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [emailToConnect, setEmailToConnect] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -50,26 +51,12 @@ export default function Settings() {
     setFilteredVoices(voices);
   }, [localUser.preferences.botPreferences, branding.botType]);
 
-  // const isValidPhoneNumber = (phoneNumber: string) => {
-  //   const phoneRegex = /^\+?\d{1,3}[-\s]?\d{3}[-\s]?\d{3}[-\s]?\d{4}$/; // Regex for phone number format
-  //   return phoneRegex.test(phoneNumber.trim()) || phoneNumber.trim() === "";
-  // };
-
   const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     const newLocalUser = { ...localUser };
     
     if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
-    } else if (id === 'phone') {
-      // const formattedValue = value.replace(/[^+\d\s-]/g, '');
-      // setPhoneNumber(formattedValue);
-      // const isValid = isValidPhoneNumber(formattedValue.trim());
-      // console.log('formattedValue', formattedValue, isValid);
-      // if (isValid && formattedValue.trim() !== newLocalUser.profile.phone) {
-      //   newLocalUser.profile.phone = formattedValue.trim();
-      //   setPhoneNumber("");
-      // }
     } else if (id === 'voiceId' || id === 'languageId') {
       newLocalUser.preferences.botPreferences[branding.botType][id] = value;
 
@@ -124,6 +111,21 @@ export default function Settings() {
     }, 1000);
   }, [localUser, isSaving, user, updateUser, branding.botType]);
 
+  const handleSendMagicLink = useCallback(async () => {
+    if (!isValidEmail(emailToConnect)) {
+      statusRef.current?.pushMessage({ type: 'error', text: "Please enter a valid email address" });
+      return;
+    }
+
+    if (!user) {
+      statusRef.current?.pushMessage({ type: 'error', text: "User not logged in" });
+      return;
+    }
+
+    await sendMagicLink(emailToConnect, user.userId);
+    statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
+  }, [emailToConnect, user, statusRef]);
+
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
@@ -149,13 +151,16 @@ export default function Settings() {
                 <div className="form-group">
                   <label htmlFor="email" className="block mb-2">Email</label>
                   <InputWithButton
-                    value={localUser.profile.email || ''}
-                    onChange={() => {}}
-                    readOnly={true}
-                    onButtonClick={() => { router.push('/auth') }}
-                    placeholder="Please link your email to retain your data"
-                    buttonLabel="Add"
-                    shouldShowButton={!localUser.profile.email || localUser.profile.email === ''}
+                    value={localUser.profile.email || emailToConnect}
+                    onChange={(newEmail) => {
+                      setEmailToConnect(newEmail);
+                    }}
+                    readOnly={!!localUser.profile.email && localUser.profile.email !== ''}
+                    onButtonClick={handleSendMagicLink}
+                    placeholder="Enter your email address"
+                    buttonLabel="Connect"
+                    shouldShowButton={!isValidEmail(localUser.profile.email)}
+                    disabled={!isValidEmail(emailToConnect)}
                   />
                 </div>
 
@@ -177,19 +182,32 @@ export default function Settings() {
                 </div>
 
 
-                {/* <div className="form-group">
+                <div className="form-group">
                   <label htmlFor="phone" className="block mb-2">Phone Number</label>
-                  <input
-                    type="text"
-                    id="phone"
-                    value={phoneNumber}
-                    onChange={handleChange}
-                    className={`w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed ${phoneNumber === '' ? '' : 'border-red-500'}`}
-                    placeholder={localUser.profile.phone || 'Enter your phone number'}
-                    disabled={isDisabled}
+                  <InputWithButton
+                    value={localUser.profile.phone || ''}
+                    onChange={() => {}}
+                    readOnly={true}
+                    onButtonClick={() => setShowPhoneModal(true)}
+                    placeholder="Enter your phone number"
+                    buttonLabel="Connect"
+                    shouldShowButton={!localUser.profile.phone}
                   />
+                  <Modal
+                    isOpen={showPhoneModal}
+                    onClose={() => setShowPhoneModal(false)}
+                    title="Connect Phone Number"
+                  >
+                    <PhoneAuth
+                      testMode={true}
+                      mode="link"
+                      onSuccess={() => {
+                        setShowPhoneModal(false);
+                      }} 
+                    />
+                  </Modal>
                 </div>
- */}
+
                 <div className="form-group">
                   <label htmlFor="languageId" className="block mb-2">Language</label>
                   <select
