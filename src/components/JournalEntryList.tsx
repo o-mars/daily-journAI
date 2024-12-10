@@ -21,20 +21,34 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
 
   const formatDate = (date: Date | undefined): string => {
     if (!date) return '';
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(navigator.language, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
     }).format(new Date(date));
   };
 
   const getEntryDisplayText = (entry: JournalEntry) => {
+    if (entry.userTitle && entry.userTitle !== '') return entry.userTitle;
     if (entry.title) return entry.title;
     if (entry.summary) {
       const words = entry.summary.split(' ').slice(0, 10).join(' ');
       return words + (entry.summary.split(' ').length > 10 ? '...' : '');
     }
     return new Date(entry.createdAt).toLocaleDateString();
+  };
+
+  const getDuration = (entry: JournalEntry) => {
+    if (entry.metadata?.duration) {
+      return `(${Math.ceil(entry.metadata.duration / 60)} min)`;
+    } else if (entry.startTime && entry.endTime) {
+      const durationInMinutes = Math.ceil((entry.endTime.getTime() - entry.startTime.getTime()) / 60000);
+      return `(${durationInMinutes} min)`;
+    }
+    return '';
   };
 
   useEffect(() => {
@@ -90,7 +104,9 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
               <div className="bubble-content">
                 <div className="entry-content">
                   <div className="entry-text">{getEntryDisplayText(entry)}</div>
-                  <div className="entry-date">{formatDate(entry.endTime)}</div>
+                  <div className="entry-date">
+                    {formatDate(entry.endTime)} <span style={{ marginLeft: '8px' }}>{getDuration(entry)}</span>
+                  </div>
                 </div>
                 <button
                   onClick={(e) => {
