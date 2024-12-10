@@ -54,13 +54,6 @@ function Dashboard() {
     }
   }, [lastSavedJournalId, user?.profile.isAnonymous, router]);
 
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false);
-    if (lastSavedJournalId) {
-      router.push(`/journals/${lastSavedJournalId}`);
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />

@@ -14,9 +14,6 @@ import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
-import Modal from '@/src/components/Modal';
-import { auth } from "@/firebase.config";
-import EmailAuth from "@/src/components/EmailAuth";
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -35,7 +32,6 @@ export default function Settings() {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [emailToConnect, setEmailToConnect] = useState<string>('');
 
   useEffect(() => {

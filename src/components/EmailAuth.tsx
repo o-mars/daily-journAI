@@ -26,7 +26,7 @@ export default function EmailAuth({
   const handleSendMagicLink = useCallback(async () => {
     await sendMagicLink(email, firebaseUser?.uid, journalEntryId);
     statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
-  }, [email, firebaseUser, statusRef]);
+  }, [email, firebaseUser, statusRef, journalEntryId]);
 
   const handleAuth = useCallback(async () => {
     if (!isValidEmail(email)) {
