@@ -7,12 +7,14 @@ interface AuthSelectorProps {
   firebaseUser: User | null;
   onSuccess?: () => void;
   testMode?: boolean;
+  recaptchaOffset?: number;
 }
 
 export default function Auth({
   firebaseUser,
   onSuccess,
-  testMode = false
+  testMode = false,
+  recaptchaOffset = 160
 }: AuthSelectorProps) {
   const [method, setMethod] = useState<'email' | 'phone'>('phone');
 
@@ -26,6 +28,7 @@ export default function Auth({
           onSuccess={onSuccess}
           testMode={testMode}
           key={!firebaseUser ? 'signIn' : firebaseUser?.isAnonymous ? 'link' : 'signUp'}
+          recaptchaOffset={recaptchaOffset}
         />
       )}
       <button

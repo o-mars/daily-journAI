@@ -63,6 +63,7 @@ function AuthForm() {
             firebaseUser={firebaseUserState}
             onSuccess={handlePostAuthRedirect}
             testMode={PHONE_AUTH_TEST_MODE}
+            recaptchaOffset={180}
           />
 
           <button

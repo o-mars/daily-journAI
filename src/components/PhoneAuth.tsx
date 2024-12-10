@@ -12,9 +12,10 @@ interface PhoneAuthProps {
   mode: 'signIn' | 'signUp' | 'link';
   onSuccess?: () => void;
   testMode?: boolean;
+  recaptchaOffset?: number;
 }
 
-export default function PhoneAuth({ mode, onSuccess, testMode = false }: PhoneAuthProps) {
+export default function PhoneAuth({ mode, onSuccess, testMode = false, recaptchaOffset = 160 }: PhoneAuthProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [confirmationResult, setConfirmationResult] = useState<string | null>(null);
@@ -266,7 +267,7 @@ export default function PhoneAuth({ mode, onSuccess, testMode = false }: PhoneAu
       <div 
         id="recaptcha-container" 
         className={`${showRecaptcha ? 'block' : 'hidden'} fixed left-1/2 transform -translate-x-1/2`} 
-        style={{ top: 'calc(50% + 160px)' }}
+        style={{ top: `calc(50% + ${recaptchaOffset}px)` }}
       />
     </>
   );
