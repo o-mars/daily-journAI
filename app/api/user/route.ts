@@ -1,5 +1,5 @@
 // Example API route to get user
-import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount } from '@/app/lib/firebase.admin';
+import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount, deleteUser } from '@/app/lib/firebase.admin';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -48,5 +48,24 @@ export async function PUT(request: Request) {
   } catch (error) {
     console.error("Error verifying ID token or updating document:", error);
     return NextResponse.json({ error: "Failed to update User" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const token = request.headers.get("Authorization")?.split("Bearer ")[1];
+
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const userId = decodedToken.uid;
+
+    await deleteUser(userId);
+    return NextResponse.json({ message: 'User and all journal entries deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error("Error verifying ID token:", error);
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 }

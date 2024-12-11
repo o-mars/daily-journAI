@@ -161,6 +161,44 @@ export async function deleteJournalEntry(entryId: string): Promise<void> {
   }
 }
 
+export async function deleteAllJournalEntries(): Promise<void> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user/journals`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to delete journal entries: ${response.statusText}`);
+  } catch (error) {
+    console.error("Error deleting journal entries:", error);
+  }
+}
+
+export async function deleteUser(): Promise<void> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to delete user: ${response.statusText}`);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+  }
+}
+
 export async function updateJournalEntry(entryId: string, updates: Partial<JournalEntry>) {
   try {
     const token = await getAuth().currentUser?.getIdToken();

@@ -4,38 +4,28 @@ interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  message?: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, message }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <h1 style={{ fontSize: '1.3rem', fontWeight: '550', marginBottom: '30px' }}>Confirm Deletion</h1>
-        <p>Are you sure you want to permanently delete this?</p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-evenly', marginTop: '40px' }}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+        <h1 className="text-xl font-semibold mb-6 text-white text-center">Confirm Deletion</h1>
+        <p className="mb-4 text-white text-center">Are you sure you want to permanently delete this?</p>
+        {message && <p className="text-white mb-6 text-center">{message}</p>}
+        <div className="flex justify-evenly gap-4">
           <button 
             onClick={onClose}
-            style={{
-              padding: '8px 16px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className="px-4 py-2 border border-gray-600 rounded hover:bg-gray-700 text-white"
           >
             Cancel
           </button>
           <button 
             onClick={onConfirm}
-            style={{
-              padding: '8px 16px',
-              border: '1px solid #dc3545',
-              borderRadius: '4px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              cursor: 'pointer'
-            }}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Delete
           </button>

@@ -197,6 +197,42 @@ export async function deleteJournalEntry(userId: string, entryId: string): Promi
   }
 }
 
+export async function deleteAllJournalEntries(userId: string): Promise<void> {
+  try {
+    const usersJournalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
+    const snapshot = await usersJournalEntriesCollectionRef.get();
+    const batchSize = 500;
+    const batches = [];
+
+    for (let i = 0; i < snapshot.size; i += batchSize) {
+      const batch = db.batch();
+      snapshot.docs.slice(i, i + batchSize).forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      batches.push(batch.commit());
+    }
+
+    await Promise.all(batches);
+    console.log(`Deleted all journal entries for user: ${userId}`);
+  } catch (error) {
+    console.error("Error deleting all journal entries:", error);
+    throw error;
+  }
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  try {
+    await deleteAllJournalEntries(userId);
+    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}`);
+    await usersJournalEntryDocumentRef.delete();
+    await auth.deleteUser(userId);
+    console.log(`Deleted user and all data with ID: ${userId}`);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
+}
+
 export async function updateJournalEntry(userId: string, entryId: string, updates: Partial<JournalEntry>): Promise<void> {
   try {
     const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}/${entryId}`);

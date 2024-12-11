@@ -14,10 +14,15 @@ import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
+import ConfirmationModal from "@/src/components/ConfirmationModal";
+import { useRouter } from 'next/navigation';
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase.config";
+import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.service.client";
 
 export default function Settings() {
   const { branding } = useHeader();
-  const { user, updateUser, isInitialized } = useUser();
+  const { user, updateUser, isInitialized, syncLocalUser } = useUser();
   const { isLoading, isStarted } = useVoiceClient()!;
 
   const isDisabled = isLoading || isStarted || !isInitialized;
@@ -33,6 +38,10 @@ export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
 
   const [emailToConnect, setEmailToConnect] = useState<string>('');
+
+  const router = useRouter();
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [deleteType, setDeleteType] = useState<'entries' | 'account' | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -123,6 +132,38 @@ export default function Settings() {
     statusRef.current?.pushMessage({ type: 'info', text: CHECK_EMAIL_MESSAGE });
   }, [emailToConnect, user, statusRef]);
 
+  const handleDeleteAllEntries = useCallback(() => {
+    setDeleteType('entries');
+    setModalOpen(true);
+  }, []);
+
+  const handleDeleteAccount = useCallback(() => {
+    setDeleteType('account');
+    setModalOpen(true);
+  }, []);
+
+  const handleDeleteConfirmed = useCallback(async () => {
+    setModalOpen(false);
+    setDeleteType(null);
+    try {
+      if (deleteType === 'entries') {
+        await deleteAllJournalEntries();
+        await syncLocalUser();
+        statusRef.current?.pushMessage({ type: 'success', text: 'All journal entries deleted successfully' });
+      } else if (deleteType === 'account') {
+        await deleteUser();
+        statusRef.current?.pushMessage({ type: 'success', text: 'Account deleted successfully' });
+        await syncLocalUser();
+        await signOut(auth);
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Delete operation failed:', error);
+      statusRef.current?.pushMessage({ type: 'error', text: 'Failed to complete delete operation' });
+    }
+  }, [deleteType, router]);
+
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
@@ -200,6 +241,30 @@ export default function Settings() {
                     ))}
                   </select>
                 </div>
+
+                <div className="flex justify-between space-x-4">
+                  <button
+                    onClick={handleDeleteAllEntries}
+                    className="w-full p-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                  >
+                    Delete All Journal Entries
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Delete Account
+                  </button>
+                </div>
+
+                <ConfirmationModal
+                  isOpen={isModalOpen}
+                  onClose={() => setModalOpen(false)}
+                  onConfirm={handleDeleteConfirmed}
+                  message={deleteType === 'entries'
+                    ? "All journal entries will be permanently deleted."
+                    : `Your account and journal entries will be permanently deleted.`}
+                />
 
                 {/* <div className="form-group">
                   <label htmlFor="languageId" className="block mb-2">Language</label>

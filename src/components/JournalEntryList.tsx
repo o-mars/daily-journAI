@@ -84,6 +84,7 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={() => entryToDelete && handleDelete(entryToDelete)}
+        message="Journal entry will be permanently deleted."
       />
       <div ref={containerRef} className="journal-entries">
         <div className="entry-list">
