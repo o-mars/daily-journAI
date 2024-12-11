@@ -18,9 +18,11 @@ export const EMAIL_STORAGE_KEY = 'innerecho:email';
 export const PHONE_STORAGE_KEY = 'innerecho:phone';
 
 export const PHONE_AUTH_TEST_MODE = process.env.PHONE_AUTH_TEST_MODE === 'true';
-
 export const LANGUAGES: Record<string, Language> = {
-  'en': { id: 'en', name: 'English' }
+  'en': { id: 'en', name: 'English' },
+  'es': { id: 'es', name: 'Spanish' },
+  'fr': { id: 'fr', name: 'French' },
+  'hi': { id: 'hi', name: 'Hindi' },
 };
 
 export const VOICES: Voice[] = [
@@ -33,9 +35,14 @@ export const VOICES: Voice[] = [
   { id: '3b554273-4299-48b9-9aaf-eefd438e3941', name: 'Sonia', region: 'X', country: 'IN', sex: 'female', languageId: 'en' },
   { id: '638efaaa-4d0c-442e-b701-3fae16aad012', name: 'Raj', region: 'X', country: 'IN', sex: 'male', languageId: 'en' },
 
-  // { id: 'f9836c6e-a0bd-460e-9d3c-f7299fa60f94', name: 'Julia', region: 'X', country: 'US', sex: 'female', languageId: 'en' },
-  // { id: 'daf747c6-6bc2-4083-bd59-aa94dce23f5d', name: 'Arab', region: 'X', country: 'UAE', sex: 'female', languageId: 'en' },
+  { id: 'a956b555-5c82-404f-9580-243b5178978d', name: 'Woman', region: 'X', country: 'ES', sex: 'female', languageId: 'es' },
+  { id: '15d0c2e2-8d29-44c3-be23-d585d5f154a1', name: 'Man', region: 'X', country: 'ES', sex: 'male', languageId: 'es' },
+  { id: 'a249eaff-1e96-4d2c-b23b-12efa4f66f41', name: 'Woman', region: 'X', country: 'FR', sex: 'female', languageId: 'fr' },
+  { id: 'ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3', name: 'Man', region: 'X', country: 'FR', sex: 'male', languageId: 'fr' },
+  { id: '95d51f79-c397-46f9-b49a-23763d3eaa2d', name: 'Woman', region: 'X', country: 'IN', sex: 'female', languageId: 'hi' },
+  { id: 'ac7ee4fa-25db-420d-bfff-f590d740aeb2', name: 'Man', region: 'X', country: 'IN', sex: 'male', languageId: 'hi' },
 ]
+
 
 export const COUNTRY_ICONS: Record<string, string> = {
   'US': '🇺🇸',

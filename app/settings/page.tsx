@@ -8,7 +8,7 @@ import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusI
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
 import { defaultUser } from "@/src/models/user";
-import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, VOICES } from "@/src/models/constants";
+import { CHECK_EMAIL_MESSAGE, COUNTRY_ICONS, LANGUAGES, VOICES } from "@/src/models/constants";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
@@ -19,6 +19,8 @@ import { useRouter } from 'next/navigation';
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.service.client";
+
+const allowDelete = false;
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -64,14 +66,31 @@ export default function Settings() {
     if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
     } else if (id === 'voiceId' || id === 'languageId') {
-      newLocalUser.preferences.botPreferences[branding.botType][id] = value;
-
-      if (id === 'voiceId' && value) {
-        const audio = new Audio(`/audio/${value}.wav`);
-        try {
-          await audio.play();
-        } catch (error) {
-          console.error('Failed to play audio sample:', error);
+      if (id === 'languageId') {
+        newLocalUser.preferences.botPreferences[branding.botType].languageId = value;
+        const voices = VOICES.filter(voice => voice.languageId === value);
+        setFilteredVoices(voices);
+        const defaultVoice = voices[0]?.id;
+        if (defaultVoice) {
+          newLocalUser.preferences.botPreferences[branding.botType].voiceId = defaultVoice;
+          const audio = new Audio(`/audio/${defaultVoice}.wav`);
+          try {
+            await audio.play();
+          } catch (error) {
+            console.error('Failed to play audio sample:', error);
+          }
+        }
+        const ttsSuffix = newLocalUser.preferences.botPreferences[branding.botType].languageId === 'en' ? 'english' : 'multilingual';
+        newLocalUser.preferences.ttsModel = `sonic-${ttsSuffix}`;  
+      } else {
+        newLocalUser.preferences.botPreferences[branding.botType].voiceId = value;
+        if (value) {
+          const audio = new Audio(`/audio/${value}.wav`);
+          try {
+            await audio.play();
+          } catch (error) {
+            console.error('Failed to play audio sample:', error);
+          } 
         }
       }
     } else if (id === 'vadStopSecs') {
@@ -242,47 +261,6 @@ export default function Settings() {
                   </select>
                 </div>
 
-                <div className="flex justify-between space-x-4">
-                  <button
-                    onClick={handleDeleteAllEntries}
-                    className="w-full p-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-                  >
-                    Delete All Journal Entries
-                  </button>
-                  <button
-                    onClick={handleDeleteAccount}
-                    className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Delete Account
-                  </button>
-                </div>
-
-                <ConfirmationModal
-                  isOpen={isModalOpen}
-                  onClose={() => setModalOpen(false)}
-                  onConfirm={handleDeleteConfirmed}
-                  message={deleteType === 'entries'
-                    ? "All journal entries will be permanently deleted."
-                    : `Your account and journal entries will be permanently deleted.`}
-                />
-
-                {/* <div className="form-group">
-                  <label htmlFor="languageId" className="block mb-2">Language</label>
-                  <select
-                    id="languageId"
-                    value={localUser.preferences.botPreferences[branding.botType].languageId}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isDisabled}
-                  >
-                    {Object.values(LANGUAGES).map(language => (
-                      <option key={language.id} value={language.id}>
-                        {language.name}
-                      </option>
-                    ))}
-                  </select>
-                </div> */}
-
                 <div className="form-group">
                   <label htmlFor="vadStopSecs" className="block mb-2">
                     Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
@@ -299,6 +277,51 @@ export default function Settings() {
                     disabled={isDisabled}
                   />
                 </div>
+
+                {allowDelete && (
+                  <>
+                  <div className="form-group">
+                    <label htmlFor="languageId" className="block mb-2">Language</label>
+                    <select
+                    id="languageId"
+                    value={localUser.preferences.botPreferences[branding.botType].languageId}
+                    onChange={handleChange}
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isDisabled}
+                    >
+                      {Object.values(LANGUAGES).map(language => (
+                        <option key={language.id} value={language.id}>
+                          {language.name}
+                      </option>
+                    ))}
+                  </select>
+                  </div>
+
+                  <div className="flex justify-between space-x-4">
+                    <button
+                      onClick={handleDeleteAllEntries}
+                      className="w-full p-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                    >
+                      Delete All Journal Entries
+                    </button>
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+  
+                  <ConfirmationModal
+                    isOpen={isModalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onConfirm={handleDeleteConfirmed}
+                    message={deleteType === 'entries'
+                      ? "All journal entries will be permanently deleted."
+                      : `Your account and journal entries will be permanently deleted.`}
+                  />
+                  </>
+                )}
 
                 <div className="flex items-center justify-between min-h-[20px]">
                   <StatusIndicator

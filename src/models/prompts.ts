@@ -1,3 +1,4 @@
+import { LANGUAGES } from "@/src/models/constants";
 import { BotType, User } from "@/src/models/user";
 import { UserPreferences } from "@/src/models/user.preferences";
 import { ResponseDepth } from "@/src/models/user.preferences";
@@ -52,6 +53,10 @@ export const LLM_VENTING_MACHINE_COMPLETE_SYSTEM_PROMPT = [
   LLM_VENTING_MACHINE_SYSTEM_PROMPT_FIRST_TIME_MESSAGE,
 ].join(' ');
 
+export function generateSystemMessageForAlternateLanguage(languageId: string) {
+  return `You are speaking in ${LANGUAGES[languageId].name}.`;
+}
+
 export function generateSystemMessage(preferences: UserPreferences, botType: BotType) {
   const chunks = [];
   chunks.push(`Try to model your response such that when spoken out, it has a ${preferences.botPreferences[botType].style} style.`);
@@ -67,6 +72,10 @@ export function generateSystemMessagesForInnerEcho(user: User) {
   ];
 
   generateSystemMessage(user.preferences, 'inner-echo').forEach(prefChunk => systemPromptChunks.push(prefChunk));
+
+  if (user.preferences.botPreferences['inner-echo'].languageId !== 'en') {
+    systemPromptChunks.push(generateSystemMessageForAlternateLanguage(user.preferences.botPreferences['inner-echo'].languageId));
+  }
 
   systemPromptChunks.push(LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS);
 
