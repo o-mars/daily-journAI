@@ -4,7 +4,7 @@ import { defaultUser, toUser, User } from "@/src/models/user";
 import { JournalConversationEntry, JournalEntry, toJournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { generateSummary, generateTitle } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
-import { publishJournalEntryMetrics } from "@/app/lib/firebase.admin.metrics";
+import { saveJournalEntryMetrics } from "@/app/lib/firebase.admin.metrics";
 
 
 if (!admin.apps.length) {
@@ -78,26 +78,52 @@ export async function addJournalEntry(
     const endTime = conversation[conversation.length-1].sentAt;
     const { FieldValue } = admin.firestore;
     const journalEntriesCollectionRef = db.collection(`${USER_PATH}/${userId}/${JOURNAL_ENTRIES_PATH}`);
-    const journalEntryDocRef = await journalEntriesCollectionRef.add({ 
-      conversation,
+    try {
+      const journalEntryDocRef = await journalEntriesCollectionRef.add({
+        conversation,
+        summary,
+        title,
+        transformedEntry: '',
+        startTime,
+        endTime,
+        createdAt: FieldValue.serverTimestamp(),
+        metadata: {
+          ...metadata,
+          userId
+        }
+      });
+
+      const document = await journalEntryDocRef.get();
+      console.log('created journalEntry: ', document.data());
+      void saveJournalEntryMetrics({...metadata, userId: userId, journalEntryId: document.id}, summary, title);
+
+      return toJournalEntry({id: document.id, ...document.data()});
+    } catch (error) {
+      console.error("Error creating journal entry:", error);
+      void saveJournalEntryMetrics({...metadata, userId: userId}, summary, title);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error creating journal entry:", error);
+    throw error;
+  }
+}
+
+export async function doNotAddJournalEntry(
+  userId: string,
+  conversation: JournalConversationEntry[],
+  metadata: JournalEntryMetadata
+): Promise<void> {
+  try {
+    const [
       summary,
       title,
-      transformedEntry: '',
-      startTime,
-      endTime,
-      createdAt: FieldValue.serverTimestamp(),
-      metadata: {
-        ...metadata,
-        userId
-      }
-    });
+    ] = await Promise.all([
+      generateSummary(conversation),
+      generateTitle(conversation),
+    ]);
     
-    void publishJournalEntryMetrics(metadata);
-
-    const document = await journalEntryDocRef.get();
-    console.log('created journalEntry: ', document.data());
-
-    return toJournalEntry({id: document.id, ...document.data()});
+    void saveJournalEntryMetrics({ ...metadata, userId }, summary, title);
   } catch (error) {
     console.error("Error creating journal entry:", error);
     throw error;

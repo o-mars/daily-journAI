@@ -181,7 +181,7 @@ export default function Settings() {
       console.error('Delete operation failed:', error);
       statusRef.current?.pushMessage({ type: 'error', text: 'Failed to complete delete operation' });
     }
-  }, [deleteType, router]);
+  }, [deleteType, router, syncLocalUser]);
 
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
@@ -279,7 +279,6 @@ export default function Settings() {
                 </div>
 
                 {allowDelete && (
-                  <>
                   <div className="form-group">
                     <label htmlFor="languageId" className="block mb-2">Language</label>
                     <select
@@ -296,32 +295,31 @@ export default function Settings() {
                     ))}
                   </select>
                   </div>
-
-                  <div className="flex justify-between space-x-4">
-                    <button
-                      onClick={handleDeleteAllEntries}
-                      className="w-full p-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-                    >
-                      Delete All Journal Entries
-                    </button>
-                    <button
-                      onClick={handleDeleteAccount}
-                      className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-  
-                  <ConfirmationModal
-                    isOpen={isModalOpen}
-                    onClose={() => setModalOpen(false)}
-                    onConfirm={handleDeleteConfirmed}
-                    message={deleteType === 'entries'
-                      ? "All journal entries will be permanently deleted."
-                      : `Your account and journal entries will be permanently deleted.`}
-                  />
-                  </>
                 )}
+
+                <div className="flex justify-between space-x-4">
+                  <button
+                    onClick={handleDeleteAllEntries}
+                    className="w-full p-2 bg-orange-500 text-red rounded hover:bg-orange-600"
+                  >
+                    Delete All Journal Entries
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Delete Account
+                  </button>
+                </div>
+
+                <ConfirmationModal
+                  isOpen={isModalOpen}
+                  onClose={() => setModalOpen(false)}
+                  onConfirm={handleDeleteConfirmed}
+                  message={deleteType === 'entries'
+                    ? "All journal entries will be permanently deleted."
+                    : `Your account and journal entries will be permanently deleted.`}
+                />
 
                 <div className="flex items-center justify-between min-h-[20px]">
                   <StatusIndicator

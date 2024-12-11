@@ -5,7 +5,7 @@ type role = 'user' | 'assistant';
 
 export interface JournalEntryMetadata {
   userId: string;
-
+  journalEntryId: string;
   type: string;
   duration: number;
 
@@ -16,8 +16,16 @@ export interface JournalEntryMetadata {
   outputLength: number;
 }
 
+export interface JournalEntrySummary {
+  summary: string;
+  title: string;
+  metadata: JournalEntryMetadata;
+  createdAt: Date;
+}
+
 export const defaultJournalEntryMetadata: JournalEntryMetadata = {
   userId: '',
+  journalEntryId: '',
   type: '',
   duration: 0,
   userEntries: 0,

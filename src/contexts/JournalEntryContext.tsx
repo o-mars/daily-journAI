@@ -4,9 +4,10 @@ import React, { createContext, useContext, useState, useRef, ReactNode } from "r
 import { useRTVIClientEvent } from "realtime-ai-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
-import { saveJournalEntry } from "@/src/client/firebase.service.client";
+import { closePrivateJournalEntry, saveJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
+import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 
 interface JournalEntryContextType {
   messages: JournalConversationEntry[];
@@ -22,6 +23,7 @@ const JournalEntryContext = createContext<JournalEntryContextType | undefined>(u
 export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { branding } = useHeader();
   const { syncLocalUser, user } = useUser();
+  const { shouldSaveRef } = useVoiceClient()!;
   const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
   const botTextStream = useRef<string[]>([]);
   const [isTextInputVisible, setIsTextInputVisible] = useState(false);
@@ -75,12 +77,16 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
         };
 
-        const response = await saveJournalEntry(messagesToSave, finalMetadata);
-        await syncLocalUser();
-        setMessages([]);
-        setLastSavedJournalId(response.id);
+        if (shouldSaveRef.current) {
+          const response = await saveJournalEntry(messagesToSave, finalMetadata);
+          await syncLocalUser();
+          setLastSavedJournalId(response.id);
+        } else {
+          await closePrivateJournalEntry(messagesToSave, finalMetadata);
+        }
       } finally {
         setIsLoading(false);
+        setMessages([]);
       }
     } else {
       setMessages([]);

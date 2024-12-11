@@ -94,7 +94,7 @@ export async function saveUpdatedUser(data: Partial<User>) {
 }
 
 export async function saveJournalEntry(
-  conversation: JournalConversationEntry[], 
+  conversation: JournalConversationEntry[],
   metadata: JournalEntryMetadata
 ) {
   try {
@@ -116,6 +116,29 @@ export async function saveJournalEntry(
     return result;
   } catch (error) {
     console.error("Error saving journal entry:", error);
+  }
+}
+
+export async function closePrivateJournalEntry(
+  conversation: JournalConversationEntry[], 
+  metadata: JournalEntryMetadata
+) {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch('/api/journals/private', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ conversation, metadata })
+    });
+
+    if (!response.ok) throw new Error(`Error trying to close private journal entry: ${response.statusText}`);
+  } catch (error) {
+    console.error("Error trying to close private journal entry:", error);
   }
 }
 

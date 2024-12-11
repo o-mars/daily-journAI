@@ -18,7 +18,13 @@ const VoiceControls: React.FC = () => {
     disconnect,
     toggleMicEnabled,
     toggleSpeakerEnabled,
+    setShouldSaveOnDisconnect,
   } = useVoiceClient()!;
+
+  const handleDisconnect = (shouldSave: boolean) => {
+    setShouldSaveOnDisconnect(shouldSave);
+    disconnect();
+  };
 
   const { toggleTextInputVisibility, isLoading: isJournalEntryLoading } = useJournalEntryContext();
 
@@ -62,7 +68,7 @@ const VoiceControls: React.FC = () => {
           </div>
         }
         <button style={{ width: '28px', height: '28px', marginLeft: '32px', marginRight: '32px', justifyContent: 'center' }}
-                onClick={() => isStarted ? disconnect() : connect()}
+                onClick={() => isStarted ? handleDisconnect(true) : connect()}
                 disabled={!isInitialized}>
           {isVoiceClientLoading || isJournalEntryLoading || !isInitialized ? (
             <div style={spinnerStyle}></div>

@@ -10,3 +10,11 @@ export const serviceModels: Record<LLMService, string[]> = {
   grok: ['grok-beta'],
   groq: ['llama-3.1-8b-instant', 'llama-3.1-70b-versatile'],
 };
+
+export type TelephonyEventType = 'call_initiated' | 'call_start_failed' | 'call_started' | 'call_ended' | 'call_ended_with_error';
+export interface TelephonyEvent {
+  phoneNumber: string;
+  timestamp?: Date;
+  eventType: TelephonyEventType;
+  data?: Record<string, string | number | boolean | Array<string | number | boolean>>;
+}

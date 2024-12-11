@@ -1,4 +1,4 @@
-import { SUMMARY_NONE } from "@/src/models/constants";
+import { SUMMARY_NONE, TITLE_NONE } from "@/src/models/constants";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
 import OpenAI from "openai";
 
@@ -28,7 +28,7 @@ export async function generateTitle(conversation: JournalConversationEntry[]) {
     ],
   });
 
-  return response.choices[0].message.content;
+  return response.choices[0].message.content ?? TITLE_NONE;
 }
 
 export async function generateTransformedEntry(conversation: JournalConversationEntry[]) {
@@ -102,5 +102,5 @@ export async function generateSummary(conversation: JournalConversationEntry[]) 
 
   const summary = response.choices[0].message.content;
   if (summary && summary.indexOf(SUMMARY_NONE) !== -1 && summary.length < 6) return SUMMARY_NONE;
-  return summary;
+  return summary ?? SUMMARY_NONE;
 }

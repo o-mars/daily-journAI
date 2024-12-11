@@ -21,6 +21,8 @@ interface VoiceClientContextType {
   toggleMicEnabled: () => void;
   toggleSpeakerEnabled: () => void;
   resetIdleTimer: () => void;
+  setShouldSaveOnDisconnect: (shouldSave: boolean) => void;
+  shouldSaveRef: React.MutableRefObject<boolean>;
 }
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
@@ -30,7 +32,7 @@ const TTS_DISCONNECT_TIMEOUT = 3000;
 
 const DisconnectHandler: React.FC<{ 
   onDisconnect: () => void,
-  onResetIdle: (callback: () => void) => void 
+  onResetIdle: (callback: () => void) => void,
 }> = ({ onDisconnect, onResetIdle }) => {
   const isBotSpeaking = useRef(false);
   const isUserSpeaking = useRef(false);
@@ -138,6 +140,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(true);
   const resetIdleTimerCallback = useRef<(() => void) | null>(null);
+  const shouldSaveOnDisconnectRef = useRef<boolean>(true);
 
   const disconnect = useCallback(() => {
     if (voiceClient && voiceClient.connected) voiceClient.disconnect();
@@ -199,6 +202,10 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     resetIdleTimerCallback.current?.();
   }, []);
 
+  const setShouldSaveOnDisconnect = useCallback((shouldSave: boolean) => {
+    shouldSaveOnDisconnectRef.current = shouldSave;
+  }, []);
+
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
       voiceClient.disconnect();
@@ -234,7 +241,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         callbacks: {},
       })
     ) as LLMHelper;
-
+    
     setVoiceClient(newVoiceClient);
 
     return () => {
@@ -255,7 +262,9 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
       disconnect,
       toggleMicEnabled,
       toggleSpeakerEnabled,
-      resetIdleTimer
+      resetIdleTimer,
+      setShouldSaveOnDisconnect,
+      shouldSaveRef: shouldSaveOnDisconnectRef
     }}>
       <BaseRTVIClientProvider client={voiceClient!}>
         <DisconnectHandler 

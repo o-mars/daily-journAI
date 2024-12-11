@@ -2,10 +2,14 @@ import { defaultUser } from "@/src/models/user";
 import { generateSystemMessageForBotType, LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS, LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS } from "@/src/models/prompts";
 import { getLlmConfig, getServices, getTtsConfig } from "@/src/models/user.preferences";
 import { defaultBranding } from "@/src/models/brand";
+import { addTelephonyEvent } from "@/app/lib/firebase.admin.metrics";
+import { TelephonyEvent } from "@/src/models/common";
 
 // [POST] /api
 export async function POST(request: Request) {
-  const { test, callId, callDomain } = await request.json();
+  const requestBody = await request.json();
+  console.log('requestBody', requestBody);
+  const { test, callId, callDomain } = requestBody;
 
   if (test) {
     // Webhook creation test response
@@ -18,6 +22,15 @@ export async function POST(request: Request) {
     });
   }
 
+  const telephonyEvent: TelephonyEvent = {
+    phoneNumber: callId,
+    eventType: 'call_initiated',
+    data: {
+      callId,
+      callDomain,
+    },
+  };
+  addTelephonyEvent(telephonyEvent);
   /* TODO: do an auth with firebase so that you can save journal entry..
   The problem is that we need to be able to proceed once the call is done but retain the information.
   Need to watch for the events to track transcript so we can do the summary, and either do that post convo or
@@ -66,8 +79,9 @@ export async function POST(request: Request) {
   const res = await req.json();
 
   if (req.status !== 200) {
+    addTelephonyEvent({ ...telephonyEvent, eventType: 'call_start_failed', data: { error: JSON.stringify(res) } });
     return Response.json(res, { status: req.status });
   }
-
+  addTelephonyEvent({ ...telephonyEvent, eventType: 'call_started' });
   return Response.json(res);
 }
