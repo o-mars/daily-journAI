@@ -8,6 +8,7 @@ import { closePrivateJournalEntry, saveJournalEntry } from "@/src/client/firebas
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
+import { trackEvent } from "@/src/services/metricsSerivce";
 
 interface JournalEntryContextType {
   messages: JournalConversationEntry[];
@@ -79,10 +80,12 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
 
         if (shouldSaveRef.current) {
           const response = await saveJournalEntry(messagesToSave, finalMetadata);
+          trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
           await syncLocalUser();
           setLastSavedJournalId(response.id);
         } else {
           await closePrivateJournalEntry(messagesToSave, finalMetadata);
+          trackEvent("session", "session-discarded", { ...finalMetadata });
         }
       } finally {
         setIsLoading(false);

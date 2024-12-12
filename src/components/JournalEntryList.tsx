@@ -5,6 +5,7 @@ import ConfirmationModal from './ConfirmationModal';
 import { deleteJournalEntry } from '@/src/client/firebase.service.client';
 import { useUser } from "@/src/contexts/UserContext";
 import Image from 'next/image';
+import { trackEvent } from "@/src/services/metricsSerivce";
 
 interface JournalEntryListProps {
   entries: JournalEntry[];
@@ -17,7 +18,7 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
   const containerRef = useRef<HTMLDivElement>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
-  const { syncLocalUser } = useUser();
+  const { user, syncLocalUser } = useUser();
 
   const formatDate = (date: Date | undefined): string => {
     if (!date) return '';
@@ -74,6 +75,7 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
 
   const handleDelete = async (entryId: string) => {
     await deleteJournalEntry(entryId);
+    trackEvent("journals", "journal-deleted", { userId: user?.userId, journalId: entryId });
     setModalOpen(false);
     await syncLocalUser();
   };

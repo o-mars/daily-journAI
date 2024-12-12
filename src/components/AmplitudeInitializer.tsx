@@ -5,13 +5,12 @@ import * as amplitude from '@amplitude/analytics-browser';
 
 export function AmplitudeInitializer() {
   useEffect(() => {
-    amplitude.init('19540656b27700fd5ec026b7ca44d57b', {"autocapture":true});
-    console.log("amplitude initialized");
-    amplitude.track("test", {
-      "test1": "test2"
-    });
-    console.log("amplitude tracked");
+    if (!process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {
+      console.error("Amplitude API key not found");
+      return;
+    }
+    amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, { autocapture: true });
   }, []);
 
-  return null; // This component doesn't render anything
-} 
+  return null;
+}

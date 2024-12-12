@@ -9,6 +9,7 @@ import { useUser } from "@/src/contexts/UserContext";
 import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from "realtime-ai-react";
 import { LLM_GOODBYE_PROMPTS } from '@/src/models/prompts';
 import { useHeader } from '@/src/contexts/HeaderContext';
+import { trackEvent } from '@/src/services/metricsSerivce';
 
 interface VoiceClientContextType {
   voiceClient: RTVIClient | null;
@@ -153,34 +154,40 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       setIsLoading(true);
       await voiceClient.connect();
+      trackEvent("session", "session-started", { userId: user?.userId });
       setIsStarted(true);
     } catch (e) {
       console.error((e as Error).message || "Unknown error occurred");
+      trackEvent("session", "session-error", { userId: user?.userId });
       disconnect();
     } finally {
       setIsLoading(false);
     }
-  }, [disconnect, voiceClient]);
+  }, [disconnect, voiceClient, user?.userId]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
       voiceClient.enableMic(isMicEnabled);
+      trackEvent("session", isMicEnabled ? "mic-enabled" : "mic-disabled", { userId: user?.userId });
     }
-  }, [isMicEnabled, voiceClient]);
+  }, [isMicEnabled, voiceClient, user?.userId]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
       const botTrack = voiceClient.tracks().bot?.audio;
-      if (botTrack) botTrack.enabled = isSpeakerEnabled;
+      if (botTrack) {
+        botTrack.enabled = isSpeakerEnabled;
+        trackEvent("session", isSpeakerEnabled ? "speaker-enabled" : "speaker-disabled", { userId: user?.userId });
+      }
     }
 
-  }, [isSpeakerEnabled, voiceClient]);
+  }, [isSpeakerEnabled, voiceClient, user?.userId]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
       voiceClient.enableMic(isMicEnabled);
     }
-  }, [isMicEnabled, voiceClient]);
+  }, [isMicEnabled, voiceClient, user?.userId]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
@@ -241,7 +248,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         callbacks: {},
       })
     ) as LLMHelper;
-    
+
     setVoiceClient(newVoiceClient);
 
     return () => {

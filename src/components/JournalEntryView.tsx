@@ -6,6 +6,7 @@ import '@/src/styles/JournalEntryView.css';
 import Image from "next/image";
 import { updateJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
+import { trackEvent } from "@/src/services/metricsSerivce";
 
 interface JournalEntryViewProps {
   entry: JournalEntry;
@@ -28,7 +29,7 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
   const [editedTransformedEntry, setEditedTransformedEntry] = useState(entry.transformedEntry);
   const [isEdited, setIsEdited] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<'none' | 'success' | 'error'>('none');
-  const { syncLocalUser } = useUser();
+  const { user, syncLocalUser } = useUser();
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -51,6 +52,10 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
       if (editedTransformedEntry !== entry.transformedEntry) updates.transformedEntry = editedTransformedEntry;
 
       await updateJournalEntry(entry.id!, updates);
+      trackEvent("journals", "journal-updated", { userId: user?.userId, journalId: entry.id! });
+      if (updates.userTitle) trackEvent("journals", "journal-title-updated", { userId: user?.userId, journalId: entry.id! });
+      if (updates.transformedEntry) trackEvent("journals", "journal-notes-updated", { userId: user?.userId, journalId: entry.id! });
+      if (updates.userTitle === entry.title) trackEvent("journals", "journal-title-reverted", { userId: user?.userId, journalId: entry.id! });
       setIsSaving(false);
       setUpdateStatus('success');
       await syncLocalUser();

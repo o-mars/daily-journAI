@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 import { useVoiceClient } from "@/src/contexts/VoiceClientContext";
 import InputWithButton from "./InputWithButton";
+import { trackEvent } from "@/src/services/metricsSerivce";
+import { useUser } from "@/src/contexts/UserContext";
 
 
 const TextMessageInput: React.FC = () => {
@@ -11,6 +13,7 @@ const TextMessageInput: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { addMessage } = useJournalEntryContext();
   const { voiceClient, resetIdleTimer } = useVoiceClient()!;
+  const { user } = useUser();
 
   useEffect(() => {
     if (voiceClient?.connected) {
@@ -35,7 +38,7 @@ const TextMessageInput: React.FC = () => {
         },
         true
       );
-
+      trackEvent("session", "text-message-sent", { userId: user?.userId });
       addMessage({ from: 'user', text: inputText, sentAt: new Date() });
     }
 

@@ -16,9 +16,9 @@ import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
 import ConfirmationModal from "@/src/components/ConfirmationModal";
 import { useRouter } from 'next/navigation';
-import { signOut } from "firebase/auth";
-import { auth } from "@/firebase.config";
 import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.service.client";
+import { signOut } from "@/src/services/authService";
+import { trackEvent } from "@/src/services/metricsSerivce";
 
 const allowDelete = false;
 
@@ -68,11 +68,14 @@ export default function Settings() {
     } else if (id === 'voiceId' || id === 'languageId') {
       if (id === 'languageId') {
         newLocalUser.preferences.botPreferences[branding.botType].languageId = value;
+        trackEvent("app", "language-updated", { userId: user?.userId, languageId: value });
         const voices = VOICES.filter(voice => voice.languageId === value);
         setFilteredVoices(voices);
         const defaultVoice = voices[0]?.id;
         if (defaultVoice) {
           newLocalUser.preferences.botPreferences[branding.botType].voiceId = defaultVoice;
+          trackEvent("app", "voice-updated", { userId: user?.userId, voiceId: defaultVoice });
+          trackEvent("app", voices[0].sex === 'male' ? 'male-voice-selected' : 'female-voice-selected', { userId: user?.userId, voiceId: defaultVoice });
           const audio = new Audio(`/audio/${defaultVoice}.wav`);
           try {
             await audio.play();
@@ -84,6 +87,12 @@ export default function Settings() {
         newLocalUser.preferences.ttsModel = `sonic-${ttsSuffix}`;  
       } else {
         newLocalUser.preferences.botPreferences[branding.botType].voiceId = value;
+        trackEvent("app", "voice-updated", { userId: user?.userId, voiceId: value });
+        const voice = VOICES.find(voice => voice.id === value);
+        if (voice) {
+          trackEvent("app", voice.sex === 'male' ? 'male-voice-selected' : 'female-voice-selected', { userId: user?.userId, voiceId: value });
+        }
+
         if (value) {
           const audio = new Audio(`/audio/${value}.wav`);
           try {
@@ -96,6 +105,7 @@ export default function Settings() {
     } else if (id === 'vadStopSecs') {
       const numValue = parseFloat(value);
       newLocalUser.preferences.botPreferences[branding.botType][id] = numValue;
+      trackEvent("app", "vad-updated", { userId: user?.userId, vadStopSecs: numValue });
     }
     
     setLocalUser(newLocalUser);
@@ -167,13 +177,15 @@ export default function Settings() {
     try {
       if (deleteType === 'entries') {
         await deleteAllJournalEntries();
+        trackEvent("journals", "all-journal-deleted", { userId: user?.userId });
         await syncLocalUser();
         statusRef.current?.pushMessage({ type: 'success', text: 'All journal entries deleted successfully' });
       } else if (deleteType === 'account') {
         await deleteUser();
+        trackEvent("auth", "account-deleted", { userId: user?.userId });
         statusRef.current?.pushMessage({ type: 'success', text: 'Account deleted successfully' });
         await syncLocalUser();
-        await signOut(auth);
+        await signOut();
         await new Promise(resolve => setTimeout(resolve, 2500));
         router.push('/');
       }
@@ -181,7 +193,7 @@ export default function Settings() {
       console.error('Delete operation failed:', error);
       statusRef.current?.pushMessage({ type: 'error', text: 'Failed to complete delete operation' });
     }
-  }, [deleteType, router, syncLocalUser]);
+  }, [deleteType, router, syncLocalUser, user?.userId]);
 
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">

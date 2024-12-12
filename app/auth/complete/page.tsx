@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { auth } from '@/firebase.config';
-import { onAuthStateChanged, linkWithCredential, User, EmailAuthProvider, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { onAuthStateChanged, User, isSignInWithEmailLink } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHeader } from '@/src/contexts/HeaderContext';
 import { EMAIL_STORAGE_KEY } from '@/src/models/constants';
 import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusIndicator';
 import { useUser } from '@/src/contexts/UserContext';
-import { isValidEmail } from '@/src/services/authService';
+import { isValidEmail, linkEmailCredential, signInWithMagicLink } from '@/src/services/authService';
+import { trackEvent } from '@/src/services/metricsSerivce';
 
 function CompleteEmailAuth() {
   const [email, setEmail] = useState("");
@@ -96,19 +97,19 @@ function CompleteEmailAuth() {
         statusRef.current?.pushMessage({ type: 'loading', text: "Linking account with email..." });
         console.log(`linking ${firebaseUser.current.uid} with email ${email}`);
         try {
-          const emailCredential = EmailAuthProvider.credentialWithLink(email, window.location.href);
-          await linkWithCredential(firebaseUser.current, emailCredential);
+          await linkEmailCredential(firebaseUser.current, email);
           statusRef.current?.pushMessage({ type: 'success', text: "Linked account with email!" });
           console.log(`linked ${firebaseUser.current.uid} with email ${email}`);
           await handleUpdateUser();
           handlePostAuthRedirect();
         } catch (error) {
           console.error("Error linking account with email:", error);
+          trackEvent("auth", "magic-link-auth-error", { userId: firebaseUser.current?.uid, email});
           statusRef.current?.pushMessage({ type: 'error', text: "Failed to link account with email: " + (error as Error).message });
         }
       } else {
         console.debug('signing in with email link');
-        await signInWithEmailLink(auth, email, window.location.href);
+        await signInWithMagicLink(email, window.location.href);
         console.debug('signed in as user: ', email);
         statusRef.current?.pushMessage({ type: 'success', text: "Signed in! Redirecting..." });
         handlePostAuthRedirect();
@@ -116,6 +117,7 @@ function CompleteEmailAuth() {
 
     } catch (error) {
       console.error("Error completing email link sign-in:", error);
+      trackEvent("auth", "magic-link-auth-error", { userId: firebaseUser.current?.uid, email});
       statusRef.current?.pushMessage({ type: 'error', text: "Failed to complete sign-in: " + (error as Error).message });
     }
   }, [email, extractedUserId, handlePostAuthRedirect, handleUpdateUser]);
@@ -125,6 +127,7 @@ function CompleteEmailAuth() {
       localStorage.setItem(EMAIL_STORAGE_KEY, email);
       setHasSignInLink(false);
       completeEmailLinkSignIn();
+      trackEvent("auth", "magic-link-received", { userId: firebaseUser.current?.uid, email });
     }
   }, [isInitialized, hasSignInLink, email, completeEmailLinkSignIn]);
 
