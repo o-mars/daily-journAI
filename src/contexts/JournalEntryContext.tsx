@@ -87,6 +87,7 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
           await closePrivateJournalEntry(messagesToSave, finalMetadata);
           trackEvent("session", "session-discarded", { ...finalMetadata });
         }
+        trackEvent("session", "session-ended", { ...finalMetadata });
       } finally {
         setIsLoading(false);
         setMessages([]);
