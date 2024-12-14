@@ -70,6 +70,7 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
         const finalMetadata: JournalEntryMetadata = {
           ...defaultJournalEntryMetadata,
           userId: user!.userId,
+          email: user!.profile?.email ?? '',
           assistantEntries: assistantEntries.length,
           userEntries: userEntries.length,
           duration: durationInSeconds,

@@ -14,6 +14,8 @@ export interface JournalEntryMetadata {
 
   inputLength: number;
   outputLength: number;
+
+  email?: string;
 }
 
 export interface JournalEntrySummary {

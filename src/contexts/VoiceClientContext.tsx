@@ -28,7 +28,7 @@ interface VoiceClientContextType {
 
 const VoiceClientContext = createContext<VoiceClientContextType | null>(null);
 
-const IDLE_TIMEOUT = 30000;
+const IDLE_TIMEOUT = 60000;
 const TTS_DISCONNECT_TIMEOUT = 3000;
 
 const DisconnectHandler: React.FC<{ 
@@ -143,8 +143,12 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const resetIdleTimerCallback = useRef<(() => void) | null>(null);
   const shouldSaveOnDisconnectRef = useRef<boolean>(true);
 
-  const disconnect = useCallback(() => {
-    if (voiceClient && voiceClient.connected) voiceClient.disconnect();
+  const disconnect = useCallback(async () => {
+    if (voiceClient && voiceClient.connected) {
+      setIsLoading(true);
+      await voiceClient.disconnect();
+      setIsLoading(false);
+    }
     setIsStarted(false);
   }, [voiceClient]);
 
@@ -154,7 +158,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       setIsLoading(true);
       await voiceClient.connect();
-      trackEvent("session", "session-started", { userId: user?.userId });
+      trackEvent("session", "session-started", { userId: user?.userId, email: user?.profile?.email ?? '' });
       setIsStarted(true);
     } catch (e) {
       console.error((e as Error).message || "Unknown error occurred");

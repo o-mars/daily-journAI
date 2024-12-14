@@ -90,6 +90,8 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
     if (previousView) {
       setCurrentView(previousView);
       router.back();
+    } else {
+      navigateToView('main');
     }
   };
 
