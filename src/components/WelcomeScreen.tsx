@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInAnonymously } from "firebase/auth";
-import { auth } from "@/firebase.config";
+import { signInWithNewAnonymousUser } from "@/src/services/authService";
 import { useHeader } from "@/src/contexts/HeaderContext";
 
 const WelcomeScreen: React.FC = () => {
@@ -12,7 +11,7 @@ const WelcomeScreen: React.FC = () => {
 
   const handleAgreeAndContinue = async () => {
     try {
-      await signInAnonymously(auth);
+      await signInWithNewAnonymousUser();
       router.push('/main?autoConnect=true');
     } catch (e) {
       setError("Failed to sign in or connect. Please try again." + e);

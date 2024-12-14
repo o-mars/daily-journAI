@@ -1,5 +1,5 @@
 import { auth } from '@/firebase.config';
-import { EmailAuthProvider, sendSignInLinkToEmail, signInWithEmailLink, User, linkWithCredential, signInWithCredential, signOut as firebaseSignOut } from 'firebase/auth';
+import { EmailAuthProvider, sendSignInLinkToEmail, signInWithEmailLink, User, linkWithCredential, signInWithCredential, signOut as firebaseSignOut, signInAnonymously } from 'firebase/auth';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import { PhoneAuthProvider } from 'firebase/auth';
 import { trackEvent } from '@/src/services/metricsSerivce';
@@ -61,4 +61,10 @@ export const signOut = async () => {
   await firebaseSignOut(auth);
   trackEvent("auth", "logout", { userId });
   return;
+}
+
+export const signInWithNewAnonymousUser = async () => {
+  const result = await signInAnonymously(auth);
+  trackEvent("auth", "login", { userId: result.user?.uid, method: "anonymous" });
+  return result;
 }
