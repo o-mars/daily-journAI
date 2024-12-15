@@ -20,9 +20,9 @@ export const LLM_SYSTEM_PROMPT_DISCONNECT_WITH_FUNCTION_INSTRUCTIONS = "To end t
 export const LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS = `Once the conversation has wrapped up, respond with exactly one of the following and nothing else: "${LLM_GOODBYE_PROMPTS.join('", "')}". Make sure to include the hiphen`;
 export const LLM_SYSTEM_PROMPT_DISCONNECT_DIALIN_INSTRUCTIONS = "If asked to say goodbye or end the conversation, let the user know that you are not able to do this, and that they should hang up if they no longer want to speak.";
 
-export const LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the following: "Hello. I'm here to help you journal. How have you been feeling today? Anything on your mind?"`;
+export const LLM_INNER_ECHO_SYSTEM_PROMPT_FIRST_TIME_MESSAGE = `Say the following: "Hello. I'm Echo. I'm here to help you explore your thoughts and feelings through journalling. What's been on your mind?"`;
 
-const LLM_INNER_ECHO_SYSTEM_PROMPT_PURPOSE = "You are a journalling assistant, but don't tell them that unless they ask.";
+const LLM_INNER_ECHO_SYSTEM_PROMPT_PURPOSE = "You are Echo, a journalling assistant, but don't tell them that unless they ask.";
 const LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_INSTRUCTIONS = "Say hello, before asking them about how they're feeling, and help them explore this feeling.";
 export const LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_MESSAGE = LLM_INNER_ECHO_SYSTEM_PROMPT_PURPOSE + ' ' + LLM_INNER_ECHO_SYSTEM_PROMPT_GREETING_INSTRUCTIONS;
 

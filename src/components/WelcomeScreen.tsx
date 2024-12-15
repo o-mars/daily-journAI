@@ -61,7 +61,7 @@ const WelcomeScreen: React.FC = () => {
         </div>
       ) : (
         <div className="text-center text-gray-300">
-          <p>Your data is securely stored and accessible only to you at all times</p>
+          <p>Your data is stored securely and only accessible to you.</p>
         </div>
       )}
 

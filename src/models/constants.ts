@@ -13,7 +13,7 @@ export const TITLE_NONE = 'None';
 export const JOURNAL_ENTRY_TITLE_DEFAULT = 'Loading Journal Entry...';
 
 export const CHECK_EMAIL_MESSAGE = "Check your email for the sign-in link!";
-export const DEFAULT_VOICE_ID = '794f9389-aac1-45b6-b726-9d9369183238';
+export const DEFAULT_VOICE_ID = '694f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';
 
 
@@ -35,7 +35,7 @@ export const LANGUAGES: Record<string, Language> = {
 };
 
 export const VOICES: Voice[] = [
-  { id: '794f9389-aac1-45b6-b726-9d9369183238', name: 'Sarah', region: 'X', country: 'US', sex: 'female', languageId: 'en' },
+  { id: '694f9389-aac1-45b6-b726-9d9369183238', name: 'Sarah', region: 'X', country: 'US', sex: 'female', languageId: 'en' }, // start with 6 for normal, 7 for curios sarah
   { id: 'a0e99841-438c-4a64-b679-ae501e7d6091', name: 'Mark', region: 'X', country: 'US', sex: 'male', languageId: 'en' },
   { id: '03496517-369a-4db1-8236-3d3ae459ddf7', name: 'Ava', region: 'X', country: 'EU', sex: 'female', languageId: 'en' },
   { id: '729651dc-c6c3-4ee5-97fa-350da1f88600', name: 'Jaime', region: 'X', country: 'EU', sex: 'male', languageId: 'en' }, 
