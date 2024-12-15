@@ -5,7 +5,7 @@ const PrivacyPolicy: React.FC = () => {
       <div className="space-y-4">
         <p>All data is stored securely and protected from unauthorized access.</p>
         <p>Your data is never shared, sold, or given to third parties under any circumstances.</p>
-        <p>Data might be accessed by our team in order to improve the user experience.</p>
+        {/* <p>Data might be accessed by our team in order to improve the user experience.</p> */}
         {/* Add more privacy policy content as needed */}
       </div>
     </div>

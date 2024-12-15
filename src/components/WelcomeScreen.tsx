@@ -3,11 +3,13 @@ import { useRouter } from "next/navigation";
 import { signInWithNewAnonymousUser } from "@/src/services/authService";
 import { useHeader } from "@/src/contexts/HeaderContext";
 
+const shouldShowPrivacyPolicy = false;
+
 const WelcomeScreen: React.FC = () => {
   const { branding } = useHeader();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [acceptedPolicy, setAcceptedPolicy] = useState(false);
+  const [acceptedPolicy, setAcceptedPolicy] = useState(!shouldShowPrivacyPolicy);
 
   const handleAgreeAndContinue = async () => {
     try {
@@ -29,33 +31,39 @@ const WelcomeScreen: React.FC = () => {
         {branding.appWelcomeMessage}
       </p>
       
-      <div className="flex items-center gap-2 mt-4">
-        <input
-          type="checkbox"
-          id="privacy-checkbox"
-          checked={acceptedPolicy}
-          onChange={(e) => setAcceptedPolicy(e.target.checked)}
-          className="w-4 h-4"
-        />
-        <label htmlFor="privacy-checkbox">
-          I confirm that I have read and agreed to the{' '}
-          <a
-            href="/privacy-policy"
-            onClick={(e) => {
-              e.preventDefault();
-              window.open(
-                '/privacy-policy',
-                'Privacy Policy',
-                'width=700,height=250,left=200,top=200,menubar=no,toolbar=no,location=no,status=no'
-              );
-            }}
-            className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
-          >
-            Privacy Policy
-          </a>
-          {' '}
-        </label>
-      </div>
+      {shouldShowPrivacyPolicy ? (
+        <div className="flex items-center gap-2 mt-4">
+          <input
+            type="checkbox"
+            id="privacy-checkbox"
+            checked={acceptedPolicy}
+            onChange={(e) => setAcceptedPolicy(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="privacy-checkbox">
+            I confirm that I have read and agreed to the{' '}
+            <a
+              href="/privacy-policy"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(
+                  '/privacy-policy',
+                  'Privacy Policy',
+                  'width=700,height=250,left=200,top=200,menubar=no,toolbar=no,location=no,status=no'
+                );
+              }}
+              className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
+            >
+              Privacy Policy
+            </a>
+            {' '}
+          </label>
+        </div>
+      ) : (
+        <div className="text-center text-gray-300">
+          <p>Your data is securely stored and accessible only to you at all times</p>
+        </div>
+      )}
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
       
