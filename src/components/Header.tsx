@@ -66,14 +66,14 @@ const Header: React.FC = () => {
             <Image width={32} height={32} src="/icons/menu.svg" alt="Menu" />
           </button>
         ) : (
-          <button className="w-8 mr-4" onClick={toggleMenu} title="Back">
+          <button className="w-8 mr-2" onClick={toggleMenu} title="Back">
             <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
           </button>
         )}
 
         {isShowingMenuOptions && (
           <>
-            <button className="w-7 mr-4" onClick={handleSettingsClick} title="Settings">
+            <button className="w-7 mr-3" onClick={handleSettingsClick} title="Settings">
               <Image
                   width={24}
                   height={24}
@@ -110,7 +110,7 @@ const Header: React.FC = () => {
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
-          <button className="w-7 mr-4" onClick={() => navigateToView('main', { autoConnect: 'true' })} title="Start">
+          <button className="w-7" onClick={() => navigateToView('main', { autoConnect: 'true' })} title="Start">
             <Image
               width={28}
               height={28}
@@ -121,7 +121,7 @@ const Header: React.FC = () => {
           </button>
         )}
         {(currentView === 'main') && (
-          <button className="w-7 mr-4" onClick={() => navigateToView('journals')}>
+          <button className="w-7" onClick={() => navigateToView('journals')}>
             <Image
               width={26}
               height={26}
