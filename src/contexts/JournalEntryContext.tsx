@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useRef, ReactNode } from "react";
+import React, { createContext, useContext, useState, useRef, ReactNode, useMemo } from "react";
 import { useRTVIClientEvent } from "realtime-ai-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
@@ -25,21 +25,46 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
   const { branding } = useHeader();
   const { syncLocalUser, user } = useUser();
   const { shouldSaveRef } = useVoiceClient()!;
-  const [messages, setMessages] = useState<JournalConversationEntry[]>([]);
+  const [rawMessages, setRawMessages] = useState<JournalConversationEntry[]>([]);
+  const messages = useMemo(() => {
+    return rawMessages.reduce((acc, message) => {
+      const lastMessage = acc[acc.length - 1];
+
+      if (lastMessage && lastMessage.from === message.from) {
+        lastMessage.text = `${lastMessage.text} ${message.text}`;
+        lastMessage.sentAt = message.sentAt; // Update timestamp to latest
+        return acc;
+      } else {
+        return [...acc, { ...message }];
+      }
+    }, [] as JournalConversationEntry[]);
+  }, [rawMessages]);
   const botTextStream = useRef<string[]>([]);
   const [isTextInputVisible, setIsTextInputVisible] = useState(false);
   const [lastSavedJournalId, setLastSavedJournalId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useRTVIClientEvent(RTVIEvent.UserTranscript, (data: TranscriptData) => {
-    if (!data.final) return;
-    setMessages((prevMessages) => {
-      const wasPreviousSender = prevMessages.length > 0 && prevMessages[prevMessages.length - 1].from === 'user';
-      if (!wasPreviousSender) return [...prevMessages, { from: 'user', text: data.text, sentAt: new Date(data.timestamp) }];
-      
-      const untouchedMessages = prevMessages.filter((_, index) => index !== prevMessages.length - 1);
-      untouchedMessages.push({ from: 'user', sentAt: new Date(data.timestamp), text: `${prevMessages[prevMessages.length - 1].text} ${data.text}` });
-      return untouchedMessages;
+    setRawMessages((prevMessages) => {
+      const previousMessage = prevMessages[prevMessages.length - 1];
+      const wasPreviousSender = prevMessages.length > 0 && previousMessage?.from === 'user';
+
+      if (wasPreviousSender && previousMessage.isPartial) {
+        const untouchedMessages = prevMessages.filter((_, index) => index !== prevMessages.length - 1);
+        return [...untouchedMessages, {
+          from: 'user',
+          text: data.text,
+          sentAt: new Date(data.timestamp),
+          isPartial: !data.final
+        }];
+      }
+
+      return [...prevMessages, {
+        from: 'user',
+        text: data.text,
+        sentAt: new Date(data.timestamp),
+        isPartial: !data.final
+      }];
     });
   });
 
@@ -52,20 +77,20 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
     botTextStream.current = [];
     if (text === '') return;
 
-    setMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
+    setRawMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   });
 
   useRTVIClientEvent(RTVIEvent.Disconnected, async () => {
-    const didUserInteract = messages.some(message => message.from === 'user');
+    const didUserInteract = rawMessages.some(message => message.from === 'user');
     if (didUserInteract) {
       setIsLoading(true);
       try {
-        const messagesToSave = [...messages];
-        const durationInSeconds = messages.length > 0 ? 
-          Math.floor((new Date().getTime() - messages[0].sentAt.getTime()) / 1000) : 
+        const messagesToSave = [...rawMessages];
+        const durationInSeconds = rawMessages.length > 0 ? 
+          Math.floor((new Date().getTime() - rawMessages[0].sentAt.getTime()) / 1000) : 
           0;
-        const assistantEntries = messages.filter(message => message.from === 'assistant');
-        const userEntries = messages.filter(message => message.from === 'user');
+        const assistantEntries = rawMessages.filter(message => message.from === 'assistant');
+        const userEntries = rawMessages.filter(message => message.from === 'user');
 
         const finalMetadata: JournalEntryMetadata = {
           ...defaultJournalEntryMetadata,
@@ -91,15 +116,15 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
         trackEvent("session", "session-ended", { ...finalMetadata });
       } finally {
         setIsLoading(false);
-        setMessages([]);
+        setRawMessages([]);
       }
     } else {
-      setMessages([]);
+      setRawMessages([]);
     }
   });
 
   const addMessage = (message: JournalConversationEntry) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
+    setRawMessages((prevMessages) => [...prevMessages, message]);
   };
 
   const toggleTextInputVisibility = () => {

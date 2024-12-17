@@ -48,6 +48,7 @@ export interface JournalConversationEntry {
   from: role;
   text: string;
   sentAt: Date;
+  isPartial?: boolean;
 }
 
 export interface JournalEntry {
