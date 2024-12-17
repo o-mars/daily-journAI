@@ -44,10 +44,10 @@ export const VOICES: Voice[] = [
   { id: '3b554273-4299-48b9-9aaf-eefd438e3941', name: 'Sonia', region: 'X', country: 'IN', sex: 'female', languageId: 'en' },
   { id: '638efaaa-4d0c-442e-b701-3fae16aad012', name: 'Raj', region: 'X', country: 'IN', sex: 'male', languageId: 'en' },
 
-  { id: 'a956b555-5c82-404f-9580-243b5178978d', name: 'Woman', region: 'X', country: 'ES', sex: 'female', languageId: 'es' },
-  { id: '15d0c2e2-8d29-44c3-be23-d585d5f154a1', name: 'Man', region: 'X', country: 'ES', sex: 'male', languageId: 'es' },
-  { id: 'a249eaff-1e96-4d2c-b23b-12efa4f66f41', name: 'Woman', region: 'X', country: 'FR', sex: 'female', languageId: 'fr' },
-  { id: 'ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3', name: 'Man', region: 'X', country: 'FR', sex: 'male', languageId: 'fr' },
+  { id: 'a956b555-5c82-404f-9580-243b5178978d', name: 'Sophia', region: 'X', country: 'ES', sex: 'female', languageId: 'es' },
+  { id: '15d0c2e2-8d29-44c3-be23-d585d5f154a1', name: 'Antonio', region: 'X', country: 'ES', sex: 'male', languageId: 'es' },
+  { id: 'a249eaff-1e96-4d2c-b23b-12efa4f66f41', name: 'Fleur', region: 'X', country: 'FR', sex: 'female', languageId: 'fr' },
+  { id: 'ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3', name: 'Pierre', region: 'X', country: 'FR', sex: 'male', languageId: 'fr' },
 
   { id: '95d51f79-c397-46f9-b49a-23763d3eaa2d', name: 'Woman', region: 'X', country: 'IN', sex: 'female', languageId: 'hi' },
   { id: 'ac7ee4fa-25db-420d-bfff-f590d740aeb2', name: 'Man', region: 'X', country: 'IN', sex: 'male', languageId: 'hi' },

@@ -20,7 +20,8 @@ import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.servi
 import { signOut } from "@/src/services/authService";
 import { trackEvent } from "@/src/services/metricsSerivce";
 
-const allowDelete = false;
+const allowLanguageSelection = true;
+const allowVoiceSelection = true;
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -256,22 +257,24 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="voiceId" className="block mb-2">Voice</label>
-                  <select
-                    id="voiceId"
-                    value={localUser.preferences.botPreferences[branding.botType].voiceId}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isDisabled}
-                  >
-                    {filteredVoices.map(voice => (
-                      <option key={voice.id} value={voice.id}>
-                        {`${COUNTRY_ICONS[voice.country] || ''} ${voice.name}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {allowVoiceSelection && (
+                  <div className="form-group">
+                    <label htmlFor="voiceId" className="block mb-2">Voice</label>
+                    <select
+                      id="voiceId"
+                      value={localUser.preferences.botPreferences[branding.botType].voiceId}
+                      onChange={handleChange}
+                      className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isDisabled}
+                    >
+                      {filteredVoices.map(voice => (
+                        <option key={voice.id} value={voice.id}>
+                          {`${COUNTRY_ICONS[voice.country] || ''} ${voice.name}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label htmlFor="vadStopSecs" className="block mb-2">
@@ -290,7 +293,7 @@ export default function Settings() {
                   />
                 </div>
 
-                {allowDelete && (
+                {allowLanguageSelection && (
                   <div className="form-group">
                     <label htmlFor="languageId" className="block mb-2">Language</label>
                     <select

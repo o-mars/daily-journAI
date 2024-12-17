@@ -86,8 +86,8 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
       setIsLoading(true);
       try {
         const messagesToSave = [...rawMessages];
-        const durationInSeconds = rawMessages.length > 0 ? 
-          Math.floor((new Date().getTime() - rawMessages[0].sentAt.getTime()) / 1000) : 
+        const durationInSeconds = rawMessages.length > 0 ?
+          Math.floor((new Date().getTime() - rawMessages[0].sentAt.getTime()) / 1000) :
           0;
         const assistantEntries = rawMessages.filter(message => message.from === 'assistant');
         const userEntries = rawMessages.filter(message => message.from === 'user');

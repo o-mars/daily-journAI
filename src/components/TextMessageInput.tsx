@@ -53,6 +53,8 @@ const TextMessageInput: React.FC = () => {
       value={inputText}
       onChange={handleInputChange}
       onButtonClick={handleSend}
+      shouldShowButton={false}
+      variant="underline"
       placeholder="Type your message..."
       buttonLabel={<Image src="/icons/feather-send.svg" alt="Send" width={28} height={28} />}
       onKeyDown={(e) => {
