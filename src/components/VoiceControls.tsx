@@ -55,14 +55,14 @@ const VoiceControls: React.FC = () => {
 
   if (!isStarted) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: '8px' }}>
-        <button 
-          style={{ width: '28px', height: '28px' }}
-          onClick={connect}
-        >
-          <Image src="/icons/feather-phone.svg" alt="Start Call" width={28} height={28} />
-        </button>
-      </div>
+      <button 
+        onClick={connect}
+        className="w-32 h-32 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-lg"
+      >
+        <div className="text-center">
+          <span className="text-white" style={{ fontSize: '1.5rem' }}>Start</span>
+        </div>
+      </button>
     );
   }
 

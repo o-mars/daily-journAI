@@ -58,13 +58,21 @@ function Dashboard() {
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
 
-      <main className="flex-grow overflow-auto p-2">
-        <Conversation />
+      <main className="flex-grow overflow-auto p-2 relative">
+        {!isStarted ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <VoiceControls />
+          </div>
+        ) : (
+          <Conversation />
+        )}
       </main>
 
-      <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-        <VoiceControls />
-      </footer>
+      {isStarted && (
+        <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+          <VoiceControls />
+        </footer>
+      )}
 
       <Modal
         isOpen={showAuthModal}
