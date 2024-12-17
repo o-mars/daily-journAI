@@ -167,7 +167,7 @@ export const VoiceClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } finally {
       setIsLoading(false);
     }
-  }, [disconnect, voiceClient, user?.userId]);
+  }, [disconnect, voiceClient, user?.userId, user?.profile?.email]);
 
   useEffect(() => {
     if (voiceClient && voiceClient.connected) {
