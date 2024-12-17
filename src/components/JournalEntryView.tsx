@@ -129,8 +129,12 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
               <button 
                 className="toggle-view-button"
                 onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+                title={activeTab === 'conversation' ? 'Notes' : 'Conversation'}
               >
-                {activeTab === 'conversation' ? 'View Notes' : 'View Conversation'}
+                {activeTab === 'conversation' ?
+                  <Image width={24} height={24} src="/icons/notes.png" alt="Notes" /> :
+                  <Image width={24} height={24} src="/icons/chat.png" alt="Conversation" />
+                }
               </button>
             </div>
           </div>

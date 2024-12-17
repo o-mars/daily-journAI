@@ -62,28 +62,43 @@ const Header: React.FC = () => {
       <div className="flex flex-grow-0">
 
         {!isShowingMenuOptions ? (
-          <button className="w-8" onClick={toggleMenu}>
+          <button className="w-8" onClick={toggleMenu} title="Menu">
             <Image width={32} height={32} src="/icons/menu.svg" alt="Menu" />
           </button>
         ) : (
-          <button className="w-8 mr-4" onClick={toggleMenu}>
+          <button className="w-8 mr-4" onClick={toggleMenu} title="Back">
             <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
           </button>
         )}
 
         {isShowingMenuOptions && (
           <>
-            <button className="w-7 mr-4" onClick={handleSettingsClick}>
-              <Image 
-                  width={24} 
-                  height={24} 
-                  src="/icons/settings.svg" 
-                  alt="Settings" 
-                  className={`${currentView === 'settings' ? '' : 'opacity-50'}`} 
+            <button className="w-7 mr-4" onClick={handleSettingsClick} title="Settings">
+              <Image
+                  width={24}
+                  height={24}
+                  src="/icons/settings.svg"
+                  alt="Settings"
+                  className={`${currentView === 'settings' ? '' : 'opacity-50'}`}
                 />
-              </button>
-              <button className="w-7" onClick={handleLogoutClick}>
-                <Image width={28} height={28} src="/icons/feather-log-out.svg" alt="Logout" />
+            </button>
+            <button className="w-7 mr-4" onClick={handleFeedbackClick} title="Feedback">
+              <Image
+                width={28}
+                height={28}
+                src="/icons/feather-mail.svg"
+                alt="Feedback"
+                className={`${currentView === 'feedback' ? '' : 'opacity-50'}`}
+              />
+            </button>
+            <button className="w-7" onClick={handleLogoutClick} title="Logout">
+              <Image
+                width={28}
+                height={28}
+                src="/icons/feather-log-out.svg"
+                alt="Logout"
+                className={`${currentView === 'auth' ? '' : 'opacity-50'}`}
+              />
             </button>
           </>
         )}
@@ -94,21 +109,12 @@ const Header: React.FC = () => {
         {currentView === 'settings' ? 'Settings' : branding.appName}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
-        <button className="w-7 mr-4" onClick={handleFeedbackClick}>
-          <Image 
-            width={28} 
-            height={28} 
-            src="/icons/feather-mail.svg" 
-            alt="Feedback" 
-            className={`${currentView === 'feedback' ? '' : 'opacity-50'}`}
-          />
-        </button>
         {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
-          <button className="w-7 mr-4" onClick={() => navigateToView('main', { autoConnect: 'true' })}>
+          <button className="w-7 mr-4" onClick={() => navigateToView('main', { autoConnect: 'true' })} title="Start">
             <Image
-              width={24}
-              height={24}
-              src="/icons/feather-phone.svg"
+              width={28}
+              height={28}
+              src="/icons/chat-plus-corner-thick.png"
               alt="New"
               className="opacity-50 hover:opacity-100"
             />
