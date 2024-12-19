@@ -345,7 +345,7 @@ export default function Settings() {
             </div>
           </main>
 
-          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2 flex justify-center">
             <VoiceControls />
           </footer>
         </JournalEntryProvider>
