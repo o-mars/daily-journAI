@@ -85,7 +85,7 @@ export const JournalEntryProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (didUserInteract) {
       setIsLoading(true);
       try {
-        const messagesToSave = [...rawMessages];
+        const messagesToSave = [...messages];
         const durationInSeconds = rawMessages.length > 0 ?
           Math.floor((new Date().getTime() - rawMessages[0].sentAt.getTime()) / 1000) :
           0;
