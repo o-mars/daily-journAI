@@ -8,9 +8,11 @@ import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 import { RTVIClientAudio } from "realtime-ai-react";
+import { ClientProvider } from "@/src/models/user.preferences";
 
 const Header: React.FC = () => {
   const { user } = useUser();
+  const provider: ClientProvider = process.env.NEXT_PUBLIC_PROVIDER === 'hume' ? 'hume' : user?.preferences.provider || 'dailybots';
   const {
     branding,
     isShowingMenuOptions,
@@ -114,7 +116,7 @@ const Header: React.FC = () => {
         {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
           <button 
             className="w-7" 
-            onClick={() => navigateToView(user?.preferences.provider === 'hume' ? 'start' : 'main', { autoConnect: 'true' })} 
+            onClick={() => navigateToView(provider === 'hume' ? 'start' : 'main', { autoConnect: 'true' })}
             title="Start"
           >
             <Image

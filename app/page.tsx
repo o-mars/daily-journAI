@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { useUser } from "@/src/contexts/UserContext";
+import { ClientProvider } from "@/src/models/user.preferences";
 
 export default function Home() {
   const { user, isInitialized } = useUser();
@@ -15,7 +16,10 @@ export default function Home() {
     if (!user) router.push("/welcome");
     // else if (user.profile.isAnonymous || !user.profile.email) router.push("/auth");
     else if (user?.isNewUser) {
-      const defaultRoute = user.preferences.provider === 'hume' ? '/start' : '/main';
+      const envProvider: ClientProvider = process.env.NEXT_PUBLIC_PROVIDER === 'hume' ? 'hume' : user?.preferences.provider || 'dailybots';
+      const clientProvider: ClientProvider = envProvider;
+
+      const defaultRoute = clientProvider === 'hume' ? '/start' : '/main';
       router.push(defaultRoute);
     }
     else router.push("/journals");

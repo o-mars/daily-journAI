@@ -22,7 +22,6 @@ export default function HumeLayout() {
       const newUrl = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
       window.history.replaceState({}, "", newUrl);
 
-      console.warn('auto connecting to hume voice client and resetting window search params');
       connect();
     }
   }, [connect, isConnected]);
