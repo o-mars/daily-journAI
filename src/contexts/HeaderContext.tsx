@@ -91,7 +91,8 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
 
   const goBack = () => {
     if (currentView === 'settings') {
-      const clientProvider: ClientProvider = user?.preferences.provider || 'dailybots';
+      const envProvider: ClientProvider = process.env.NEXT_PUBLIC_PROVIDER === 'hume' ? 'hume' : user?.preferences.provider || 'dailybots';
+      const clientProvider: ClientProvider = envProvider;
 
       if (previousView === 'main' && clientProvider === 'hume') {
         navigateToView('start');
