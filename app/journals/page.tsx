@@ -19,11 +19,9 @@ export default function Journals() {
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
 
-        <JournalEntryProvider>
-          <main className="">
-            <JournalEntryList entries={journalEntries} onEntrySelect={handleEntrySelect} />
-          </main>
-        </JournalEntryProvider>
+        <main className="">
+          <JournalEntryList entries={journalEntries} onEntrySelect={handleEntrySelect} />
+        </main>
       </div>
   );
 }

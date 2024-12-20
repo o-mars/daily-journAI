@@ -4,8 +4,6 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { useRouter, usePathname } from 'next/navigation';
 import { brands, defaultBranding } from '@/src/models/brand';
 import { Branding } from '@/src/models/brand';
-import { useUser } from '@/src/contexts/UserContext';
-import { ClientProvider } from '@/src/models/user.preferences';
 
 type HeaderView = 'main' | 'start' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
 
@@ -34,13 +32,11 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathName = usePathname();
   const [currentView, setCurrentView] = useState<HeaderView>(getCurrentViewFromPath(pathName));
-  const [previousView, setPreviousView] = useState<HeaderView | null>(null);
   const [branding, setBranding] = useState<Branding>(defaultBranding);
 
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
 
   const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(false);
-  const { user } = useUser();
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -68,7 +64,6 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   };
 
   const navigateToView = (view: HeaderView, params?: Record<string, string>) => {
-    setPreviousView(currentView);
     setCurrentView(view);
 
     if (view === 'journals/:journalEntryId' && params?.journalEntryId) {
@@ -90,19 +85,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   };
 
   const goBack = () => {
-    if (currentView === 'settings') {
-      const clientProvider: ClientProvider = user?.preferences.provider || 'dailybots';
-
-      if (previousView === 'main' && clientProvider === 'hume') {
-        navigateToView('start');
-      } else if (previousView === 'start' && clientProvider === 'dailybots') {
-        navigateToView('main');
-      } else {
-        router.back();
-      }
-    } else {
-      router.back();
-    }
+    router.back();
   };
 
   return (
