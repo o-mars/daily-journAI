@@ -4,8 +4,10 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { useRouter, usePathname } from 'next/navigation';
 import { brands, defaultBranding } from '@/src/models/brand';
 import { Branding } from '@/src/models/brand';
+import { useUser } from '@/src/contexts/UserContext';
+import { ClientProvider } from '@/src/models/user.preferences';
 
-type HeaderView = 'main' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
+type HeaderView = 'main' | 'start' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
 
 interface HeaderContextType {
   isShowingMenuOptions: boolean;
@@ -38,6 +40,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
 
   const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -87,11 +90,18 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   };
 
   const goBack = () => {
-    if (previousView) {
-      setCurrentView(previousView);
-      router.back();
+    if (currentView === 'settings') {
+      const clientProvider: ClientProvider = user?.preferences.provider || 'dailybots';
+
+      if (previousView === 'main' && clientProvider === 'hume') {
+        navigateToView('start');
+      } else if (previousView === 'start' && clientProvider === 'dailybots') {
+        navigateToView('main');
+      } else {
+        router.back();
+      }
     } else {
-      navigateToView('main');
+      router.back();
     }
   };
 

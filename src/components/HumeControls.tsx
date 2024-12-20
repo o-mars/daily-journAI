@@ -1,7 +1,6 @@
 "use client";
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import Image from "next/image";
-import { useState } from 'react';
 import { saveJournalEntry, closePrivateJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
@@ -9,18 +8,19 @@ import { trackEvent } from "@/src/services/metricsSerivce";
 import { defaultJournalEntryMetadata } from "@/src/models/journal.entry";
 import { transformHumeMessages } from "@/src/services/humeMessageTransformerService";
 import HumeVuMeter from './HumeVuMeter';
+import { ClientProvider } from "@/src/models/user.preferences";
 
-export default function HumeControls() {
+export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
   const { connect, disconnect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, messages: humeMessages, fft, micFft } = useVoice();
-  const [isLoading, setIsLoading] = useState(false);
   const { user, syncLocalUser } = useUser();
-  const { branding } = useHeader();
+  const { branding, navigateToView } = useHeader();
 
   const handleEndSession = async (shouldSave: boolean) => {
     const messages = transformHumeMessages(humeMessages);
+    disconnect();
     const didUserInteract = messages.some(message => message.from === 'user');
     if (didUserInteract) {
-      setIsLoading(true);
+      setIsLoadingAction(true);
       try {
         const messagesToSave = [...messages];
         const durationInSeconds = messages.length > 0 ?
@@ -39,23 +39,22 @@ export default function HumeControls() {
           type: branding.botType,
           inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
+          provider: 'hume' as ClientProvider,
         };
 
         if (shouldSave) {
           const response = await saveJournalEntry(messagesToSave, finalMetadata);
           trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
           await syncLocalUser();
+          navigateToView('journals/:journalEntryId', { journalEntryId: response.id });
         } else {
           await closePrivateJournalEntry(messagesToSave, finalMetadata);
           trackEvent("session", "session-discarded", { ...finalMetadata });
         }
         trackEvent("session", "session-ended", { ...finalMetadata });
       } finally {
-        setIsLoading(false);
-        disconnect();
+        setIsLoadingAction(false);
       }
-    } else {
-      disconnect();
     }
   };
 

@@ -112,7 +112,11 @@ const Header: React.FC = () => {
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
-          <button className="w-7" onClick={() => navigateToView('main', { autoConnect: 'true' })} title="Start">
+          <button 
+            className="w-7" 
+            onClick={() => navigateToView(user?.preferences.provider === 'hume' ? 'start' : 'main', { autoConnect: 'true' })} 
+            title="Start"
+          >
             <Image
               width={28}
               height={28}
@@ -122,7 +126,7 @@ const Header: React.FC = () => {
             />
           </button>
         )}
-        {(currentView === 'main') && (
+        {(currentView === 'main' || currentView === 'start') && (
           <button className="w-7" onClick={() => navigateToView('journals')}>
             <Image
               width={26}

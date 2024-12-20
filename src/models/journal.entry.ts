@@ -1,4 +1,5 @@
 import { JOURNAL_ENTRY_TITLE_DEFAULT, SUMMARY_NONE } from "@/src/models/constants";
+import { ClientProvider } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
 
 type role = 'user' | 'assistant';
@@ -16,6 +17,7 @@ export interface JournalEntryMetadata {
   outputLength: number;
 
   email?: string;
+  provider?: ClientProvider;
 }
 
 export interface JournalEntrySummary {
@@ -34,6 +36,7 @@ export const defaultJournalEntryMetadata: JournalEntryMetadata = {
   assistantEntries: 0,
   inputLength: 0,
   outputLength: 0,
+  provider: 'dailybots',
 };
 
 export const defaultJournalEntry: JournalEntry = {

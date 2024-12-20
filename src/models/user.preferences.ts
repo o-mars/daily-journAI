@@ -6,6 +6,7 @@ export type ConversationStyle = "empathetic" | "reflective" | "conversational" |
 export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
 export type VocabularyType = "simple" | "regular" | "formal" | "slang";
+export type ClientProvider = 'dailybots' | 'hume';
 
 export interface BotPreferences {
   style: ConversationStyle;
@@ -18,6 +19,7 @@ export interface BotPreferences {
 }
 
 export interface UserPreferences {
+  provider: ClientProvider;
   ttsService: TTSService;
   ttsModel: string;
   llmModel: string;
@@ -50,6 +52,7 @@ export const ventingMachineBotPreferences: BotPreferences = {
 };
 
 export const defaultInnerEchoUserPreferences: UserPreferences = {
+  provider: 'dailybots',
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
@@ -64,6 +67,7 @@ export const defaultInnerEchoUserPreferences: UserPreferences = {
 };
 
 export const defaultVentingMachineUserPreferences: UserPreferences = {
+  provider: 'dailybots',
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
@@ -139,6 +143,7 @@ export function getLlmConfig(preferences: UserPreferences, systemMessage: string
 
 export function toUserPreferences(document: DocumentData): UserPreferences {
   const preferences: UserPreferences = {
+    provider: !!document.provider ? document.provider : defaultUserPreferences.provider,
     llmModel: !!document.llmModel ? document.llmModel : defaultUserPreferences.llmModel,
     llmService: !!document.llmService ? document.llmService : defaultUserPreferences.llmService,
 

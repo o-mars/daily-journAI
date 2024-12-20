@@ -19,9 +19,15 @@ import { useRouter } from 'next/navigation';
 import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.service.client";
 import { signOut } from "@/src/services/authService";
 import { trackEvent } from "@/src/services/metricsSerivce";
+import { ClientProvider } from "@/src/models/user.preferences";
 
 const allowLanguageSelection = true;
 const allowVoiceSelection = true;
+
+const PROVIDERS = [
+  { id: 'dailybots', name: 'DailyBots' },
+  { id: 'hume', name: 'Hume' },
+];
 
 export default function Settings() {
   const { branding } = useHeader();
@@ -64,7 +70,10 @@ export default function Settings() {
     const { id, value } = e.target;
     const newLocalUser = { ...localUser };
     
-    if (id === 'name' || id === 'city') {
+    if (id === 'provider') {
+      newLocalUser.preferences.provider = value as ClientProvider;
+      trackEvent("app", "provider-updated", { userId: user?.userId, provider: value });
+    } else if (id === 'name' || id === 'city') {
       newLocalUser.profile[id] = value;
     } else if (id === 'voiceId' || id === 'languageId') {
       if (id === 'languageId') {
@@ -129,7 +138,10 @@ export default function Settings() {
         const clonedUser = { 
           ...user,
           profile: { ...newLocalUser.profile },
-          preferences: { ...newLocalUser.preferences }
+          preferences: { 
+            ...newLocalUser.preferences,
+            provider: newLocalUser.preferences.provider || 'dailybots',
+          }
         };
         
         await updateUser(clonedUser);
@@ -257,59 +269,80 @@ export default function Settings() {
                   />
                 </div>
 
-                {allowVoiceSelection && (
-                  <div className="form-group">
-                    <label htmlFor="voiceId" className="block mb-2">Voice</label>
-                    <select
-                      id="voiceId"
-                      value={localUser.preferences.botPreferences[branding.botType].voiceId}
-                      onChange={handleChange}
-                      className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={isDisabled}
-                    >
-                      {filteredVoices.map(voice => (
-                        <option key={voice.id} value={voice.id}>
-                          {`${COUNTRY_ICONS[voice.country] || ''} ${voice.name}`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
                 <div className="form-group">
-                  <label htmlFor="vadStopSecs" className="block mb-2">
-                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
-                  </label>
-                  <input
-                    type="range"
-                    id="vadStopSecs"
-                    min={0.8}
-                    max={2.4}
-                    step={0.1}
-                    value={localUser.preferences.botPreferences[branding.botType].vadStopSecs}
-                    onChange={handleChange}
-                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isDisabled}
-                  />
-                </div>
-
-                {allowLanguageSelection && (
-                  <div className="form-group">
-                    <label htmlFor="languageId" className="block mb-2">Language</label>
-                    <select
-                    id="languageId"
-                    value={localUser.preferences.botPreferences[branding.botType].languageId}
+                  <label htmlFor="provider" className="block mb-2">Provider</label>
+                  <select
+                    id="provider"
+                    value={localUser.preferences.provider}
                     onChange={handleChange}
                     className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isDisabled}
-                    >
-                      {Object.values(LANGUAGES).map(language => (
-                        <option key={language.id} value={language.id}>
-                          {language.name}
+                  >
+                    {PROVIDERS.map(provider => (
+                      <option key={provider.id} value={provider.id}>
+                        {provider.name}
                       </option>
                     ))}
                   </select>
-                  </div>
+                </div>
+
+                {localUser.preferences.provider === 'dailybots' && (
+                  <>
+                    {allowVoiceSelection && (
+                      <div className="form-group">
+                        <label htmlFor="voiceId" className="block mb-2">Voice</label>
+                        <select
+                          id="voiceId"
+                          value={localUser.preferences.botPreferences[branding.botType].voiceId}
+                          onChange={handleChange}
+                          className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={isDisabled}
+                        >
+                          {filteredVoices.map(voice => (
+                            <option key={voice.id} value={voice.id}>
+                              {`${COUNTRY_ICONS[voice.country] || ''} ${voice.name}`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <div className="form-group">
+                      <label htmlFor="vadStopSecs" className="block mb-2">
+                        Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
+                      </label>
+                      <input
+                        type="range"
+                        id="vadStopSecs"
+                        min={0.8}
+                        max={2.4}
+                        step={0.1}
+                        value={localUser.preferences.botPreferences[branding.botType].vadStopSecs}
+                        onChange={handleChange}
+                        className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isDisabled}
+                      />
+                    </div>
+
+                    {allowLanguageSelection && (
+                      <div className="form-group">
+                        <label htmlFor="languageId" className="block mb-2">Language</label>
+                        <select
+                        id="languageId"
+                        value={localUser.preferences.botPreferences[branding.botType].languageId}
+                        onChange={handleChange}
+                        className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isDisabled}
+                        >
+                          {Object.values(LANGUAGES).map(language => (
+                            <option key={language.id} value={language.id}>
+                              {language.name}
+                        </option>
+                      ))}
+                    </select>
+                    </div>
+                  )}
+                  </>
                 )}
 
                 <div className="flex justify-between space-x-4">
@@ -346,7 +379,7 @@ export default function Settings() {
           </main>
 
           <footer className="bg-gray-900 sticky bottom-0 z-10 p-2 flex justify-center">
-            <VoiceControls />
+            {localUser.preferences.provider === 'dailybots' && <VoiceControls />}
           </footer>
         </JournalEntryProvider>
       </div>

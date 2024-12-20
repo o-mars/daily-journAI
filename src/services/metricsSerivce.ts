@@ -10,7 +10,7 @@ export type SessionErrorEventName = 'session-error';
 export type SessionActionEventName = 'mic-enabled' | 'mic-disabled' | 'speaker-enabled' | 'speaker-disabled' | 'text-message-sent';
 export type SessionEventName = 'session-started' | 'session-ended' | 'session-saved' | 'session-discarded' | SessionActionEventName | SessionErrorEventName;
 
-export type AppEventName = 'vad-updated' | 'voice-updated' | 'language-updated' | 'male-voice-selected' | 'female-voice-selected' | 'voice-error';
+export type AppEventName = 'vad-updated' | 'voice-updated' | 'language-updated' | 'male-voice-selected' | 'female-voice-selected' | 'voice-error' | 'provider-updated';
 
 export type JournalEventName = 'journal-updated' | 'journal-deleted' | 'all-journal-deleted' | 'journal-title-updated' | 'journal-title-reverted' | 'journal-notes-updated';
 

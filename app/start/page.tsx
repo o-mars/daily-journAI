@@ -16,9 +16,7 @@ export default async function Page() {
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
 
-      <main className="flex-grow overflow-auto p-2 relative">
-        <HumeClient accessToken={accessToken} />
-      </main>
+      <HumeClient accessToken={accessToken} />
     </div>
   );
 }
