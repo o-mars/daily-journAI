@@ -2,6 +2,9 @@ import Header from "@/src/components/Header";
 import HumeClient from "@/src/components/HumeClient";
 import { fetchAccessToken } from "hume";
 
+// Add dynamic flag to prevent pre-rendering
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const accessToken = await fetchAccessToken({
     apiKey: String(process.env.HUME_API_KEY),
@@ -9,7 +12,7 @@ export default async function Page() {
   });
 
   if (!accessToken) {
-    throw new Error();
+    throw new Error("Failed to fetch access token");
   }
 
   return (
