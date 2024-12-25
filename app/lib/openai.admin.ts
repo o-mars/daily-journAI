@@ -3,7 +3,7 @@ import { JournalConversationEntry } from "@/src/models/journal.entry";
 import OpenAI from "openai";
 
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY_INNER_ECHO_TEXT_COMPLETION,
 })
 
 const model = 'gpt-4o-mini';

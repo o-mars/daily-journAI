@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('connect route');
     const { services, config } = await request.json();
 
     if (!services || !config || !process.env.DAILY_BOTS_API_KEY) {
@@ -15,7 +14,7 @@ export async function POST(request: NextRequest) {
       services,
       config,
       api_keys: {
-        openai: process.env.OPENAI_API_KEY,
+        openai: process.env.OPENAI_API_KEY_DAILY_BOTS_LLM,
         gemini: process.env.GEMINI_API_KEY,
       }
     };
