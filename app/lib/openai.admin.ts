@@ -6,11 +6,12 @@ export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+const model = 'gpt-4o-mini';
 export async function generateTitle(conversation: JournalConversationEntry[]) {
   const transcript = conversation.map(entry => `${entry.from}: ${entry.text}.`).join(' ');
   
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model,
     messages: [
       {
         role: "system",
@@ -35,7 +36,7 @@ export async function generateTransformedEntry(conversation: JournalConversation
   const transcript = conversation.map(entry => `${entry.from}: ${entry.text}.`).join(' ');
   
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model,
     messages: [
       {
         role: "system",
@@ -77,7 +78,7 @@ export async function generateSummary(conversation: JournalConversationEntry[]) 
   const transcript = conversation.map(entry => `${entry.from}: ${entry.text}.`).join(' ');
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model,
     messages: [
       {
         role: "system",
