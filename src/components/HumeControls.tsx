@@ -11,12 +11,13 @@ import HumeVuMeter from './HumeVuMeter';
 import { ClientProvider } from "@/src/models/user.preferences";
 
 export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
-  const { connect, disconnect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, messages: humeMessages, fft, micFft } = useVoice();
+  const { connect, disconnect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, messages: humeMessages, fft, micFft, chatMetadata } = useVoice();
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
 
   const handleEndSession = async (shouldSave: boolean) => {
     const messages = transformHumeMessages(humeMessages);
+    console.log(humeMessages, messages);
     disconnect();
     const didUserInteract = messages.some(message => message.from === 'user');
     if (didUserInteract) {
@@ -40,6 +41,8 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
           inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
           provider: 'hume' as ClientProvider,
+          ...(chatMetadata?.chatId && { chatId: chatMetadata.chatId }),
+          ...(chatMetadata?.chatGroupId && { chatGroupId: chatMetadata.chatGroupId })
         };
 
         if (shouldSave) {
