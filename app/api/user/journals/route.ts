@@ -37,21 +37,38 @@ export async function POST(request: Request) {
 
     const { conversation, metadata } = await request.json();
 
-    const response = await addJournalEntry(userId, conversation, metadata);
+    const journalPromise = addJournalEntry(userId, conversation, metadata);
 
-    //// Hume Config Update
-    const user = await getUser(userId);
-    const recentJournalEntries = await getRecentJournalEntries(userId);
-    const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
-    const shouldCreateConfigVersion = user.preferences.humeConfigId.id !== DEFAULT_HUME_CONFIG_ID; // user.preferences.humeConfigId.version !== undefined;
-    const humeConfigResponse = shouldCreateConfigVersion ? await updatePublishedConfig(user.preferences.humeConfigId.id, config) : await publishConfig(config);
-    const humeConfigId: HumeConfigId = {
-      id: humeConfigResponse.id ?? DEFAULT_HUME_CONFIG_ID,
-      version: humeConfigResponse.id ? humeConfigResponse.version : undefined,
-    };
-    user.preferences.humeConfigId = humeConfigId;
-    await updateUser(user.userId, user); // We don't need to block on this since we have the config to use?
-    // End of Hume Config Update
+    const configUpdatePromise = (async () => {
+      const [user, recentJournalEntries] = await Promise.all([
+        getUser(userId),
+        getRecentJournalEntries(userId)
+      ]);
+      
+      const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
+      const shouldCreateConfigVersion = user.preferences.humeConfigId.id !== DEFAULT_HUME_CONFIG_ID;
+      
+      const humeConfigResponse = shouldCreateConfigVersion 
+        ? await updatePublishedConfig(user.preferences.humeConfigId.id, config)
+        : await publishConfig(config);
+        
+      const humeConfigId: HumeConfigId = {
+        id: humeConfigResponse.id ?? DEFAULT_HUME_CONFIG_ID,
+        version: humeConfigResponse.id ? humeConfigResponse.version : undefined,
+      };
+      
+      user.preferences.humeConfigId = humeConfigId;
+      return updateUser(user.userId, user);
+    })();
+
+    // Wait for journal entry but not config update
+    const response = await journalPromise;
+    
+    // Fire and forget the config update
+    configUpdatePromise.catch(error => {
+      console.error("Error updating Hume config:", error);
+      // You might want to log this to your error tracking service
+    });
 
     return NextResponse.json(response);
   } catch (error) {

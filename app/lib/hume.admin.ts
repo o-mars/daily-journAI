@@ -7,12 +7,16 @@ export const hume = new HumeClient({
 });
 
 export const publishConfig = async (config: PostedConfig) => {
+  console.log('publish new config', config);
   const publishedConfig = await hume.empathicVoice.configs.createConfig(config);
+  console.log('published new config', publishedConfig);
   return publishedConfig;
 }
 
 export const updatePublishedConfig = async (configId: string, config: PostedConfig) => {
+  console.log('update publish config');
   const publishedConfig = await hume.empathicVoice.configs.createConfigVersion(configId, config);
+  console.log('update published config', publishedConfig);
   return publishedConfig;
 }
 

@@ -22,21 +22,22 @@ export function generateHumeConfigForUser(user: User): PostedConfig {
 
 export function generateHumeConfigForUserWithJournalEntries(user: User, journalEntries: JournalEntry[]): PostedConfig {
   const humeSystemPrompt: HumeSystemPrompt = generateHumeSystemPromptForUserWithJournalEntries(user, journalEntries);
-  return generateHumeConfigWithPrompt(humeSystemPrompt);
+  const humeConfig = generateHumeConfigWithPrompt(humeSystemPrompt, user);
+  return humeConfig;
 }
 
 export const baseHumeConfig: PostedConfig = generateHumeConfigWithPrompt(defaultHumeSystemPrompt);
 
-export function generateHumeConfigWithPrompt(prompt: HumeSystemPrompt): PostedConfig {
+export function generateHumeConfigWithPrompt(prompt: HumeSystemPrompt, user?: User): PostedConfig {
   const humeConfig: PostedConfig = {
     eviVersion: '2',
-    name: 'Journaling Assistant Config',
+    name: user ? `Config For ${user.userId}` : 'Journaling Assistant Config',
     versionDescription: 'Journaling assistant configuration',
     prompt: {
       text: humeSystemPromptAsString(prompt),
     },
     voice: baseVoice,
-    languageModel: baseLanguageModel,
+    // languageModel: baseLanguageModel,
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {

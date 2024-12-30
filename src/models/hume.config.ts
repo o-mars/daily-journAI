@@ -89,12 +89,12 @@ export function getBaseHumeConfig(): HumeSystemPrompt {
 
 export function generateHumeSystemPromptForUser(user: User): HumeSystemPrompt {
   const humeSystemPrompt: HumeSystemPrompt = {...defaultHumeSystemPrompt};
-  humeSystemPrompt.foo = ['bar', 'baz'];
+  humeSystemPrompt.user = ['Is using the application for the first time: ' + user.isNewUser];
   return humeSystemPrompt;
 }
 
 export function generateHumeSystemPromptForUserWithJournalEntries(user: User, journalEntries: JournalEntry[]): HumeSystemPrompt {
   const humeSystemPrompt: HumeSystemPrompt = {...defaultHumeSystemPrompt};
-  humeSystemPrompt.foo = ['bar', 'baz'];
+  if (journalEntries.length > 0) humeSystemPrompt.context = journalEntries.map(entry => entry.summary ?? '');
   return humeSystemPrompt;
 }

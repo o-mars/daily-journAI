@@ -11,7 +11,6 @@ export default function HumeClient({
   accessToken: string;
 }) {
   const { user } = useUser();
-  console.log(`hume client config: ${user?.preferences.humeConfigId.id}, ${user?.preferences.humeConfigId.version}`);
   return (
     <VoiceProvider
       auth={{ type: "accessToken", value: accessToken }}

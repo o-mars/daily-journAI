@@ -1,44 +1,11 @@
 // ./components/Messages.tsx
 "use client";
-import { useVoice } from "@humeai/voice-react";
-import { useEffect, useRef, useState } from 'react';
-import { transformHumeMessages } from '@/src/services/humeMessageTransformerService';
-import { JournalConversationEntry } from '@/src/models/journal.entry';
+import { useEffect, useRef } from 'react';
+import { useHumeMessages } from '@/src/contexts/HumeMessagesContext';
 
 export default function HumeMessages() {
-  const { messages: recentMessages } = useVoice();
-  const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
+  const { allMessages } = useHumeMessages();
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (recentMessages.length === 0) return;
-
-    const transformedRecent = transformHumeMessages(recentMessages);
-    
-    setAllMessages(prevMessages => {
-      if (prevMessages.length === 0) return transformedRecent;
-
-      // Find the oldest message in the recent messages
-      const oldestRecentMessage = transformedRecent[0];
-      
-      // Find where this message exists in our previous messages (if it does)
-      const overlapIndex = prevMessages.findIndex(
-        msg => msg.from === oldestRecentMessage.from && 
-              msg.text === oldestRecentMessage.text
-      );
-
-      if (overlapIndex === -1) {
-        // No overlap found, append all new messages
-        return [...prevMessages, ...transformedRecent];
-      }
-
-      // Replace overlapping portion with new messages
-      return [
-        ...prevMessages.slice(0, overlapIndex),
-        ...transformedRecent
-      ];
-    });
-  }, [recentMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
