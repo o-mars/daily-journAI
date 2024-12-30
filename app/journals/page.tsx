@@ -4,7 +4,6 @@ import Header from "@/src/components/Header";
 import { JournalEntryList } from "@/src/components/JournalEntryList";
 import { useRouter } from 'next/navigation';
 import { JournalEntry } from "@/src/models/journal.entry";
-import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { useUser } from "@/src/contexts/UserContext";
 
 export default function Journals() {

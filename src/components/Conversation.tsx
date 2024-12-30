@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
-import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 
 interface ConversationProps {
   messages?: JournalConversationEntry[];

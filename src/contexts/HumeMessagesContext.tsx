@@ -18,12 +18,12 @@ export function HumeMessagesProvider({ children }: { children: React.ReactNode }
     if (recentMessages.length === 0) return;
 
     const transformedRecent = transformHumeMessages(recentMessages);
-    
+
     setAllMessages(prevMessages => {
       if (prevMessages.length === 0) return transformedRecent;
 
       const oldestRecentMessage = transformedRecent[0];
-      
+
       const overlapIndex = prevMessages.findIndex(
         msg => msg.from === oldestRecentMessage.from && 
               msg.text === oldestRecentMessage.text
