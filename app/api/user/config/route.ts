@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { auth, getUser, getRecentJournalEntries } from '@/app/lib/firebase.admin';
+import { auth, getUser, getRecentJournalEntries, updateUser } from '@/app/lib/firebase.admin';
 import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig } from '@/app/lib/hume.admin';
+import { HumeConfigId } from '@/src/models/hume.config';
+import { DEFAULT_HUME_CONFIG_ID } from '@/src/models/constants';
 
 /*
  GET = get config id for user from firebase, if not found, create default hume config, save to firebase, and then return config id
@@ -32,7 +34,15 @@ export async function GET(request: Request) {
 
     const response = await publishConfig(config);
 
-    return NextResponse.json({ configId: response.id });
+    const humeConfigId: HumeConfigId = {
+      id: response.id ?? DEFAULT_HUME_CONFIG_ID,
+      version: response.id ? response.version : undefined,
+    };
+    user.preferences.humeConfigId = humeConfigId;
+
+    await updateUser(user.userId, user); // We don't need to block on this since we have the config to use?
+
+    return NextResponse.json(humeConfigId);
   } catch (error) {
     console.error("Error verifying ID token:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

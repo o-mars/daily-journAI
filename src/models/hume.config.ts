@@ -1,6 +1,11 @@
 import { JournalEntry } from "@/src/models/journal.entry";
 import { User } from "@/src/models/user";
 
+export interface HumeConfigId {
+  id: string;
+  version?: number;
+}
+
 export interface HumeSystemPrompt {
   [key: string]: string[];
 }
