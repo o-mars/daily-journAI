@@ -14,7 +14,7 @@ const WelcomeScreen: React.FC = () => {
   const handleAgreeAndContinue = async () => {
     try {
       await signInWithNewAnonymousUser();
-      router.push('/main?autoConnect=true');
+      router.push('/start?autoConnect=true');
     } catch (e) {
       setError("Failed to sign in or connect. Please try again." + e);
     }
