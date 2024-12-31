@@ -6,28 +6,28 @@ import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { trackEvent } from "@/src/services/metricsSerivce";
 import { defaultJournalEntryMetadata } from "@/src/models/journal.entry";
-import { transformHumeMessages } from "@/src/services/humeMessageTransformerService";
 import HumeVuMeter from './HumeVuMeter';
 import { ClientProvider } from "@/src/models/user.preferences";
+import { useHumeMessages } from '@/src/contexts/HumeMessagesContext';
 
 export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
-  const { connect, disconnect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, messages: humeMessages, fft, micFft } = useVoice();
+  const { connect, disconnect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft, chatMetadata } = useVoice();
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
+  const { allMessages } = useHumeMessages();
 
   const handleEndSession = async (shouldSave: boolean) => {
-    const messages = transformHumeMessages(humeMessages);
     disconnect();
-    const didUserInteract = messages.some(message => message.from === 'user');
+    const didUserInteract = allMessages.some(message => message.from === 'user');
     if (didUserInteract) {
       setIsLoadingAction(true);
       try {
-        const messagesToSave = [...messages];
-        const durationInSeconds = messages.length > 0 ?
-          Math.floor((new Date().getTime() - messages[0].sentAt.getTime()) / 1000) :
+        const messagesToSave = [...allMessages];
+        const durationInSeconds = allMessages.length > 0 ?
+          Math.floor((new Date().getTime() - allMessages[0].sentAt.getTime()) / 1000) :
           0;
-        const assistantEntries = messages.filter(message => message.from === 'assistant');
-        const userEntries = messages.filter(message => message.from === 'user');
+        const assistantEntries = allMessages.filter(message => message.from === 'assistant');
+        const userEntries = allMessages.filter(message => message.from === 'user');
 
         const finalMetadata = {
           ...defaultJournalEntryMetadata,
@@ -40,6 +40,8 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
           inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
           provider: 'hume' as ClientProvider,
+          ...(chatMetadata?.chatId && { chatId: chatMetadata.chatId }),
+          ...(chatMetadata?.chatGroupId && { chatGroupId: chatMetadata.chatGroupId })
         };
 
         if (shouldSave) {

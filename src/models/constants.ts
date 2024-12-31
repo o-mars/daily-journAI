@@ -15,7 +15,7 @@ export const JOURNAL_ENTRY_TITLE_DEFAULT = 'Loading Journal Entry...';
 export const CHECK_EMAIL_MESSAGE = "Check your email for the sign-in link!";
 export const DEFAULT_VOICE_ID = '694f9389-aac1-45b6-b726-9d9369183238';
 export const DEFAULT_LANGUAGE_ID = 'en';
-
+export const DEFAULT_HUME_CONFIG_ID = '1eb3dbb0-9501-43a7-9079-e9e576185d71';
 
 export const EMAIL_STORAGE_KEY = 'innerecho:email';
 export const PHONE_STORAGE_KEY = 'innerecho:phone';

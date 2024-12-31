@@ -1,14 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { JournalConversationEntry } from "@/src/models/journal.entry";
-import { useJournalEntryContext } from "@/src/contexts/JournalEntryContext";
 
 interface ConversationProps {
   messages?: JournalConversationEntry[];
 }
 
-const Conversation: React.FC<ConversationProps> = ({ messages: staticMessages }) => {
-  const { messages: liveMessages, isTextInputVisible } = useJournalEntryContext();
-  const messages = staticMessages || liveMessages;  // Use static messages if provided, otherwise live
+const Conversation: React.FC<ConversationProps> = ({ messages }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,12 +26,12 @@ const Conversation: React.FC<ConversationProps> = ({ messages: staticMessages })
         paddingTop: '16px',
         borderRadius: '8px',
         overflowY: 'scroll',
-        height: staticMessages ? 'auto' : `calc(100vh - ${isTextInputVisible ? 170 : 120}px)`,
+        height: 'auto',
         flexGrow: 1
       }}
       data-conversation-content
     >
-      {messages.map((message, index) => (
+      {messages?.map((message, index) => (
         <div 
           key={index} 
           style={{

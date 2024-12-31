@@ -1,7 +1,8 @@
 import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
-import { DEFAULT_VOICE_ID } from "@/src/models/constants";
+import { DEFAULT_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
 import { BotType } from "@/src/models/user";
+import { HumeConfigId } from "@/src/models/hume.config";
 export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
 export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
@@ -26,7 +27,7 @@ export interface UserPreferences {
   llmService: LLMService;
   sttModel: string;
   sttService: STTService;
-  
+  humeConfigId: HumeConfigId;
   botPreferences: Record<BotType, BotPreferences>;
   quirks: string[];
 }
@@ -59,6 +60,9 @@ export const defaultInnerEchoUserPreferences: UserPreferences = {
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
+  humeConfigId: {
+    id: DEFAULT_HUME_CONFIG_ID
+  },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
     'venting-machine': ventingMachineBotPreferences,
@@ -74,6 +78,9 @@ export const defaultVentingMachineUserPreferences: UserPreferences = {
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
+  humeConfigId: {
+    id: DEFAULT_HUME_CONFIG_ID
+  },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
     'venting-machine': ventingMachineBotPreferences,
@@ -152,6 +159,8 @@ export function toUserPreferences(document: DocumentData): UserPreferences {
 
     sttModel: !!document.sttModel ? document.sttModel : defaultUserPreferences.sttModel,
     sttService: !!document.sttService ? document.sttService : defaultUserPreferences.sttService,
+
+    humeConfigId: !!document.humeConfigId ? document.humeConfigId : defaultUserPreferences.humeConfigId,
 
     botPreferences: {
       'inner-echo': document.botPreferences?.['inner-echo'] ?? defaultUserPreferences.botPreferences['inner-echo'],

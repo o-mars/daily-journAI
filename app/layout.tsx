@@ -1,8 +1,6 @@
 import "./globals.css";
 import { UserProvider } from "@/src/contexts/UserContext";
-import { VoiceClientProvider } from "@/src/contexts/VoiceClientContext";
 import { HeaderProvider } from "@/src/contexts/HeaderContext";
-import { JournalEntryProvider } from "@/src/contexts/JournalEntryContext";
 import { Metadata } from 'next';
 import { headers } from "next/headers";
 import { brands } from "@/src/models/brand";
@@ -32,13 +30,9 @@ export default function RootLayout({
       <AmplitudeInitializer />
       <UserProvider>
         <HeaderProvider>
-          <VoiceClientProvider>
-            <JournalEntryProvider>
-              <body>
-                {children}
-              </body>
-            </JournalEntryProvider>
-          </VoiceClientProvider>
+          <body>
+            {children}
+          </body>
         </HeaderProvider>
       </UserProvider>
     </html>
