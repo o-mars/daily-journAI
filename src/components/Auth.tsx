@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import EmailAuth from './EmailAuth';
 import PhoneAuth from './PhoneAuth';
 import { User } from 'firebase/auth';
-import { useJournalEntryContext } from '@/src/contexts/JournalEntryContext';
 
 interface AuthSelectorProps {
   firebaseUser: User | null;
@@ -18,12 +17,11 @@ export default function Auth({
   recaptchaOffset = 160
 }: AuthSelectorProps) {
   const [method, setMethod] = useState<'email' | 'phone'>('phone');
-  const { lastSavedJournalId } = useJournalEntryContext();
 
   return (
     <div className="space-y-6">
       {method === 'email' ? (
-        <EmailAuth firebaseUser={firebaseUser} journalEntryId={lastSavedJournalId || ''} />
+        <EmailAuth firebaseUser={firebaseUser} journalEntryId={''} />
       ) : (
         <PhoneAuth 
           mode="signIn" 
