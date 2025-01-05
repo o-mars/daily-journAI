@@ -1,15 +1,17 @@
 interface HumeVuMeterProps {
   fftData: number[];
-  height?: number;
-  barCount?: number;
-  barColor?: string;
+  height: number;
+  barCount: number;
+  barColor: string;
+  barWidth?: number;
 }
 
 export default function HumeVuMeter({ 
   fftData,
   height = 32,
   barCount = 5,
-  barColor = "rgb(229, 229, 234)"
+  barColor = "rgb(229, 229, 234)",
+  barWidth
 }: HumeVuMeterProps) {
   const sampledData = Array.from({ length: barCount }, (_, i) => {
     const index = Math.floor((i / barCount) * fftData.length);
@@ -17,25 +19,37 @@ export default function HumeVuMeter({
   });
 
   return (
-    <div className="flex items-center gap-[2px]" style={{ height: `${height}px`, width: '32px' }}>
+    <div 
+      className="flex items-center gap-[2px]"
+      style={{ height: `${height}px`, width: `${(barWidth || 4) * barCount + (barCount - 1) * 2}px` }}
+    >
       {sampledData.map((value, index) => (
         <div
           key={index}
-          className="w-1 relative"
-          style={{ height: '100%' }}
+          className="relative"
+          style={{
+            height: '100%',
+            width: `${barWidth || 4}px`,
+            willChange: 'transform',
+            backfaceVisibility: 'hidden'
+          }}
         >
           <div
-            className="w-full absolute bottom-1/2 rounded-t transition-all duration-75"
+            className="absolute bottom-1/2 rounded-t transition-all duration-75"
             style={{
-              height: `${Math.max(2, (value * height) / 2)}px`,
-              backgroundColor: barColor
+              width: '100%',
+              height: `${value * height / 2}px`,
+              backgroundColor: barColor,
+              opacity: value > 0 ? 1 : 0
             }}
           />
           <div
-            className="w-full absolute top-1/2 rounded-b transition-all duration-75"
+            className="absolute top-1/2 rounded-b transition-all duration-75"
             style={{
-              height: `${Math.max(2, (value * height) / 2)}px`,
-              backgroundColor: barColor
+              width: '100%',
+              height: `${value * height / 2}px`,
+              backgroundColor: barColor,
+              opacity: value > 0 ? 1 : 0
             }}
           />
         </div>

@@ -1,18 +1,69 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useVoice } from "@humeai/voice-react";
-import { JournalConversationEntry } from '@/src/models/journal.entry';
+import { defaultJournalEntryMetadata, JournalConversationEntry } from '@/src/models/journal.entry';
 import { transformHumeMessages } from '@/src/services/humeMessageTransformerService';
+import { useUser } from '@/src/contexts/UserContext';
+import { useHeader } from '@/src/contexts/HeaderContext';
+import { saveJournalEntry, closePrivateJournalEntry } from '@/src/client/firebase.service.client';
+import { ClientProvider } from '@/src/models/user.preferences';
+import { trackEvent } from '@/src/services/metricsSerivce';
 
 interface HumeMessagesContextType {
   allMessages: JournalConversationEntry[];
+  handleEndSession: (shouldSave: boolean) => Promise<void>;
 }
 
 const HumeMessagesContext = createContext<HumeMessagesContextType | undefined>(undefined);
 
 export function HumeMessagesProvider({ children }: { children: React.ReactNode }) {
-  const { messages: recentMessages } = useVoice();
+  const { messages: recentMessages, disconnect, chatMetadata } = useVoice();
+  const { user, syncLocalUser } = useUser();
+  const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
+
+  const handleEndSession = async (shouldSave: boolean) => {
+    disconnect();
+    const didUserInteract = allMessages.some(message => message.from === 'user');
+    if (didUserInteract) {
+      try {
+        const messagesToSave = [...allMessages];
+        const durationInSeconds = allMessages.length > 0 ?
+          Math.floor((new Date().getTime() - allMessages[0].sentAt.getTime()) / 1000) :
+          0;
+        const assistantEntries = allMessages.filter(message => message.from === 'assistant');
+        const userEntries = allMessages.filter(message => message.from === 'user');
+
+        const finalMetadata = {
+          ...defaultJournalEntryMetadata,
+          userId: user!.userId,
+          email: user!.profile?.email ?? '',
+          assistantEntries: assistantEntries.length,
+          userEntries: userEntries.length,
+          duration: durationInSeconds,
+          type: branding.botType,
+          inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
+          outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
+          provider: 'hume' as ClientProvider,
+          ...(chatMetadata?.chatId && { chatId: chatMetadata.chatId }),
+          ...(chatMetadata?.chatGroupId && { chatGroupId: chatMetadata.chatGroupId })
+        };
+
+        if (shouldSave) {
+          const response = await saveJournalEntry(messagesToSave, finalMetadata);
+          trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
+          await syncLocalUser();
+          navigateToView('journals/:journalEntryId', { journalEntryId: response.id });
+        } else {
+          await closePrivateJournalEntry(messagesToSave, finalMetadata);
+          trackEvent("session", "session-discarded", { ...finalMetadata });
+        }
+        trackEvent("session", "session-ended", { ...finalMetadata });
+      } catch (e) {
+        console.error(`Error saving journal entry: ${e}`);
+      }
+    }
+  };
 
   useEffect(() => {
     if (recentMessages.length === 0) return;
@@ -41,7 +92,7 @@ export function HumeMessagesProvider({ children }: { children: React.ReactNode }
   }, [recentMessages]);
 
   return (
-    <HumeMessagesContext.Provider value={{ allMessages }}>
+    <HumeMessagesContext.Provider value={{ allMessages, handleEndSession }}>
       {children}
     </HumeMessagesContext.Provider>
   );
