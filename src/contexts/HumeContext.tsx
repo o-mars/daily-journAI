@@ -21,31 +21,27 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
-  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const keepAliveRef = useRef<HTMLAudioElement | null>(null);
 
-  const requestWakeLock = useCallback(async () => {
-    if ('wakeLock' in navigator) {
-      try {
-        wakeLockRef.current = await navigator.wakeLock.request('screen');
-      } catch (err) {
-        console.error(`Failed to request Wake Lock: ${err}`);
-      }
-    }
+  const preventSleep = useCallback(() => {
+    if (keepAliveRef.current) return;
+
+    const audio = new Audio();
+    audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+    audio.loop = true;
+    audio.play().catch(console.error);
+    keepAliveRef.current = audio;
   }, []);
 
-  const releaseWakeLock = useCallback(async () => {
-    if (wakeLockRef.current) {
-      try {
-        await wakeLockRef.current.release();
-        wakeLockRef.current = null;
-      } catch (err) {
-        console.error(`Failed to release Wake Lock: ${err}`);
-      }
+  const allowSleep = useCallback(() => {
+    if (keepAliveRef.current) {
+      keepAliveRef.current.pause();
+      keepAliveRef.current = null;
     }
   }, []);
 
   const handleEndSession = useCallback(async (shouldSave: boolean) => {
-    releaseWakeLock();
+    allowSleep();
     disconnect();
     const didUserInteract = allMessages.some(message => message.from === 'user');
     if (didUserInteract) {
@@ -86,23 +82,22 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         console.error(`Error saving journal entry: ${e}`);
       }
     }
-  }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, releaseWakeLock, syncLocalUser, user]);
+  }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, allowSleep, syncLocalUser, user]);
 
   useEffect(() => {
     const isSessionStarting = status.value === 'connected' && readyState === VoiceReadyState.OPEN;
-    const isMaxCallTimeReached = status.value === 'connected' && readyState === VoiceReadyState.CLOSED;
 
     if (isSessionStarting) {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (isMobile) {
-        requestWakeLock();
+        preventSleep();
       }
     }
-
-    if (isMaxCallTimeReached) {
-      handleEndSession(true);
-    }
-  }, [readyState, status, requestWakeLock, handleEndSession]);
+    
+    return () => {
+      allowSleep();
+    };
+  }, [readyState, status, preventSleep, allowSleep]);
 
   useEffect(() => {
     if (recentMessages.length === 0) return;

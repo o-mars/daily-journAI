@@ -1,13 +1,13 @@
 .journal-entries {
   padding: 20px;
-  height: calc(100vh - 64px);
+  height: calc(100dvh - 64px);
   overflow-y: none;
   display: flex;
   flex-direction: column;
 }
 
 .entry-list {
-  min-height: calc(100vh - 160px);
+  min-height: calc(100dvh - 160px);
   display: flex;
   flex-direction: column;
   gap: 12px;

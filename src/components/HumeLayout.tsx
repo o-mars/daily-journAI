@@ -29,7 +29,7 @@ export default function HumeLayout() {
 
   if (isLoadingAction) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-10px)]">
+      <div className="flex items-center justify-center h-[calc(100dvh-10px)]">
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
         </div>
