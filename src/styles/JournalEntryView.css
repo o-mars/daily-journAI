@@ -166,3 +166,57 @@
   margin-right: 8px;
   margin-top: 2px;
 }
+
+@media (max-width: 768px) {
+  .content-card-header {
+    padding-bottom: 0.5rem;
+  }
+
+  .content-card-header {
+    padding: 4px;  /* Reduced padding */
+  }
+
+  .content-card-header-title {
+    font-size: 0.9rem;  /* Smaller font on mobile */
+  }
+
+  .content-card-header-action {
+    gap: 4px;  /* Tighter spacing between action buttons */
+    padding-right: 4px;  /* Reduced right padding */
+  }
+
+  /* Smaller buttons on mobile */
+  .save-button, .cancel-button {
+    padding: 2px;
+    margin-right: 4px;
+  }
+
+  .save-button img, .cancel-button img {
+    width: 20px;  /* Smaller icons */
+    height: 20px;
+  }
+
+  .back-button, .toggle-view-button {
+    padding: 0px;  /* Reduced padding */
+  }
+
+  .back-button img {
+    width: 24px;  /* Smaller icons */
+    height: 24px;
+  }
+  .toggle-view-button img {
+    width: 20px;  /* Smaller icons */
+    height: 20px;
+  }
+
+  /* Adjust save status text size */
+  .save-status {
+    font-size: 0.8rem;
+  }
+
+  /* Make spinner smaller on mobile */
+  .spinner {
+    width: 16px;
+    height: 16px;
+  }
+}

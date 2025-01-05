@@ -17,7 +17,7 @@ export default function HumeMessages() {
     <div
       ref={scrollRef}
       className="w-full pt-4 rounded-lg overflow-y-scroll flex-grow"
-      style={{ height: 'calc(100vh - 120px)' }}
+      style={{ height: 'calc(100dvh - 120px)' }}
       data-conversation-content
     >
       {allMessages.map((msg, index) => (
