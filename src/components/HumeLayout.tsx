@@ -39,7 +39,7 @@ export default function HumeLayout() {
 
   return (
     <HumeProvider>
-      <main className="flex-grow overflow-auto p-2 relative min-h-[85vh]">
+      <main className="flex-grow overflow-auto p-2 relative min-h-[85dvh]">
         {!isConnected ? (
           <div className="flex items-center justify-center h-full">
             <HumeControls setIsLoadingAction={setIsLoadingAction} />

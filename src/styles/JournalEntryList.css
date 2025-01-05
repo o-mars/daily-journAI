@@ -1,16 +1,18 @@
 .journal-entries {
   padding: 20px;
   height: calc(100dvh - 64px);
-  overflow-y: none;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
 .entry-list {
-  min-height: calc(100dvh - 160px);
+  min-height: min-content;
+  max-height: calc(100dvh - 160px);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
 }
 
 .entry-bubble {
@@ -34,9 +36,15 @@
   justify-content: space-between;
 }
 
+.entry-content {
+  max-width: 90%;
+}
 .entry-text {
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .entry-date {

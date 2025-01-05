@@ -55,7 +55,7 @@ export function JournalEntryList({ entries, onEntrySelect }: JournalEntryListPro
   useEffect(() => {
     const updatePageSize = () => {
       if (containerRef.current) {
-        const fixedHeaderHeight = 90 + 68;
+        const fixedHeaderHeight = 64 + 60 + 20;
         const entryHeight = 78;
         const containerHeight = containerRef.current.clientHeight;
         const newPageSize = Math.floor((containerHeight - fixedHeaderHeight) / entryHeight);
