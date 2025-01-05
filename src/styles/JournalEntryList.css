@@ -7,8 +7,8 @@
 }
 
 .entry-list {
-  min-height: min-content;
-  max-height: calc(100dvh - 160px);
+  min-height: calc(100dvh - 170px);
+  max-height: calc(100dvh - 170px);
   display: flex;
   flex-direction: column;
   gap: 12px;
