@@ -39,7 +39,7 @@ export default function HumeLayout() {
 
   return (
     <HumeProvider>
-      <main className="flex-grow overflow-auto p-2 relative min-h-[85dvh]">
+      <main className="flex-grow overflow-auto px-2 relative" style={{ minHeight: 'calc(100dvh - 170px)' }}>
         {!isConnected ? (
           <div className="flex items-center justify-center h-full">
             <HumeControls setIsLoadingAction={setIsLoadingAction} />

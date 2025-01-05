@@ -18,7 +18,7 @@ export default function Journals() {
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
 
-        <main className="relative min-h-[85dvh]">
+        <main className="relative" style={{ minHeight: 'calc(100dvh - 170px)' }}>
           <JournalEntryList entries={journalEntries} onEntrySelect={handleEntrySelect} />
         </main>
       </div>
