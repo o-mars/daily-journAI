@@ -29,7 +29,7 @@ export default function HumeLayout() {
 
   if (isLoadingAction) {
     return (
-      <div className="flex items-center justify-center h-[calc(100dvh-64px)]">
+      <div className="flex items-center justify-center h-[calc(75dvh)]">
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
         </div>
@@ -39,7 +39,7 @@ export default function HumeLayout() {
 
   return (
     <HumeProvider>
-      <main className="flex-grow overflow-auto px-2 relative" style={{ minHeight: 'calc(100dvh - 170px)' }}>
+      <main className="flex-grow overflow-auto px-2 relative" style={{ minHeight: 'calc(75dvh)' }}>
         {!isConnected ? (
           <div className="flex items-center justify-center h-full">
             <HumeControls setIsLoadingAction={setIsLoadingAction} />

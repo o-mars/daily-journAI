@@ -91,7 +91,7 @@ export default function Settings() {
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
 
-          <main className="flex-grow overflow-auto pt-8 p-4">
+          <main className="flex-grow overflow-auto pt-8 p-4" style={{ minHeight: '79dvh' }}>
             <div className="max-w-2xl mx-auto space-y-6 text-white">
               <div className="space-y-4">
 
