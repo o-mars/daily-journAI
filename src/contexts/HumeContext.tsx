@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry } from '@/src/models/journal.entry';
 import { transformHumeMessages } from '@/src/services/humeMessageTransformerService';
@@ -21,15 +21,31 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
-  useEffect(() => {
-    const isMaxCallTimeReached = status.value === 'connected' && readyState === VoiceReadyState.CLOSED;
-    if (isMaxCallTimeReached) {
-      handleEndSession(true);
+  const requestWakeLock = useCallback(async () => {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      } catch (err) {
+        console.error(`Failed to request Wake Lock: ${err}`);
+      }
     }
-  }, [readyState, status]);
+  }, []);
 
-  const handleEndSession = async (shouldSave: boolean) => {
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } catch (err) {
+        console.error(`Failed to release Wake Lock: ${err}`);
+      }
+    }
+  }, []);
+
+  const handleEndSession = useCallback(async (shouldSave: boolean) => {
+    releaseWakeLock();
     disconnect();
     const didUserInteract = allMessages.some(message => message.from === 'user');
     if (didUserInteract) {
@@ -70,7 +86,23 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         console.error(`Error saving journal entry: ${e}`);
       }
     }
-  };
+  }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, releaseWakeLock, syncLocalUser, user]);
+
+  useEffect(() => {
+    const isSessionStarting = status.value === 'connected' && readyState === VoiceReadyState.OPEN;
+    const isMaxCallTimeReached = status.value === 'connected' && readyState === VoiceReadyState.CLOSED;
+
+    if (isSessionStarting) {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        requestWakeLock();
+      }
+    }
+
+    if (isMaxCallTimeReached) {
+      handleEndSession(true);
+    }
+  }, [readyState, status, requestWakeLock, handleEndSession]);
 
   useEffect(() => {
     if (recentMessages.length === 0) return;
