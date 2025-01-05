@@ -3,6 +3,9 @@ import { BotType, User } from "@/src/models/user";
 import { UserPreferences } from "@/src/models/user.preferences";
 import { ResponseDepth } from "@/src/models/user.preferences";
 
+export const HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help you reflect on your day. What's on your mind?`;
+export const HUME_RETURNING_FIRST_MESSAGE = `Hi! What's on your mind?`;
+
 const LLM_AUDIO_OUTPUT_INSTRUCTIONS = "Your responses will converted to audio, so please don't include any special characters, your response should work if piped to a speech-to-text service.";
 const LLM_AUDIO_INPUT_INSTRUCTIONS = "They are also speaking to you, and their response is being converted to text before being sent to you.";
 export const LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS = LLM_AUDIO_OUTPUT_INSTRUCTIONS + ' ' + LLM_AUDIO_INPUT_INSTRUCTIONS;

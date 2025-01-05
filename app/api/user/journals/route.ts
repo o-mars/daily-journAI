@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
       const shouldCreateConfigVersion = user.preferences.humeConfigId.id !== DEFAULT_HUME_CONFIG_ID;
       
-      const humeConfigResponse = shouldCreateConfigVersion 
+      const humeConfigResponse = shouldCreateConfigVersion
         ? await updatePublishedConfig(user.preferences.humeConfigId.id, config)
         : await publishConfig(config);
         
