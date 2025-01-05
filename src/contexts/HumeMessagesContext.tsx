@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useVoice } from "@humeai/voice-react";
+import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry } from '@/src/models/journal.entry';
 import { transformHumeMessages } from '@/src/services/humeMessageTransformerService';
 import { useUser } from '@/src/contexts/UserContext';
@@ -17,10 +17,17 @@ interface HumeMessagesContextType {
 const HumeMessagesContext = createContext<HumeMessagesContextType | undefined>(undefined);
 
 export function HumeMessagesProvider({ children }: { children: React.ReactNode }) {
-  const { messages: recentMessages, disconnect, chatMetadata } = useVoice();
+  const { messages: recentMessages, disconnect, chatMetadata, readyState, status } = useVoice();
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
+
+  useEffect(() => {
+    const isMaxCallTimeReached = status.value === 'connected' && readyState === VoiceReadyState.CLOSED;
+    if (isMaxCallTimeReached) {
+      handleEndSession(true);
+    }
+  }, [readyState, status]);
 
   const handleEndSession = async (shouldSave: boolean) => {
     disconnect();
