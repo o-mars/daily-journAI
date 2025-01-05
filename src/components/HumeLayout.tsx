@@ -4,7 +4,7 @@ import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeMessages from "./HumeMessages";
 import HumeControls from "./HumeControls";
 import { useState, useEffect, useRef } from 'react';
-import { HumeMessagesProvider } from "@/src/contexts/HumeMessagesContext";
+import { HumeProvider } from "@/src/contexts/HumeContext";
 
 export default function HumeLayout() {
   const { readyState, connect } = useVoice();
@@ -38,7 +38,7 @@ export default function HumeLayout() {
   }
 
   return (
-    <HumeMessagesProvider>
+    <HumeProvider>
       <main className="flex-grow overflow-auto p-2 relative min-h-[85vh]">
         {!isConnected ? (
           <div className="flex items-center justify-center h-full">
@@ -54,6 +54,6 @@ export default function HumeLayout() {
           <HumeControls setIsLoadingAction={setIsLoadingAction} />
         </footer>
       )}
-    </HumeMessagesProvider>
+    </HumeProvider>
   );
 } 

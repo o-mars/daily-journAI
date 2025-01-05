@@ -9,14 +9,14 @@ import { saveJournalEntry, closePrivateJournalEntry } from '@/src/client/firebas
 import { ClientProvider } from '@/src/models/user.preferences';
 import { trackEvent } from '@/src/services/metricsSerivce';
 
-interface HumeMessagesContextType {
+interface HumeContextType {
   allMessages: JournalConversationEntry[];
   handleEndSession: (shouldSave: boolean) => Promise<void>;
 }
 
-const HumeMessagesContext = createContext<HumeMessagesContextType | undefined>(undefined);
+const HumeContext = createContext<HumeContextType | undefined>(undefined);
 
-export function HumeMessagesProvider({ children }: { children: React.ReactNode }) {
+export function HumeProvider({ children }: { children: React.ReactNode }) {
   const { messages: recentMessages, disconnect, chatMetadata, readyState, status } = useVoice();
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
@@ -99,14 +99,14 @@ export function HumeMessagesProvider({ children }: { children: React.ReactNode }
   }, [recentMessages]);
 
   return (
-    <HumeMessagesContext.Provider value={{ allMessages, handleEndSession }}>
+    <HumeContext.Provider value={{ allMessages, handleEndSession }}>
       {children}
-    </HumeMessagesContext.Provider>
+    </HumeContext.Provider>
   );
 }
 
-export function useHumeMessages() {
-  const context = useContext(HumeMessagesContext);
+export function useHume() {
+  const context = useContext(HumeContext);
   if (context === undefined) {
     throw new Error('useHumeMessages must be used within a HumeMessagesProvider');
   }

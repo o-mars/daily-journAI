@@ -4,7 +4,7 @@ import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeVuMeter from "./HumeVuMeter";
 import HumeControls from "./HumeControls";
 import { useState, useEffect, useRef } from 'react';
-import { HumeMessagesProvider, useHumeMessages } from "@/src/contexts/HumeMessagesContext";
+import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 
 // New inner component that has access to the context
 function HumeMinimalLayoutContent() {
@@ -12,7 +12,7 @@ function HumeMinimalLayoutContent() {
   const isConnected = readyState === VoiceReadyState.OPEN;
   const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
-  const { handleEndSession } = useHumeMessages();
+  const { handleEndSession } = useHume();
 
   const endSession = async () => {
     setIsLoadingAction(true);
@@ -87,8 +87,8 @@ function HumeMinimalLayoutContent() {
 // Main component that provides the context
 export default function HumeMinimalLayout() {
   return (
-    <HumeMessagesProvider>
+    <HumeProvider>
       <HumeMinimalLayoutContent />
-    </HumeMessagesProvider>
+    </HumeProvider>
   );
 } 

@@ -2,11 +2,11 @@
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import Image from "next/image";
 import HumeVuMeter from './HumeVuMeter';
-import { useHumeMessages } from '@/src/contexts/HumeMessagesContext';
+import { useHume } from '@/src/contexts/HumeContext';
 
 export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
   const { connect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft } = useVoice();
-  const { handleEndSession } = useHumeMessages();
+  const { handleEndSession } = useHume();
 
   const endSession = async (shouldSave: boolean) => {
     setIsLoadingAction(true);

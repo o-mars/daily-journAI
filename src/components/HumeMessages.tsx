@@ -1,10 +1,10 @@
 // ./components/Messages.tsx
 "use client";
 import { useEffect, useRef } from 'react';
-import { useHumeMessages } from '@/src/contexts/HumeMessagesContext';
+import { useHume } from '@/src/contexts/HumeContext';
 
 export default function HumeMessages() {
-  const { allMessages } = useHumeMessages();
+  const { allMessages } = useHume();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
