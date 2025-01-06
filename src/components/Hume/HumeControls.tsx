@@ -1,7 +1,7 @@
 "use client";
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import Image from "next/image";
-import HumeVuMeter from '../VuMeter';
+import VuMeter from '../VuMeter';
 import { useHume } from '@/src/contexts/HumeContext';
 import HumeTextInput from './HumeTextInput';
 
@@ -55,7 +55,7 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
             />
           </button>
           <div className="ml-[-12px]">
-            <HumeVuMeter fftData={fft}
+            <VuMeter fftData={fft}
                          barColor="rgb(229, 229, 234)"
                          height={20}
                          barCount={5}
@@ -74,7 +74,7 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
             />
           </button>
           <div className="ml-[-12px]">
-            <HumeVuMeter fftData={micFft}
+            <VuMeter fftData={micFft}
                          barColor="rgb(0, 122, 255)"
                          height={20}
                          barCount={5}
