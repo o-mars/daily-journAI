@@ -12,7 +12,7 @@ export function TransformedEntryView({ text, onChange }: TransformedEntryViewPro
         placeholder="Add notes here..."
         style={{
           width: '100%',
-          minHeight: '100%',
+          minHeight: '98%',
           padding: '1.5rem',
           border: 'none',
           resize: 'none',

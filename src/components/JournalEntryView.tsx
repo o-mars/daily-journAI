@@ -7,6 +7,7 @@ import Image from "next/image";
 import { updateJournalEntry } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { trackEvent } from "@/src/services/metricsSerivce";
+import { generateTransformedEntry } from "@/src/client/openai.service.client";
 
 interface JournalEntryViewProps {
   entry: JournalEntry;
@@ -41,7 +42,7 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
   const [isEdited, setIsEdited] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<'none' | 'success' | 'error'>('none');
   const { user, syncLocalUser } = useUser();
-  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [titleSizeClass, setTitleSizeClass] = useState('size-lg');
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +73,7 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
   };
 
   const handleUpdate = async () => {
-    setIsSaving(true);
+    setIsLoading(true);
     try {
       const updates: Partial<JournalEntry> = {};
       if (editedTitle !== entry.userTitle) updates.userTitle = editedTitle;
@@ -83,12 +84,12 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
       if (updates.userTitle) trackEvent("journals", "journal-title-updated", { userId: user?.userId, journalId: entry.id! });
       if (updates.transformedEntry) trackEvent("journals", "journal-notes-updated", { userId: user?.userId, journalId: entry.id! });
       if (updates.userTitle === entry.title) trackEvent("journals", "journal-title-reverted", { userId: user?.userId, journalId: entry.id! });
-      setIsSaving(false);
+      setIsLoading(false);
       setUpdateStatus('success');
       await syncLocalUser();
     } catch (error) {
       console.error(error);
-      setIsSaving(false);
+      setIsLoading(false);
       setUpdateStatus('error');
     } finally {
       setTimeout(() => {
@@ -106,6 +107,19 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
   const handleTransformedEntryChange = (newText: string) => {
     setEditedTransformedEntry(newText);
     setIsEdited(editedTitle !== entry.title || newText !== entry.transformedEntry);
+  };
+
+  const handleGenerateNotes = async () => {
+    setIsLoading(true);
+    setIsEdited(true);
+    try {
+      const response = await generateTransformedEntry(entry.conversation);
+      setEditedTransformedEntry(response.transformedEntry);
+    } catch {
+      setIsEdited(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -134,10 +148,21 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
             )}
           </div>
           <div className="content-card-footer">
+            <div className="footer-left">
+              {activeTab === 'transformed' && (
+                <button
+                  className="generate-notes-button"
+                  onClick={handleGenerateNotes}
+                  disabled={isLoading}
+                >
+                  <Image width={24} height={24} src="/icons/page.png" alt="Generate Notes" />
+                </button>
+              )}
+            </div>
             <div className="save-actions">
               {isEdited && (
                 <>
-                  {isSaving ? (
+                  {isLoading ? (
                     <div className="save-status spinner" />
                   ) : updateStatus === 'none' ? (
                     <>
@@ -156,16 +181,18 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
                 </>
               )}
             </div>
-            <button
-              className="toggle-view-button"
-              onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
-              title={activeTab === 'conversation' ? 'Notes' : 'Conversation'}
-            >
-              {activeTab === 'conversation' ?
-                <Image width={24} height={24} src="/icons/notes.png" alt="Notes" /> :
-                <Image width={24} height={24} src="/icons/chat.png" alt="Conversation" />
-              }
-            </button>
+            <div className="footer-right">
+              <button
+                className="toggle-view-button"
+                onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+                title={activeTab === 'conversation' ? 'Notes' : 'Conversation'}
+              >
+                {activeTab === 'conversation' ?
+                  <Image width={24} height={24} src="/icons/notes.png" alt="Notes" /> :
+                  <Image width={24} height={24} src="/icons/chat.png" alt="Conversation" />
+                }
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -174,19 +174,29 @@
 }
 
 .content-card-footer {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  padding-top: 4px;
-  border-top: 2px solid #2a2a2a;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+}
+
+.footer-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .save-actions {
-  grid-column: 2;
+  flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 8px;
+}
+
+.footer-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .toggle-view-button {
@@ -253,3 +263,20 @@
 .title-input.size-md { font-size: 1rem; }
 .title-input.size-sm { font-size: 0.9rem; }
 .title-input.size-xs { font-size: 0.8rem; }
+
+.generate-notes-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.generate-notes-button:hover {
+  opacity: 1;
+}
+
+.generate-notes-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

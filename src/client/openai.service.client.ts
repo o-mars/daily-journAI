@@ -1,7 +1,7 @@
-import { JournalEntry } from "@/src/models/journal.entry";
+import { JournalConversationEntry, JournalEntry } from "@/src/models/journal.entry";
 import { getAuth } from "firebase/auth";
 
-export async function analyzeTranscriptForSummary(transcript: string): Promise<Partial<JournalEntry>> {
+export async function generateTransformedEntry(conversation: JournalConversationEntry[]): Promise<Partial<JournalEntry>> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user');
@@ -11,14 +11,14 @@ export async function analyzeTranscriptForSummary(transcript: string): Promise<P
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({text: transcript})
+      body: JSON.stringify(conversation)
     });
-    
+
     if (!response.ok) throw new Error('Failed to analyze transcript');
-    
+
     const data = await response.json();
 
-    return JSON.parse(data);
+    return data;
   } catch (error) {
     console.error(error);
     return {};

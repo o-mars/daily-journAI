@@ -34,7 +34,6 @@ export async function generateTitle(conversation: JournalConversationEntry[]) {
 
 export async function generateTransformedEntry(conversation: JournalConversationEntry[]) {
   const transcript = conversation.map(entry => `${entry.from}: ${entry.text}.`).join(' ');
-  
   const response = await openai.chat.completions.create({
     model,
     messages: [
@@ -50,7 +49,9 @@ export async function generateTransformedEntry(conversation: JournalConversation
               "3. Only include assistant responses that provide necessary context for understanding the user's responses",
               "4. Remove assistant responses that merely echo or elaborate on user statements",
               "5. The goal is to preserve the user's authentic journal entry while maintaining coherence",
-              "Respond with only the transformed text."
+              "6. Edit and style the content so it is more of a journal entry than a dialogue",
+              "7. Lists and short sentences are preferred to long paragraphs, unless the detail is essential to the content",
+              "Respond with only the transformed text"
             ].join("\n")
           },
         ],
