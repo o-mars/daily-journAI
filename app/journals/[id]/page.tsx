@@ -2,7 +2,7 @@
 
 import { JournalEntryView } from "@/src/components/JournalEntryView";
 import Header from "@/src/components/Header";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { defaultJournalEntry, JournalEntry } from "@/src/models/journal.entry";
 import { fetchJournalEntry } from "@/src/client/firebase.service.client";
@@ -12,7 +12,6 @@ export default function JournalEntryPage() {
   const params = useParams();
   const { isInitialized } = useUser();
   const [entry, setEntry] = useState<JournalEntry>(defaultJournalEntry);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchEntry = async () => {
