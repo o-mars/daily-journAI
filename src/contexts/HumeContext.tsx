@@ -103,6 +103,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
     if (recentMessages.length === 0) return;
 
     const transformedRecent = transformHumeMessages(recentMessages);
+    if (transformedRecent.length === 0) return;
 
     setAllMessages(prevMessages => {
       if (prevMessages.length === 0) return transformedRecent;
