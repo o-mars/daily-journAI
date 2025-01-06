@@ -5,10 +5,11 @@ import HumeVuMeter from "./HumeVuMeter";
 import HumeControls from "./HumeControls";
 import { useState, useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
+import HumeEchoInput from "./HumeEchoInput";
 
 // New inner component that has access to the context
 function HumeMinimalLayoutContent() {
-  const { readyState, connect, fft } = useVoice();
+  const { readyState, connect, fft, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
   const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
@@ -69,7 +70,8 @@ function HumeMinimalLayoutContent() {
           </div>
           
           <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-2">
+              {isMuted && <HumeEchoInput />}
               <button
                 onClick={endSession}
                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-lg font-medium"

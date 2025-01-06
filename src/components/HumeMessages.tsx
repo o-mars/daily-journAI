@@ -2,8 +2,10 @@
 "use client";
 import { useEffect, useRef } from 'react';
 import { useHume } from '@/src/contexts/HumeContext';
+import { useVoice } from '@humeai/voice-react';
 
 export default function HumeMessages() {
+  const { isMuted } = useVoice();
   const { allMessages } = useHume();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +19,7 @@ export default function HumeMessages() {
     <div
       ref={scrollRef}
       className="w-full pt-4 rounded-lg overflow-y-scroll flex-grow"
-      style={{ height: 'calc(100svh - 120px)' }}
+      style={{ height: `calc(100svh - 120px ${isMuted ? '- 50px' : ''})` }}
       data-conversation-content
     >
       {allMessages.map((msg, index) => (

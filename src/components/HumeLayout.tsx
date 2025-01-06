@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { HumeProvider } from "@/src/contexts/HumeContext";
 
 export default function HumeLayout() {
-  const { readyState, connect } = useVoice();
+  const { readyState, connect, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
   const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
@@ -39,7 +39,12 @@ export default function HumeLayout() {
 
   return (
     <HumeProvider>
-      <main className="flex-grow px-2 relative" style={{ minHeight: 'calc(100svh - 170px)' }}>
+      <main
+        className="flex-grow px-2 relative"
+        style={{
+          minHeight: `calc(100svh - ${170 + (isConnected && isMuted ? 60 : 0)}px)`
+        }}
+      >
         {!isConnected ? (
           <div className="flex items-center justify-center h-full">
             <HumeControls setIsLoadingAction={setIsLoadingAction} />
