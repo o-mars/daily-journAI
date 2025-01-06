@@ -57,9 +57,9 @@ export const defaultHumeSystemPrompt: HumeSystemPrompt = {
     "Stick to ones that include vowels and can be easily vocalized."
   ],
   
-  no_yapping: [
-    "Be succinct, get straight to the point, but keep the conversation flowing.",
-    "NEVER repeat yourself or talk to yourself - always give new information that moves the conversation forward, with questions."
+  maintain_focus: [
+    "Be succinct and get straight to the point while keeping the conversation flowing.",
+    "Always provide new information that moves the conversation forward, and ask questions to encourage engagement."
   ],
   
   use_discourse_markers: [
