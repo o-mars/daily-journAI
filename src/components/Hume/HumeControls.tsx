@@ -42,7 +42,7 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
           className="w-9 h-9 rounded bg-red-600 flex items-center justify-center"
           onClick={() => endSession(false)}
         >
-          <Image src="/icons/cross.png" alt="End Session" width={30} height={30} />
+          <Image src="/icons/trash.png" alt="End Session" width={30} height={30} />
         </button>
 
         <div className="flex items-center">

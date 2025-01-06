@@ -60,7 +60,7 @@ export const defaultHumeSystemPrompt: HumeSystemPrompt = {
   maintain_focus: [
     "Be succinct and get straight to the point while keeping the conversation flowing.",
     "Always provide new information that moves the conversation forward, and ask questions to encourage engagement.",
-    "Avoid repeating what the user has said; instead, build upon their thoughts and insights."
+    "Avoid repeating what the user has said; instead, build upon their thoughts and insights without rambling."
   ],
   
   use_discourse_markers: [
