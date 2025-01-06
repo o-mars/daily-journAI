@@ -1,4 +1,4 @@
-interface HumeVuMeterProps {
+interface VuMeterProps {
   fftData: number[];
   height: number;
   barCount: number;
@@ -6,20 +6,20 @@ interface HumeVuMeterProps {
   barWidth?: number;
 }
 
-export default function HumeVuMeter({ 
+export default function VuMeter({
   fftData,
   height = 32,
   barCount = 5,
   barColor = "rgb(229, 229, 234)",
   barWidth
-}: HumeVuMeterProps) {
+}: VuMeterProps) {
   const sampledData = Array.from({ length: barCount }, (_, i) => {
     const index = Math.floor((i / barCount) * fftData.length);
     return Math.min(1, fftData[index] || 0);
   });
 
   return (
-    <div 
+    <div
       className="flex items-center gap-[2px]"
       style={{ height: `${height}px`, width: `${(barWidth || 4) * barCount + (barCount - 1) * 2}px` }}
     >

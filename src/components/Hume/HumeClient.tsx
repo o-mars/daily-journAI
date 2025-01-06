@@ -3,8 +3,8 @@
 import { VoiceProvider } from "@humeai/voice-react";
 import { DEFAULT_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useUser } from "@/src/contexts/UserContext";
-import HumeMinimalLayout from "@/src/components/HumeMinimalLayout";
-import HumeLayout from "@/src/components/HumeLayout";
+import HumeMinimalLayout from "@/src/components/Hume/HumeMinimalLayout";
+import HumeLayout from "@/src/components/Hume/HumeLayout";
 import { useState, useEffect } from "react";
 
 const MOBILE_BREAKPOINT = 320;

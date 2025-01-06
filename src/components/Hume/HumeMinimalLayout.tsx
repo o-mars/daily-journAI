@@ -1,7 +1,7 @@
 "use client";
 
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
-import HumeVuMeter from "./HumeVuMeter";
+import HumeVuMeter from "../VuMeter";
 import HumeControls from "./HumeControls";
 import { useState, useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";

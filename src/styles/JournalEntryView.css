@@ -57,6 +57,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   margin: 8px;
   padding: 16px;
+  padding-bottom: 10px;
   height: calc(100svh - 100px);
   display: flex;
   flex-direction: column;
@@ -175,7 +176,7 @@
 .content-card-footer {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  padding: 0.75rem 1rem;
+  padding-top: 4px;
   border-top: 2px solid #2a2a2a;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -221,17 +222,13 @@
     height: 20px;
   }
 
-  .back-button, .toggle-view-button {
+  .toggle-view-button {
     padding: 0px;  /* Reduced padding */
   }
 
-  .back-button img {
+  .toggle-view-button img {
     width: 24px;  /* Smaller icons */
     height: 24px;
-  }
-  .toggle-view-button img {
-    width: 20px;  /* Smaller icons */
-    height: 20px;
   }
 
   /* Adjust save status text size */
@@ -246,8 +243,7 @@
   }
 
   .content-card-footer {
-    padding-top: 0.5rem;
-    gap: 4px;
+    gap: 2px;
   }
 }
 

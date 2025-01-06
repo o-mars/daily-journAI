@@ -1,7 +1,7 @@
 "use client";
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import Image from "next/image";
-import HumeVuMeter from './HumeVuMeter';
+import HumeVuMeter from '../VuMeter';
 import { useHume } from '@/src/contexts/HumeContext';
 import HumeTextInput from './HumeTextInput';
 

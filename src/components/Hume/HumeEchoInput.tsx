@@ -1,21 +1,14 @@
-import { useVoice, VoiceReadyState } from "@humeai/voice-react";
-import InputWithButton from "./InputWithButton";
-import { useEffect, useRef, useState } from "react";
+import { useVoice } from "@humeai/voice-react";
+import InputWithButton from "../InputWithButton";
+import { useState } from "react";
 
-export default function HumeTextInput() {
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function HumeEchoInput() {
   const [inputText, setInputText] = useState("");
-  const { sendUserInput, readyState } = useVoice();
+  const { sendAssistantInput } = useVoice();
 
-  useEffect(() => {
-    if (readyState === VoiceReadyState.OPEN) {
-      inputRef.current?.focus();
-    }
-  }, [readyState]);
-  
   const handleSend = () => {
     if (inputText.trim()) {
-      sendUserInput(inputText);
+      sendAssistantInput(inputText);
       setInputText("");
     }
   };
@@ -29,7 +22,6 @@ export default function HumeTextInput() {
 
   return (
     <InputWithButton
-      ref={inputRef}
       value={inputText}
       onChange={setInputText}
       onButtonClick={handleSend}

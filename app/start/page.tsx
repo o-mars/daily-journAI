@@ -1,5 +1,5 @@
 import Header from "@/src/components/Header";
-import HumeClient from "@/src/components/HumeClient";
+import HumeClient from "@/src/components/Hume/HumeClient";
 import { fetchAccessToken } from "hume";
 
 // Add dynamic flag to prevent pre-rendering
