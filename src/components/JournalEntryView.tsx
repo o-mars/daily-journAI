@@ -1,5 +1,5 @@
 import { JournalEntry } from "@/src/models/journal.entry";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Conversation from "./Conversation";
 import { TransformedEntryView } from "./TransformedEntryView";
 import '@/src/styles/JournalEntryView.css';
@@ -10,7 +10,6 @@ import { trackEvent } from "@/src/services/metricsSerivce";
 
 interface JournalEntryViewProps {
   entry: JournalEntry;
-  onBack: () => void;
 }
 
 const getEntryDisplayText = (entry: JournalEntry) => {
@@ -23,7 +22,19 @@ const getEntryDisplayText = (entry: JournalEntry) => {
   return '';
 };
 
-export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
+function calculateTitleSize(title: string, containerWidth: number): string {
+  const charWidth = 10; // Approximate width of a character in pixels
+  const titleLength = title.length;
+  const approximateWidth = titleLength * charWidth;
+
+  if (approximateWidth < containerWidth * 0.6) return 'size-xl';
+  if (approximateWidth < containerWidth * 0.8) return 'size-lg';
+  if (approximateWidth < containerWidth * 0.9) return 'size-md';
+  if (approximateWidth < containerWidth * 1.0) return 'size-sm';
+  return 'size-xs';
+}
+
+export function JournalEntryView({ entry }: JournalEntryViewProps) {
   const [activeTab, setActiveTab] = useState<'conversation' | 'transformed'>('conversation');
   const [editedTitle, setEditedTitle] = useState(getEntryDisplayText(entry));
   const [editedTransformedEntry, setEditedTransformedEntry] = useState(entry.transformedEntry);
@@ -31,12 +42,28 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
   const [updateStatus, setUpdateStatus] = useState<'none' | 'success' | 'error'>('none');
   const { user, syncLocalUser } = useUser();
   const [isSaving, setIsSaving] = useState(false);
+  const [titleSizeClass, setTitleSizeClass] = useState('size-lg');
+  const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setEditedTitle(getEntryDisplayText(entry));
     setEditedTransformedEntry(entry.transformedEntry);
     setIsEdited(false);
   }, [entry]);
+
+  useEffect(() => {
+    const updateTitleSize = () => {
+      if (titleRef.current) {
+        const containerWidth = titleRef.current.parentElement?.offsetWidth || 0;
+        const sizeClass = calculateTitleSize(editedTitle, containerWidth);
+        setTitleSizeClass(sizeClass);
+      }
+    };
+
+    updateTitleSize();
+    window.addEventListener('resize', updateTitleSize);
+    return () => window.removeEventListener('resize', updateTitleSize);
+  }, [editedTitle]);
 
   const handleCancel = () => {
     setEditedTitle(getEntryDisplayText(entry));
@@ -86,56 +113,14 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
       <div className="content">
         <div className="content-card">
           <div className="content-card-header">
-            <button className="back-button" onClick={onBack}>
-              <Image width={32} height={32} src="/icons/feather-chevron-left.svg" alt="Back" />
-            </button>
             <div className="content-card-header-title">
               <input
+                ref={titleRef}
                 type="text"
                 value={editedTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                className="title-input"
+                className={`title-input ${titleSizeClass}`}
               />
-            </div>
-            <div className="content-card-header-action">
-              {isEdited && (
-                <>
-                  {isSaving ? (
-                    <div className="save-status spinner">
-                      {/* Basic spinner div */}
-                    </div>
-                  ) : updateStatus === 'none' ? (
-                    <>
-                      <button
-                        className="cancel-button"
-                        onClick={handleCancel}
-                      >
-                        <Image width={24} height={23} src="/icons/cross-mark-red.png" alt="Cancel" />
-                      </button>
-                      <button
-                        className="save-button"
-                        onClick={handleUpdate}
-                      >
-                        <Image width={24} height={24} src="/icons/check-green.png" alt="Save" />
-                      </button>
-                    </>
-                  ) : (
-                    <div className={`save-status ${updateStatus}`}>
-                      <span>{updateStatus === 'success' ? 'Success!' : 'Failed!'}</span>
-                    </div>
-                  )}
-                </>
-              )}
-              <button 
-                className="toggle-view-button"
-                onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
-                title={activeTab === 'conversation' ? 'Notes' : 'Conversation'}
-              >
-                {activeTab === 'conversation' ?
-                  <Image width={24} height={24} src="/icons/notes.png" alt="Notes" /> :
-                  <Image width={24} height={24} src="/icons/chat.png" alt="Conversation" />
-                }
-              </button>
             </div>
           </div>
           <div className="content-card-body">
@@ -147,6 +132,40 @@ export function JournalEntryView({ entry, onBack }: JournalEntryViewProps) {
                 onChange={handleTransformedEntryChange}
               />
             )}
+          </div>
+          <div className="content-card-footer">
+            <div className="save-actions">
+              {isEdited && (
+                <>
+                  {isSaving ? (
+                    <div className="save-status spinner" />
+                  ) : updateStatus === 'none' ? (
+                    <>
+                      <button className="cancel-button" onClick={handleCancel}>
+                        <Image width={24} height={23} src="/icons/cross-mark-red.png" alt="Cancel" />
+                      </button>
+                      <button className="save-button" onClick={handleUpdate}>
+                        <Image width={24} height={24} src="/icons/check-green.png" alt="Save" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className={`save-status ${updateStatus}`}>
+                      <span>{updateStatus === 'success' ? 'Success!' : 'Failed!'}</span>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <button
+              className="toggle-view-button"
+              onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
+              title={activeTab === 'conversation' ? 'Notes' : 'Conversation'}
+            >
+              {activeTab === 'conversation' ?
+                <Image width={24} height={24} src="/icons/notes.png" alt="Notes" /> :
+                <Image width={24} height={24} src="/icons/chat.png" alt="Conversation" />
+              }
+            </button>
           </div>
         </div>
       </div>

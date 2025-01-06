@@ -13,7 +13,8 @@
   z-index: 1;
   width: 100%;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 2px solid #2a2a2a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .content-card-header {
@@ -28,10 +29,9 @@
 }
 
 .content-card-header-title {
-  width: 80%;
+  width: 100%;
   text-align: center;
   font-weight: bold;
-  margin: auto;
 }
 
 .content-card-header-action {
@@ -89,11 +89,16 @@
 .title-input {
   background: none;
   border: none;
-  font-size: inherit;
+  font-size: 1.2rem;
   font-weight: inherit;
   color: inherit;
   width: 100%;
   padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: font-size 0.2s ease;
+  max-width: 100%;
 }
 
 .title-input:focus {
@@ -167,6 +172,26 @@
   margin-top: 2px;
 }
 
+.content-card-footer {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  padding: 0.75rem 1rem;
+  border-top: 2px solid #2a2a2a;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.save-actions {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-view-button {
+  grid-column: 3;
+}
+
 @media (max-width: 768px) {
   .content-card-header {
     padding-bottom: 0.5rem;
@@ -219,4 +244,16 @@
     width: 16px;
     height: 16px;
   }
+
+  .content-card-footer {
+    padding-top: 0.5rem;
+    gap: 4px;
+  }
 }
+
+/* Add these font size classes that we'll apply dynamically */
+.title-input.size-xl { font-size: 1.5rem; }
+.title-input.size-lg { font-size: 1.2rem; }
+.title-input.size-md { font-size: 1rem; }
+.title-input.size-sm { font-size: 0.9rem; }
+.title-input.size-xs { font-size: 0.8rem; }

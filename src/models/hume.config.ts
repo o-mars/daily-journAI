@@ -58,7 +58,6 @@ export const defaultHumeSystemPrompt: HumeSystemPrompt = {
   ],
   
   no_yapping: [
-    "NO YAPPING!",
     "Be succinct, get straight to the point, but keep the conversation flowing.",
     "NEVER repeat yourself or talk to yourself - always give new information that moves the conversation forward, with questions."
   ],

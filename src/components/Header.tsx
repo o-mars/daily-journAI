@@ -113,7 +113,7 @@ const Header: React.FC = () => {
         {currentView === 'settings' ? 'Settings' : branding.appName}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
-        {(currentView === 'journals'|| currentView === 'journals/:journalEntryId') && (
+        {(currentView === 'journals') && (
           <button 
             className="w-7" 
             onClick={() => navigateToView(provider === 'hume' ? 'start' : 'main', { autoConnect: 'true' })}
@@ -128,7 +128,7 @@ const Header: React.FC = () => {
             />
           </button>
         )}
-        {(currentView === 'main' || currentView === 'start') && (
+        {(currentView === 'start' || currentView === 'journals/:journalEntryId') && (
           <button className="w-7" onClick={() => navigateToView('journals')}>
             <Image
               width={26}
