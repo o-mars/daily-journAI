@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 
 function HumeLayoutContent() {
-  const { readyState, isMuted } = useVoice();
+  const { readyState } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
   const hasAutoConnected = useRef(false);
   const { handleStartSession, isLoading } = useHume();
@@ -28,7 +28,7 @@ function HumeLayoutContent() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center" style={{ height: 'calc(100svh - 64px)'}}>
+      <div className="flex items-center justify-center flex-1" style={{ height: 'calc(100svh - 64px)' }}>
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
         </div>
@@ -37,26 +37,25 @@ function HumeLayoutContent() {
   }
 
   return (
-    <main
-      className="flex-grow px-2 relative"
-      style={{
-        minHeight: `calc(100svh - ${170 + (isConnected && isMuted ? 60 : 0)}px)`
-      }}
-    >
-      {!isConnected ? (
-        <div className="flex items-center justify-center h-full">
-          <HumeControls />
-        </div>
-      ) : (
-        <HumeMessages />
-      )}
+    <div className="flex flex-col h-[calc(100svh-64px)]">
+      <main
+        className="flex-1 px-2 relative overflow-y-auto"
+      >
+        {!isConnected ? (
+          <div className="flex items-center justify-center h-full">
+            <HumeControls />
+          </div>
+        ) : (
+          <HumeMessages />
+        )}
+      </main>
 
       {isConnected && (
-        <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+        <footer className="bg-gray-900 w-full z-10 p-2">
           <HumeControls />
         </footer>
       )}
-    </main>
+    </div>
   );
 }
 

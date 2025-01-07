@@ -61,24 +61,6 @@
   height: calc(100svh - 100px);
   display: flex;
   flex-direction: column;
-
-  /* Customize scrollbar for webkit browsers (Chrome, Safari, etc.) */
-  &::-webkit-scrollbar {
-    width: 8px;  /* width of the scrollbar */
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;  /* scrollbar track */
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);  /* scrollbar handle */
-    border-radius: 4px;
-  }
-
-  /* For Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .content-card-body {
