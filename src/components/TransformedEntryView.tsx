@@ -20,22 +20,31 @@ export function TransformedEntryView({ text, onChange }: TransformedEntryViewPro
           fontFamily: 'inherit',
           fontSize: 'inherit',
           lineHeight: 'inherit',
-          outline: 'none', // Remove default outline
+          outline: 'none',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }}
         onFocus={(e) => {
-          e.currentTarget.style.border = '1px solid #444'; // Change border color on focus
+          e.currentTarget.style.border = '1px solid #444';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.border = 'none'; // Reset border color on blur
+          e.currentTarget.style.border = 'none';
         }}
       />
     );
   }
 
   return (
-    <div className="transformed-entry" style={{
-      padding: '1.5rem',
-    }}>
+    <div
+      className="transformed-entry"
+      style={{
+        padding: '1.5rem',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        maxHeight: '100%',
+        height: '100%',
+      }}
+    >
       {text.split('\n').map((paragraph, index) => (
         <p key={index} style={{
           marginBottom: index < text.split('\n').length - 1 ? '1rem' : 0,

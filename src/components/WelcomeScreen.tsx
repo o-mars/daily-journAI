@@ -22,7 +22,10 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">Welcome to {branding.appName}</h1>
+      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">
+        <span className="xs:inline block text-center">Welcome to</span>{' '}
+        <span className="xs:inline block text-center mt-2 xs:mt-0">{branding.appName}</span>
+      </h1>
 
       <p style={{ marginTop: '16px' }} className="mb-4 text-center">
         Providing you a safe and supportive space for your thoughts.
