@@ -3,17 +3,22 @@
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeVuMeter from "../VuMeter";
 import HumeControls from "./HumeControls";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 import HumeEchoInput from "./HumeEchoInput";
 
-// New inner component that has access to the context
 function HumeMinimalLayoutContent() {
-  const { readyState, connect, fft, isMuted } = useVoice();
+  const { readyState, fft, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
   const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
-  const { handleEndSession } = useHume();
+  const { handleStartSession, handleEndSession } = useHume();
+
+  const startSession = useCallback(async () => {
+    setIsLoadingAction(true);
+    await handleStartSession();
+    setIsLoadingAction(false);
+  }, [handleStartSession]);
 
   const endSession = async () => {
     setIsLoadingAction(true);
@@ -22,7 +27,6 @@ function HumeMinimalLayoutContent() {
   }
 
   useEffect(() => {
-    // Same auto-connect logic as HumeLayout
     const searchParams = new URLSearchParams(window.location.search);
     const shouldAutoConnect = searchParams.get("autoConnect") === "true";
 
@@ -31,9 +35,9 @@ function HumeMinimalLayoutContent() {
       searchParams.delete("autoConnect");
       const newUrl = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
       window.history.replaceState({}, "", newUrl);
-      connect();
+      startSession();
     }
-  }, [connect, isConnected]);
+  }, [startSession, isConnected]);
 
   if (isLoadingAction) {
     return (
@@ -55,9 +59,11 @@ function HumeMinimalLayoutContent() {
         <>
           <div className="flex-grow flex items-center justify-center w-full">
             <div className="bg-gray-800/30 rounded-xl p-12 w-[600px] h-[400px] flex flex-col items-center justify-center">
-              <div className="relative">
+              <div className="relative mt-20">
                 <div className="absolute inset-0 bg-blue-500/20 blur-xl" />
-                <div className="text-blue-500/70 text-sm mb-2 text-center">Echo</div>
+                <div className="text-blue-500/70 text-lg mb-4 text-center">
+                  Echo
+                </div>
                 <HumeVuMeter
                   fftData={fft || []}
                   height={120}
@@ -86,11 +92,10 @@ function HumeMinimalLayoutContent() {
   );
 }
 
-// Main component that provides the context
 export default function HumeMinimalLayout() {
   return (
     <HumeProvider>
       <HumeMinimalLayoutContent />
     </HumeProvider>
   );
-} 
+}

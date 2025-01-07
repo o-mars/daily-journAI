@@ -4,22 +4,29 @@ import Image from "next/image";
 import VuMeter from '../VuMeter';
 import { useHume } from '@/src/contexts/HumeContext';
 import HumeTextInput from './HumeTextInput';
+import { useCallback } from "react";
 
 export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
-  const { connect, readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft } = useVoice();
-  const { handleEndSession } = useHume();
+  const { readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft } = useVoice();
+  const { handleStartSession, handleEndSession } = useHume();
 
-  const endSession = async (shouldSave: boolean) => {
+  const startSession = useCallback(async () => {
+    setIsLoadingAction(true);
+    await handleStartSession();
+    setIsLoadingAction(false);
+  }, [handleStartSession, setIsLoadingAction]);
+
+  const endSession = useCallback(async (shouldSave: boolean) => {
     setIsLoadingAction(true);
     await handleEndSession(shouldSave);
     setIsLoadingAction(false);
-  }
+  }, [handleEndSession, setIsLoadingAction]);
 
   if (readyState !== VoiceReadyState.OPEN) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
         <button
-          onClick={connect}
+          onClick={startSession}
           className="w-32 h-32 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-lg"
         >
           <div className="text-center">

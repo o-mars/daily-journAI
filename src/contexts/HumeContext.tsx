@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
-import { useVoice, VoiceReadyState } from "@humeai/voice-react";
+import { useVoice } from "@humeai/voice-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry } from '@/src/models/journal.entry';
 import { transformHumeMessages } from '@/src/services/humeMessageTransformerService';
 import { useUser } from '@/src/contexts/UserContext';
@@ -11,13 +11,14 @@ import { trackEvent } from '@/src/services/metricsSerivce';
 
 interface HumeContextType {
   allMessages: JournalConversationEntry[];
+  handleStartSession: () => Promise<void>;
   handleEndSession: (shouldSave: boolean) => Promise<void>;
 }
 
 const HumeContext = createContext<HumeContextType | undefined>(undefined);
 
 export function HumeProvider({ children }: { children: React.ReactNode }) {
-  const { messages: recentMessages, disconnect, chatMetadata, readyState, status } = useVoice();
+  const { messages: recentMessages, connect, disconnect, chatMetadata } = useVoice();
   const { user, syncLocalUser } = useUser();
   const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
@@ -39,6 +40,21 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
       keepAliveRef.current = null;
     }
   }, []);
+
+  const handleStartSession = useCallback(async () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    try {
+      await connect();
+      if (isMobile) {
+        preventSleep();
+      }
+    } catch (e) {
+      const error = e instanceof Error ? e.message : 'Unknown error';
+      trackEvent("session", "session-error", { error });
+      console.error(`Error starting session: ${error}`);
+      navigateToView('start', { autoConnect: 'true' });
+    }
+  }, [connect, preventSleep, navigateToView]);
 
   const handleEndSession = useCallback(async (shouldSave: boolean) => {
     allowSleep();
@@ -85,21 +101,6 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, allowSleep, syncLocalUser, user]);
 
   useEffect(() => {
-    const isSessionStarting = status.value === 'connected' && readyState === VoiceReadyState.OPEN;
-
-    if (isSessionStarting) {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        preventSleep();
-      }
-    }
-    
-    return () => {
-      allowSleep();
-    };
-  }, [readyState, status, preventSleep, allowSleep]);
-
-  useEffect(() => {
     if (recentMessages.length === 0) return;
 
     const transformedRecent = transformHumeMessages(recentMessages);
@@ -127,7 +128,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   }, [recentMessages]);
 
   return (
-    <HumeContext.Provider value={{ allMessages, handleEndSession }}>
+    <HumeContext.Provider value={{ allMessages, handleStartSession, handleEndSession }}>
       {children}
     </HumeContext.Provider>
   );
@@ -139,4 +140,4 @@ export function useHume() {
     throw new Error('useHumeMessages must be used within a HumeMessagesProvider');
   }
   return context;
-} 
+}

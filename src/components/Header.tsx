@@ -8,11 +8,9 @@ import { useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { useHeader } from '@/src/contexts/HeaderContext';
 import { RTVIClientAudio } from "realtime-ai-react";
-import { ClientProvider } from "@/src/models/user.preferences";
 
 const Header: React.FC = () => {
   const { user } = useUser();
-  const provider: ClientProvider = process.env.NEXT_PUBLIC_PROVIDER === 'hume' ? 'hume' : user?.preferences.provider || 'dailybots';
   const {
     branding,
     isShowingMenuOptions,
@@ -114,9 +112,9 @@ const Header: React.FC = () => {
       </h1>
       <div className="flex flex-grow-0 ml-auto">
         {(currentView === 'journals') && (
-          <button 
+          <button
             className="w-7" 
-            onClick={() => navigateToView(provider === 'hume' ? 'start' : 'main', { autoConnect: 'true' })}
+            onClick={() => navigateToView('start', { autoConnect: 'true' })}
             title="Start"
           >
             <Image
@@ -144,4 +142,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;
