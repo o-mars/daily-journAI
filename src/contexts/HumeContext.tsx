@@ -11,6 +11,7 @@ import { trackEvent } from '@/src/services/metricsSerivce';
 
 interface HumeContextType {
   allMessages: JournalConversationEntry[];
+  isLoading: boolean;
   handleStartSession: () => Promise<void>;
   handleEndSession: (shouldSave: boolean) => Promise<void>;
 }
@@ -23,6 +24,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   const { branding, navigateToView } = useHeader();
   const [allMessages, setAllMessages] = useState<JournalConversationEntry[]>([]);
   const keepAliveRef = useRef<HTMLAudioElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const preventSleep = useCallback(() => {
     if (keepAliveRef.current) return;
@@ -43,20 +45,24 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
 
   const handleStartSession = useCallback(async () => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    setIsLoading(true);
     try {
       await connect();
       if (isMobile) {
         preventSleep();
       }
     } catch (e) {
-      const error = e instanceof Error ? e.message : 'Unknown error';
+      const error = e instanceof Error ? e.message : 'Error connecting to Hume, reloading and retrying...';
       trackEvent("session", "session-error", { error });
       console.error(`Error starting session: ${error}`);
       navigateToView('start', { autoConnect: 'true' });
+    } finally {
+      setIsLoading(false);
     }
   }, [connect, preventSleep, navigateToView]);
 
   const handleEndSession = useCallback(async (shouldSave: boolean) => {
+    setIsLoading(true);
     allowSleep();
     disconnect();
     const didUserInteract = allMessages.some(message => message.from === 'user');
@@ -98,6 +104,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         console.error(`Error saving journal entry: ${e}`);
       }
     }
+    setIsLoading(false);
   }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, allowSleep, syncLocalUser, user]);
 
   useEffect(() => {
@@ -128,7 +135,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
   }, [recentMessages]);
 
   return (
-    <HumeContext.Provider value={{ allMessages, handleStartSession, handleEndSession }}>
+    <HumeContext.Provider value={{ allMessages, isLoading, handleStartSession, handleEndSession }}>
       {children}
     </HumeContext.Provider>
   );

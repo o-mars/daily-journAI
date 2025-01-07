@@ -4,29 +4,16 @@ import Image from "next/image";
 import VuMeter from '../VuMeter';
 import { useHume } from '@/src/contexts/HumeContext';
 import HumeTextInput from './HumeTextInput';
-import { useCallback } from "react";
 
-export default function HumeControls({ setIsLoadingAction }: { setIsLoadingAction: (loading: boolean) => void }) {
+export default function HumeControls() {
   const { readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft } = useVoice();
   const { handleStartSession, handleEndSession } = useHume();
-
-  const startSession = useCallback(async () => {
-    setIsLoadingAction(true);
-    await handleStartSession();
-    setIsLoadingAction(false);
-  }, [handleStartSession, setIsLoadingAction]);
-
-  const endSession = useCallback(async (shouldSave: boolean) => {
-    setIsLoadingAction(true);
-    await handleEndSession(shouldSave);
-    setIsLoadingAction(false);
-  }, [handleEndSession, setIsLoadingAction]);
 
   if (readyState !== VoiceReadyState.OPEN) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
         <button
-          onClick={startSession}
+          onClick={handleStartSession}
           className="w-32 h-32 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-lg"
         >
           <div className="text-center">
@@ -47,7 +34,7 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
       <div className="flex w-full justify-between items-center">
         <button
           className="w-9 h-9 rounded bg-red-600 flex items-center justify-center"
-          onClick={() => endSession(false)}
+          onClick={() => handleEndSession(false)}
         >
           <Image src="/icons/trash.png" alt="End Session" width={30} height={30} />
         </button>
@@ -92,7 +79,7 @@ export default function HumeControls({ setIsLoadingAction }: { setIsLoadingActio
 
         <button
           className="w-9 h-9 rounded bg-green-600 flex items-center justify-center"
-          onClick={() => endSession(true)}
+          onClick={() => handleEndSession(true)}
         >
           <Image src="/icons/check-white.png" alt="Save" width={30} height={30} />
         </button>

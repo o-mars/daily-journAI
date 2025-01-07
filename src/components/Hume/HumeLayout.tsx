@@ -3,21 +3,15 @@
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeMessages from "./HumeMessages";
 import HumeControls from "./HumeControls";
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 
 function HumeLayoutContent() {
   const { readyState, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
-  const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
-  const { handleStartSession } = useHume();
+  const { handleStartSession, isLoading } = useHume();
 
-  const startSession = useCallback(async () => {
-    setIsLoadingAction(true);
-    await handleStartSession();
-    setIsLoadingAction(false);
-  }, [handleStartSession]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -28,11 +22,11 @@ function HumeLayoutContent() {
       searchParams.delete("autoConnect");
       const newUrl = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
       window.history.replaceState({}, "", newUrl);
-      startSession();
+      handleStartSession();
     }
-  }, [startSession, isConnected]);
+  }, [handleStartSession, isConnected]);
 
-  if (isLoadingAction) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center" style={{ height: 'calc(100svh - 64px)'}}>
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
@@ -51,7 +45,7 @@ function HumeLayoutContent() {
     >
       {!isConnected ? (
         <div className="flex items-center justify-center h-full">
-          <HumeControls setIsLoadingAction={setIsLoadingAction} />
+          <HumeControls />
         </div>
       ) : (
         <HumeMessages />
@@ -59,7 +53,7 @@ function HumeLayoutContent() {
 
       {isConnected && (
         <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
-          <HumeControls setIsLoadingAction={setIsLoadingAction} />
+          <HumeControls />
         </footer>
       )}
     </main>

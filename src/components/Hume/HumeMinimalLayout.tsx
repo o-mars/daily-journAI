@@ -3,27 +3,22 @@
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeVuMeter from "../VuMeter";
 import HumeControls from "./HumeControls";
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 import HumeEchoInput from "./HumeEchoInput";
 
 function HumeMinimalLayoutContent() {
   const { readyState, fft, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
-  const [isLoadingAction, setIsLoadingAction] = useState(false);
   const hasAutoConnected = useRef(false);
-  const { handleStartSession, handleEndSession } = useHume();
+  const { isLoading, handleStartSession, handleEndSession } = useHume();
 
   const startSession = useCallback(async () => {
-    setIsLoadingAction(true);
     await handleStartSession();
-    setIsLoadingAction(false);
   }, [handleStartSession]);
 
   const endSession = async () => {
-    setIsLoadingAction(true);
     await handleEndSession(true);
-    setIsLoadingAction(false);
   }
 
   useEffect(() => {
@@ -39,7 +34,7 @@ function HumeMinimalLayoutContent() {
     }
   }, [startSession, isConnected]);
 
-  if (isLoadingAction) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
@@ -53,7 +48,7 @@ function HumeMinimalLayoutContent() {
     <main className="flex flex-col h-screen bg-gray-900">
       {!isConnected ? (
         <div className="flex items-center justify-center h-full">
-          <HumeControls setIsLoadingAction={setIsLoadingAction} />
+          <HumeControls />
         </div>
       ) : (
         <>
