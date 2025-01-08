@@ -101,10 +101,12 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         }
         trackEvent("session", "session-ended", { ...finalMetadata });
       } catch (e) {
+        trackEvent("session", "session-error", { error: e instanceof Error ? e.message : 'Error saving journal entry' });
         console.error(`Error saving journal entry: ${e}`);
       }
     }
     setIsLoading(false);
+    setAllMessages([]);
   }, [allMessages, branding.botType, chatMetadata, disconnect, navigateToView, allowSleep, syncLocalUser, user]);
 
   useEffect(() => {
