@@ -78,10 +78,13 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
         });
         url += `?${searchParams.toString()}`;
       }
-  
-      router.push(url);
-    }
 
+      if (view === currentView && params) {
+        window.location.href = url;
+      } else {
+        router.push(url);
+      }
+    }
   };
 
   const goBack = () => {
