@@ -48,6 +48,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       await connect();
+      trackEvent("session", "session-started", { userId: user?.userId, email: user?.profile?.email ?? '' });
       if (isMobile) {
         preventSleep();
       }
@@ -59,7 +60,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [connect, preventSleep, navigateToView]);
+  }, [connect, preventSleep, navigateToView, user?.userId, user?.profile?.email]);
 
   const handleEndSession = useCallback(async (shouldSave: boolean) => {
     setIsLoading(true);
