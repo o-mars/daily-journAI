@@ -54,7 +54,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {
       const error = e instanceof Error ? e.message : 'Error connecting to Hume, reloading and retrying...';
-      trackEvent("session", "session-error", { error });
+      trackEvent("session", "session-error", { error, userId: user?.userId, email: user?.profile?.email ?? '' });
       console.error(`Error starting session: ${error}`);
       navigateToView('start', { autoConnect: 'true' });
     } finally {
@@ -102,7 +102,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         }
         trackEvent("session", "session-ended", { ...finalMetadata });
       } catch (e) {
-        trackEvent("session", "session-error", { error: e instanceof Error ? e.message : 'Error saving journal entry' });
+        trackEvent("session", "session-error", { error: e instanceof Error ? e.message : 'Error saving journal entry', userId: user?.userId, email: user?.profile?.email ?? '' });
         console.error(`Error saving journal entry: ${e}`);
       }
     }
