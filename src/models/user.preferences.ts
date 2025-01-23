@@ -81,7 +81,7 @@ export const defaultVentingMachineUserPreferences: UserPreferences = {
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
-  selectedConfig: 'journaling',
+  selectedConfig: 'dating',
   humeConfigs: {
     journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
     dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },

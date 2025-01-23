@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceProvider } from "@humeai/voice-react";
-import { DEFAULT_JOURNALING_HUME_CONFIG_ID } from "@/src/models/constants";
+import { DEFAULT_DATING_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useUser } from "@/src/contexts/UserContext";
 import HumeMinimalLayout from "@/src/components/Hume/HumeMinimalLayout";
 import HumeLayout from "@/src/components/Hume/HumeLayout";
@@ -32,7 +32,7 @@ export default function HumeClient({
   return (
     <VoiceProvider
       auth={{ type: "accessToken", value: accessToken }}
-      configId={user?.preferences.humeConfigs?.[user?.preferences.selectedConfig]?.id ?? DEFAULT_JOURNALING_HUME_CONFIG_ID}
+      configId={user?.preferences.humeConfigs?.[user?.preferences.selectedConfig]?.id ?? DEFAULT_DATING_HUME_CONFIG_ID}
     >
       {isMinimal ? <HumeMinimalLayout /> : <HumeLayout />}
     </VoiceProvider>
