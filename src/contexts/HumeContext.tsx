@@ -92,7 +92,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         };
 
         if (shouldSave) {
-          const response = await saveJournalEntry(user?.preferences.selectedConfig!, messagesToSave, finalMetadata);
+          const response = await saveJournalEntry(user?.preferences.selectedConfig ?? 'journaling', messagesToSave, finalMetadata);
           trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
           await syncLocalUser();
           navigateToView('journals/:journalEntryId', { journalEntryId: response.id });
