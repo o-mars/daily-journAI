@@ -3,8 +3,8 @@ import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.co
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
 
-export const DATING_HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help you reflect on your date. How did it go?`;
-export const DATING_HUME_RETURNING_FIRST_MESSAGE = `Hi! How was your date?`;
+export const DATING_HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help you reflect on your date. I'd love to hear about your feelings and first impressions about this person. What emotions come up when you think about them?`;
+export const DATING_HUME_RETURNING_FIRST_MESSAGE = `Welcome back! How are you feeling about your date? I'd love to hear how you're feeling about this person. What emotions come up when you think about them?`;
 
 export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   role: [
@@ -82,7 +82,7 @@ export const generateDatingPostedConfig = (user?: User): PostedConfig => {
   const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0;
   return {
     eviVersion: '2',
-    name: 'Dating Assistant Config',
+    name: `Dating Config: ${user?.userId}`,
     versionDescription: 'Dating reflection assistant configuration',
     prompt: {
       text: humeSystemPromptAsString(DATING_HUME_SYSTEM_PROMPT),

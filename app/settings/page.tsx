@@ -133,7 +133,7 @@ export default function Settings() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="category" className="block mb-2">Active Category</label>
+                  <label htmlFor="category" className="block mb-2">Category</label>
                   <select 
                     value={user?.preferences.selectedConfig ?? 'journaling'}
                     onChange={handleCategoryChange}
