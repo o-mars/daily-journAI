@@ -6,7 +6,7 @@ import StatusIndicator, { StatusIndicatorHandle } from '@/src/components/StatusI
 
 import { useUser } from "@/src/contexts/UserContext";
 import Header from "@/src/components/Header";
-import { defaultUser } from "@/src/models/user";
+import { defaultUser, User } from "@/src/models/user";
 import { CHECK_EMAIL_MESSAGE } from "@/src/models/constants";
 import InputWithButton from "@/src/components/InputWithButton";
 import { isValidEmail, sendMagicLink } from "@/src/services/authService";
@@ -17,7 +17,7 @@ import { signOut } from "@/src/services/authService";
 import { trackEvent } from "@/src/services/metricsSerivce";
 
 export default function Settings() {
-  const { user, syncLocalUser } = useUser();
+  const { user, syncLocalUser, updateUser } = useUser();
 
   const statusRef = useRef<StatusIndicatorHandle>(null);
 
@@ -87,6 +87,27 @@ export default function Settings() {
     }
   }, [deleteType, router, syncLocalUser, user?.userId]);
 
+  const handleCategoryChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!user) return;
+
+    const newUser: Partial<User> = {
+      ...user,
+      preferences: {
+        ...user.preferences,
+        selectedConfig: e.target.value
+      }
+    };
+
+    try {
+      await updateUser(newUser);
+      await syncLocalUser();
+      statusRef.current?.pushMessage({ type: 'success', text: 'Category updated successfully' });
+    } catch (error) {
+      console.error('Failed to update category:', error);
+      statusRef.current?.pushMessage({ type: 'error', text: 'Failed to update category' });
+    }
+  }, [user, syncLocalUser, updateUser]);
+
   return (
       <div className="flex flex-col min-h-screen bg-gray-900">
         <Header />
@@ -109,6 +130,18 @@ export default function Settings() {
                     shouldShowButton={!isValidEmail(localUser.profile.email)}
                     disabled={!isValidEmail(emailToConnect)}
                   />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="category" className="block mb-2">Active Category</label>
+                  <select 
+                    value={user?.preferences.selectedConfig ?? 'journaling'}
+                    onChange={handleCategoryChange}
+                    className="w-full p-2 bg-gray-800 rounded"
+                  >
+                    <option value="journaling">Journaling</option>
+                    <option value="dating">Dating</option>
+                  </select>
                 </div>
 
                 <div className="flex justify-between space-x-4">

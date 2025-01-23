@@ -5,6 +5,7 @@ import { JournalEntry } from "@/src/models/journal.entry";
 import { fetchAccessToken } from "hume";
 import { trackEvent } from "@/src/services/metricsSerivce";
 import { generateDatingPostedConfig } from "@/src/models/hume/configs/dating";
+import { generateJournalingPostedConfig } from "@/src/models/hume/configs/journaling";
 
 export const baseVoice: PostedVoice = {
   name: 'KORA',
@@ -18,9 +19,20 @@ export const baseLanguageModel: PostedLanguageModel = {
 }
 
 export function generateHumeConfigForUserWithJournalEntries(user: User, journalEntries: JournalEntry[]): PostedConfig {
-  console.log('ignore this', journalEntries);
-  // const humeSystemPrompt: HumeSystemPrompt = generateHumeSystemPromptForUserWithJournalEntries(user, journalEntries);
-  const humeConfig = generateDatingPostedConfig(user);
+  const category = user.preferences.selectedConfig;
+  let humeConfig;
+
+  switch (category) {
+    case 'journaling':
+      humeConfig = generateJournalingPostedConfig(user, journalEntries);
+      break;
+    case 'dating':
+      humeConfig = generateDatingPostedConfig(user);
+      break;
+    default:
+      throw new Error(`Unsupported category: ${category}`);
+  }
+
   return humeConfig;
 }
 

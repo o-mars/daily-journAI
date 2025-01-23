@@ -3,7 +3,7 @@ import { auth, getUser, getRecentJournalEntries, updateUser } from '@/app/lib/fi
 import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig } from '@/app/lib/hume.admin';
 import { HumeConfigId } from '@/src/models/hume.config';
-import { DEFAULT_HUME_CONFIG_ID } from '@/src/models/constants';
+import { DEFAULT_JOURNALING_HUME_CONFIG_ID } from '@/src/models/constants';
 
 /*
  GET = get config id for user from firebase, if not found, create default hume config, save to firebase, and then return config id
@@ -23,24 +23,26 @@ export async function GET(request: Request) {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category') || 'journaling';
+
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
     const user = await getUser(userId);
-
     const recentJournalEntries = await getRecentJournalEntries(userId);
 
     const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
-
     const response = await publishConfig(config);
 
     const humeConfigId: HumeConfigId = {
-      id: response.id ?? DEFAULT_HUME_CONFIG_ID,
+      id: response.id ?? DEFAULT_JOURNALING_HUME_CONFIG_ID,
       version: response.id ? response.version : undefined,
     };
-    user.preferences.humeConfigId = humeConfigId;
-
-    await updateUser(user.userId, user); // We don't need to block on this since we have the config to use?
+    
+    // Update the specific category config
+    user.preferences.humeConfigs[category] = humeConfigId;
+    await updateUser(user.userId, user);
 
     return NextResponse.json(humeConfigId);
   } catch (error) {

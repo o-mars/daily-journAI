@@ -1,5 +1,6 @@
 // Example API route to get user
 import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount, deleteUser } from '@/app/lib/firebase.admin';
+import { defaultUserPreferences } from '@/src/models/user.preferences';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -20,6 +21,19 @@ export async function GET(request: Request) {
 
     const recentJournalEntries = await getRecentJournalEntries(userId);
     user.journalEntries = recentJournalEntries;
+
+    let needsUpdate = false;
+    if (!user.preferences.humeConfigs) {
+      user.preferences.humeConfigs = defaultUserPreferences.humeConfigs;
+      needsUpdate = true;
+    }
+    if (!user.preferences.selectedConfig) {
+      user.preferences.selectedConfig = defaultUserPreferences.selectedConfig;
+      needsUpdate = true;
+    }
+    if (needsUpdate) {
+      await updateUser(user.userId, user);
+    }
     
     console.log('returning user from backend using next response: ', user);
     return NextResponse.json(user);

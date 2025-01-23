@@ -94,6 +94,7 @@ export async function saveUpdatedUser(data: Partial<User>) {
 }
 
 export async function saveJournalEntry(
+  category: string,
   conversation: JournalConversationEntry[],
   metadata: JournalEntryMetadata
 ) {
@@ -107,7 +108,7 @@ export async function saveJournalEntry(
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ conversation, metadata })
+      body: JSON.stringify({ conversation, metadata, category })
     });
 
     if (!response.ok) throw new Error(`Failed to save journal entry: ${response.statusText}`);

@@ -3,7 +3,8 @@ import { addJournalEntry, auth, deleteAllJournalEntries, getJournalEntries, getR
 import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig, updatePublishedConfig } from '@/app/lib/hume.admin';
 import { HumeConfigId } from '@/src/models/hume.config';
-import { DEFAULT_HUME_CONFIG_ID } from '@/src/models/constants';
+import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID } from '@/src/models/constants';
+import { defaultUserPreferences } from '@/src/models/user.preferences';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const { conversation, metadata } = await request.json();
+    const { conversation, metadata, category } = await request.json();
 
     const journalPromise = addJournalEntry(userId, conversation, metadata);
 
@@ -44,20 +45,26 @@ export async function POST(request: Request) {
         getUser(userId),
         getRecentJournalEntries(userId)
       ]);
-      
+
+      if (!user.preferences.humeConfigs) {
+        user.preferences.humeConfigs = defaultUserPreferences.humeConfigs;
+      }
+
+      const defaultConfigId = category === 'journaling' ? DEFAULT_JOURNALING_HUME_CONFIG_ID : DEFAULT_DATING_HUME_CONFIG_ID;
       const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
-      const shouldCreateConfigVersion = user.preferences.humeConfigId.id !== DEFAULT_HUME_CONFIG_ID;
-      
+      const currentConfigId = user.preferences.humeConfigs[category].id;
+      const shouldCreateConfigVersion = currentConfigId !== defaultConfigId;
+
       const humeConfigResponse = shouldCreateConfigVersion
-        ? await updatePublishedConfig(user.preferences.humeConfigId.id, config)
+        ? await updatePublishedConfig(currentConfigId, config)
         : await publishConfig(config);
         
       const humeConfigId: HumeConfigId = {
-        id: humeConfigResponse.id ?? DEFAULT_HUME_CONFIG_ID,
+        id: humeConfigResponse.id ?? defaultConfigId,
         version: humeConfigResponse.id ? humeConfigResponse.version : undefined,
       };
       
-      user.preferences.humeConfigId = humeConfigId;
+      user.preferences.humeConfigs[category] = humeConfigId;
       return updateUser(user.userId, user);
     })();
 

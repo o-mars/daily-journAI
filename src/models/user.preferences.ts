@@ -1,6 +1,6 @@
 import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
-import { DEFAULT_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
+import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
 import { BotType } from "@/src/models/user";
 import { HumeConfigId } from "@/src/models/hume.config";
 export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
@@ -27,7 +27,8 @@ export interface UserPreferences {
   llmService: LLMService;
   sttModel: string;
   sttService: STTService;
-  humeConfigId: HumeConfigId;
+  selectedConfig: string;
+  humeConfigs: Record<string, HumeConfigId>;
   botPreferences: Record<BotType, BotPreferences>;
   quirks: string[];
 }
@@ -53,15 +54,17 @@ export const ventingMachineBotPreferences: BotPreferences = {
 };
 
 export const defaultInnerEchoUserPreferences: UserPreferences = {
-  provider: 'dailybots',
+  provider: 'hume',
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
-  humeConfigId: {
-    id: DEFAULT_HUME_CONFIG_ID
+  selectedConfig: 'journaling',
+  humeConfigs: {
+    journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
+    dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
   },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
@@ -71,15 +74,17 @@ export const defaultInnerEchoUserPreferences: UserPreferences = {
 };
 
 export const defaultVentingMachineUserPreferences: UserPreferences = {
-  provider: 'dailybots',
+  provider: 'hume',
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
   llmService: 'openai',
   sttModel: 'nova-2-general',
   sttService: 'deepgram',
-  humeConfigId: {
-    id: DEFAULT_HUME_CONFIG_ID
+  selectedConfig: 'journaling',
+  humeConfigs: {
+    journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
+    dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
   },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
@@ -160,7 +165,12 @@ export function toUserPreferences(document: DocumentData): UserPreferences {
     sttModel: !!document.sttModel ? document.sttModel : defaultUserPreferences.sttModel,
     sttService: !!document.sttService ? document.sttService : defaultUserPreferences.sttService,
 
-    humeConfigId: !!document.humeConfigId ? document.humeConfigId : defaultUserPreferences.humeConfigId,
+    selectedConfig: !!document.selectedCategory ? document.selectedCategory : defaultUserPreferences.selectedConfig,
+    humeConfigs: {
+      journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
+      dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
+      ...document.humeConfigs,
+    },
 
     botPreferences: {
       'inner-echo': document.botPreferences?.['inner-echo'] ?? defaultUserPreferences.botPreferences['inner-echo'],

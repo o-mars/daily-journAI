@@ -1,4 +1,5 @@
 import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { JournalEntry } from "@/src/models/journal.entry";
 import { User } from "@/src/models/user";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { PostedConfig } from "hume/api/resources/empathicVoice";
@@ -67,7 +68,22 @@ export const JOURNALING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   ]
 };
 
-export const generatePostedConfig = (user?: User): PostedConfig => {
+export const generateJournalingSystemPrompt = (journalEntries?: JournalEntry[]): string => {
+  const systemPrompt: HumeSystemPrompt = {
+    ...JOURNALING_HUME_SYSTEM_PROMPT
+  };
+
+  if (journalEntries?.length) {
+    systemPrompt.context = [
+      "Here are summaries of the user's previous journal entries:",
+      journalEntries.map(entry => entry.summary).join('\n')
+    ];
+  }
+
+  return humeSystemPromptAsString(systemPrompt);
+}
+
+export const generateJournalingPostedConfig = (user?: User, journalEntries?: JournalEntry[]): PostedConfig => {
   console.log('journaling config selected');
   const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0;
   return {
@@ -75,7 +91,7 @@ export const generatePostedConfig = (user?: User): PostedConfig => {
     name: 'Dating Assistant Config',
     versionDescription: 'Dating reflection assistant configuration',
     prompt: {
-      text: humeSystemPromptAsString(JOURNALING_HUME_SYSTEM_PROMPT),
+      text: generateJournalingSystemPrompt(journalEntries),
     },
     voice: baseVoice,
     ellmModel: { allowShortResponses: true },

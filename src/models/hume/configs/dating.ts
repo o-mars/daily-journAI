@@ -3,7 +3,7 @@ import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.co
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
 
-export const DATING_HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help you reflect on your date. How was it?`;
+export const DATING_HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help you reflect on your date. How did it go?`;
 export const DATING_HUME_RETURNING_FIRST_MESSAGE = `Hi! How was your date?`;
 
 export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
@@ -23,16 +23,16 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   ],
 
   themes_to_explore: [
-    "initial impressions - comfort level, first reactions, and authentic presence",
-    "emotional connection - memorable moments, shared laughter, and natural rapport",
-    "values alignment - shared principles, treatment of others, and mutual respect",
-    "communication style - ease of conversation, listening skills, and conflict handling",
-    "authenticity - ability to be yourself, comfort in expression, and mutual understanding",
-    "chemistry - physical attraction, energy compatibility, and natural connection",
-    "future potential - alignment with relationship goals, shared vision, and growth compatibility",
-    "personal insights - self-awareness, learning moments, and clarity about wants/needs",
-    "red and green flags - notable positive signs or concerns that emerged",
-    "gut feeling - overall intuition about the connection and potential"
+    "initial impressions such as comfort level, first reactions, and authentic presence",
+    "emotional connection such as memorable moments, shared laughter, and natural rapport",
+    "values alignment such as shared principles, treatment of others, and mutual respect",
+    "communication style such as ease of conversation, listening skills, and conflict handling",
+    "authenticity such as ability to be yourself, comfort in expression, and mutual understanding",
+    "chemistry such as physical attraction, energy compatibility, and natural connection",
+    "future potential such as alignment with relationship goals, shared vision, and growth compatibility",
+    "personal insights such as self-awareness, learning moments, and clarity about wants/needs",
+    "red and green flags such as notable positive signs or concerns that emerged",
+    "gut feeling, your overall intuition about the connection and potential"
   ],
 
   personality: [
