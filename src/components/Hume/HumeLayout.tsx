@@ -5,13 +5,13 @@ import HumeMessages from "./HumeMessages";
 import HumeControls from "./HumeControls";
 import { useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
+import HumeSessionManager from "./HumeSessionManager";
 
 function HumeLayoutContent() {
   const { readyState } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
   const hasAutoConnected = useRef(false);
   const { handleStartSession, isLoading } = useHume();
-
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -62,6 +62,7 @@ function HumeLayoutContent() {
 export default function HumeLayout() {
   return (
     <HumeProvider>
+      <HumeSessionManager />
       <HumeLayoutContent />
     </HumeProvider>
   );

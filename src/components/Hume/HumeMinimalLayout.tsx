@@ -6,6 +6,7 @@ import HumeControls from "./HumeControls";
 import { useEffect, useRef, useCallback } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 import HumeEchoInput from "./HumeEchoInput";
+import HumeSessionManager from "@/src/components/Hume/HumeSessionManager";
 
 function HumeMinimalLayoutContent() {
   const { readyState, fft, isMuted } = useVoice();
@@ -90,6 +91,7 @@ function HumeMinimalLayoutContent() {
 export default function HumeMinimalLayout() {
   return (
     <HumeProvider>
+      <HumeSessionManager />
       <HumeMinimalLayoutContent />
     </HumeProvider>
   );
