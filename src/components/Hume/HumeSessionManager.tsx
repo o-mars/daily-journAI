@@ -1,33 +1,93 @@
 "use client";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useVoice, VoiceReadyState } from '@humeai/voice-react';
 import { useUser } from '@/src/contexts/UserContext';
-import { DATING_HUME_FIRST_PROMPT } from "@/src/models/hume/configs/dating";
+import { DATING_HUME_FIRST_TIME_PROMPTS } from "@/src/models/hume/configs/dating";
+
+interface QueuedMessage {
+  text: string;
+  sent: boolean;
+  confirmed: boolean;
+}
 
 export default function HumeSessionManager() {
-  const { readyState, sendAssistantInput, messages } = useVoice();
+  const { readyState, sendAssistantInput, messages, mute, unmute } = useVoice();
   const { user } = useUser();
-  const hasSentFirstMessage = useRef(false);
+  const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([]);
+  const isProcessingRef = useRef(false);
+  const hasSetMessageQueueRef = useRef(false);
   const isConnected = readyState === VoiceReadyState.OPEN;
   const isDatingConfig = user?.preferences.selectedConfig === 'dating';
 
   useEffect(() => {
     if (!isConnected) {
-      hasSentFirstMessage.current = false;
+      isProcessingRef.current = false;
+      setMessageQueue([]);
+      hasSetMessageQueueRef.current = false;
+      return;
     }
-  }, [isConnected]);
+
+    if (isDatingConfig && !hasSetMessageQueueRef.current) {
+      const prompts = DATING_HUME_FIRST_TIME_PROMPTS;
+
+      setMessageQueue(prompts.map((text: string, index: number) => ({
+        text,
+        sent: index === 0 ? true : false,
+        confirmed: false
+      })));
+      hasSetMessageQueueRef.current = true;
+
+      if (prompts.length > 0) mute();
+    }
+  }, [isConnected, isDatingConfig, user, mute]);
 
   useEffect(() => {
-    if (
-      isDatingConfig &&
-      isConnected &&
-      !hasSentFirstMessage.current &&
-      messages.filter(msg => msg.type === 'assistant_end').length > 0
-    ) {
-      hasSentFirstMessage.current = true;
-      sendAssistantInput(DATING_HUME_FIRST_PROMPT);
-    }
-  }, [isConnected, sendAssistantInput, messages, isDatingConfig]);
+    if (!isConnected || messageQueue.length === 0) return;
+
+    const processNextMessage = () => {
+      const nextUnconfirmedMessageIndex = messageQueue.findIndex(msg => !msg.confirmed);
+      console.log('nextUnconfirmedMessageIndex', nextUnconfirmedMessageIndex);
+      if (nextUnconfirmedMessageIndex === -1) {
+        unmute();
+        setMessageQueue([]);
+        return;
+      }
+
+      const currentMessage = messageQueue[nextUnconfirmedMessageIndex];
+      console.log('currentMessage', currentMessage);
+      console.log('isProcessingRef', isProcessingRef.current);
+      if (!currentMessage.sent && !isProcessingRef.current) {
+        isProcessingRef.current = true;
+        sendAssistantInput(currentMessage.text);
+        setMessageQueue(prev => prev.map((msg, i) => 
+          i === nextUnconfirmedMessageIndex ? { ...msg, sent: true } : msg
+        ));
+        console.log('messageQueue updated', messageQueue);
+        return;
+      }
+
+      const messageIndexOfCurrentMessage = messages.findIndex(msg =>
+        msg.type === 'assistant_message' && 
+        msg.message.content?.includes(currentMessage.text)
+      );
+      console.log('messageIndexOfCurrentMessage', messageIndexOfCurrentMessage);
+      if (messageIndexOfCurrentMessage !== -1) {
+        const hasEndMarker = messages.slice(messageIndexOfCurrentMessage).some(msg => msg.type === 'assistant_end');
+        console.log('hasEndMarker', hasEndMarker);
+
+        if (hasEndMarker) {
+          isProcessingRef.current = false;
+          console.log('isProcessingRef set to false');
+          setMessageQueue(prev => prev.map((msg, i) => 
+            i === nextUnconfirmedMessageIndex ? { ...msg, confirmed: true } : msg
+          ));
+          console.log('messageQueue updated', messageQueue);
+        }
+      }
+    };
+
+    processNextMessage();
+  }, [isConnected, messageQueue, messages, sendAssistantInput, unmute]);
 
   return null;
 }

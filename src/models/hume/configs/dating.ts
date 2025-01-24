@@ -3,9 +3,18 @@ import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.co
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
 
-export const DATING_HUME_FIRST_TIME_MESSAGE = `Hi! I'm Echo, and I'm here to help guide you through exploring different aspects of your date, summarizing key insights at the end.`;
-export const DATING_HUME_RETURNING_FIRST_MESSAGE = `Welcome back! As always, I'm here to help guide you through exploring different aspects of your date, summarizing key insights at the end.`;
-export const DATING_HUME_FIRST_PROMPT = 'To start, were there any moments that stood out as particularly positive or concerning to you?';
+export const DATING_HUME_FIRST_TIME_PROMPTS = [
+  `Hi! I'm Echo, and I'm here to help you build mindfulness around your dating experiences.`,
+  `I'll ask you various questions to help guide you through exploring different aspects of your date, such as chemistry, values, and lifestyle patterns.`,
+  `Once we've explored the various themes, I'll summarize the key insights for you.`,
+  `Let's begin! Were there any moments from your date that stood out as particularly positive or concerning to you?`
+];
+
+export const DATING_HUME_RETURNING_PROMPTS = [
+  `Welcome back! Let's continue mindfully reflecting on your dating experience.`,
+  `As always, I'll ask you various questions to explore different aspects of your date, before summarizing the key insights at the end.`,
+  `To start, what moments stood out to you the most from this date?`
+];
 
 export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   role: [
@@ -80,8 +89,8 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
 };
 
 export const generateDatingPostedConfig = (user?: User): PostedConfig => {
-  console.log('dating config selected', DATING_HUME_SYSTEM_PROMPT);
-  const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0;
+  console.info("ignore", user);
+  // const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0 || true;
   return {
     eviVersion: '2',
     name: `Dating Config: ${user?.userId}`,
@@ -94,7 +103,8 @@ export const generateDatingPostedConfig = (user?: User): PostedConfig => {
     eventMessages: {
       onNewChat: {
         enabled: true,
-        text: !isFirstSession ? DATING_HUME_FIRST_TIME_MESSAGE : DATING_HUME_RETURNING_FIRST_MESSAGE,
+        text: DATING_HUME_FIRST_TIME_PROMPTS[0],
+        // text: !isFirstSession ? DATING_HUME_FIRST_TIME_PROMPTS[0] : DATING_HUME_RETURNING_PROMPTS[0],
       },
       onInactivityTimeout: {
         enabled: true,

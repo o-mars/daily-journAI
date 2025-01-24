@@ -4,10 +4,22 @@ import Image from "next/image";
 import VuMeter from '../VuMeter';
 import { useHume } from '@/src/contexts/HumeContext';
 import HumeTextInput from './HumeTextInput';
+import { useState } from 'react';
 
 export default function HumeControls() {
   const { readyState, isMuted, isAudioMuted, mute, unmute, muteAudio, unmuteAudio, fft, micFft } = useVoice();
   const { handleStartSession, handleEndSession } = useHume();
+  const [showTextInput, setShowTextInput] = useState(false);
+
+  const handleMicToggle = () => {
+    if (isMuted) {
+      unmute();
+      setShowTextInput(false);
+    } else {
+      mute();
+      setShowTextInput(true);
+    }
+  };
 
   if (readyState !== VoiceReadyState.OPEN) {
     return (
@@ -26,7 +38,7 @@ export default function HumeControls() {
 
   return (
     <div className="flex flex-col w-full">
-      {isMuted && (
+      {showTextInput && (
         <div className="mb-2">
           <HumeTextInput />
         </div>
@@ -59,7 +71,10 @@ export default function HumeControls() {
         </div>
 
         <div className="flex items-center">
-          <button onClick={isMuted ? unmute : mute} className="w-9 z-10 mr-2">
+          <button 
+            onClick={handleMicToggle}
+            className="w-9 z-10 mr-2"
+          >
             <Image 
               src={!isMuted ? "/icons/mic-on.svg" : "/icons/mic-off.svg"}
               alt={!isMuted ? "Mic On" : "Mic Off"}
