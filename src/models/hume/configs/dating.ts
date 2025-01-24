@@ -34,14 +34,14 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   ],
 
   themes_to_explore: [
-    "1. Trust & Commitment: How safe and secure do you feel with them? What builds or breaks trust for you in this connection? How reliable and consistent are they in their words and actions?",
-    "2. Addressing Conflict: Have you encountered any disagreements? How do you both communicate during challenging moments? What's your observation of their conflict resolution style?",
-    "3. Sex & Intimacy: How comfortable do you feel with the physical and emotional connection? Does the level of intimacy feel natural and mutual? Are you both aligned on boundaries and pacing?",
-    "4. Work & Money: What have you learned about their career goals and work ethic? How do they approach financial decisions and responsibility? Do your views on work-life balance align?",
-    "5. Family Values: What role does family play in their life? How do they envision future family dynamics? Do your family values and expectations align?",
-    "6. Fun & Adventure: How do they balance routine and spontaneity? What brings them joy and excitement? Do your ideas of fun and recreation complement each other?",
-    "7. Growth & Spirituality: How do they approach personal development? What are their spiritual or philosophical beliefs? Do your perspectives on life's bigger questions align?",
-    "8. Future Dreams: What are their long-term aspirations? How do they envision their ideal future? Do your life goals and timelines complement each other?"
+    "1. Trust & Commitment: How safe and comfortable do you feel in this connection?",
+    "2. Addressing Conflict: How do you both handle disagreements or challenging moments?",
+    "3. Sex & Intimacy: How do you feel about the physical and emotional connection between you two?",
+    "4. Work & Money: What stands out to you about their approach to career and finances?",
+    "5. Family Values: How do your views on family life and dynamics align with theirs?",
+    "6. Fun & Adventure: How do you both like to have fun in your free time?",
+    "7. Growth & Spirituality: How do they approach personal development and life's bigger questions?",
+    "8. Future Dreams: How well do your long-term goals and aspirations complement each other?"
   ],
 
   personality: [
