@@ -46,7 +46,6 @@ export default function HumeSessionManager() {
 
     const processNextMessage = () => {
       const nextUnconfirmedMessageIndex = messageQueue.findIndex(msg => !msg.confirmed);
-      console.log('nextUnconfirmedMessageIndex', nextUnconfirmedMessageIndex);
       if (nextUnconfirmedMessageIndex === -1) {
         unmute();
         setMessageQueue([]);
@@ -54,15 +53,12 @@ export default function HumeSessionManager() {
       }
 
       const currentMessage = messageQueue[nextUnconfirmedMessageIndex];
-      console.log('currentMessage', currentMessage);
-      console.log('isProcessingRef', isProcessingRef.current);
       if (!currentMessage.sent && !isProcessingRef.current) {
         isProcessingRef.current = true;
         sendAssistantInput(currentMessage.text);
         setMessageQueue(prev => prev.map((msg, i) => 
           i === nextUnconfirmedMessageIndex ? { ...msg, sent: true } : msg
         ));
-        console.log('messageQueue updated', messageQueue);
         return;
       }
 
@@ -70,18 +66,14 @@ export default function HumeSessionManager() {
         msg.type === 'assistant_message' && 
         msg.message.content?.includes(currentMessage.text)
       );
-      console.log('messageIndexOfCurrentMessage', messageIndexOfCurrentMessage);
       if (messageIndexOfCurrentMessage !== -1) {
         const hasEndMarker = messages.slice(messageIndexOfCurrentMessage).some(msg => msg.type === 'assistant_end');
-        console.log('hasEndMarker', hasEndMarker);
 
         if (hasEndMarker) {
           isProcessingRef.current = false;
-          console.log('isProcessingRef set to false');
           setMessageQueue(prev => prev.map((msg, i) => 
             i === nextUnconfirmedMessageIndex ? { ...msg, confirmed: true } : msg
           ));
-          console.log('messageQueue updated', messageQueue);
         }
       }
     };
