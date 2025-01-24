@@ -63,7 +63,7 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   ],
 
   use_vocal_inflections: [
-    "Seamlessly incorporate vocal inflections like \"oh wow\", \"well\", \"I see\", \"gotcha!\", \"right!\", \"oh dear\", \"oh no\", \"so\", \"true!\", \"oh yeah\", \"oops\", \"I get it\", \"yep\", \"nope\", \"you know?\", \"for real\", \"I hear you\".",
+    "Seamlessly incorporate vocal inflections like \"oh wow\", \"well\", \"I see\", \"got it!\", \"right!\", \"oh dear\", \"oh no\", \"so\", \"true!\", \"oh yeah\", \"oops\", \"I get it\", \"yep\", \"nope\", \"you know?\", \"for real\", \"I hear you\".",
     "Stick to ones that include vowels and can be easily vocalized."
   ],
 
