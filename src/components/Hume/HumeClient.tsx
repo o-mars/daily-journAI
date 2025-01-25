@@ -1,20 +1,19 @@
 "use client";
 
 import { VoiceProvider } from "@humeai/voice-react";
-import { DEFAULT_DATING_HUME_CONFIG_ID } from "@/src/models/constants";
-import { useUser } from "@/src/contexts/UserContext";
-import HumeMinimalLayout from "@/src/components/Hume/HumeMinimalLayout";
-import HumeLayout from "@/src/components/Hume/HumeLayout";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import HumeMinimalLayout from "./HumeMinimalLayout";
+import HumeLayout from "./HumeLayout";
 
 const MOBILE_BREAKPOINT = 320;
 
 export default function HumeClient({
   accessToken,
+  configId,
 }: {
   accessToken: string;
+  configId: string;
 }) {
-  const { user } = useUser();
   const [isMinimal, setIsMinimal] = useState(false);
 
   useEffect(() => {
@@ -23,16 +22,14 @@ export default function HumeClient({
     };
 
     handleResize();
-
     window.addEventListener('resize', handleResize);
-
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
     <VoiceProvider
       auth={{ type: "accessToken", value: accessToken }}
-      configId={user?.preferences.humeConfigs?.[user?.preferences.selectedConfig]?.id ?? DEFAULT_DATING_HUME_CONFIG_ID}
+      configId={configId}
     >
       {isMinimal ? <HumeMinimalLayout /> : <HumeLayout />}
     </VoiceProvider>

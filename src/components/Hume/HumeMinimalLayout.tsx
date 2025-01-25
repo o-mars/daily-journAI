@@ -2,8 +2,7 @@
 
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import HumeVuMeter from "../VuMeter";
-import HumeControls from "./HumeControls";
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { HumeProvider, useHume } from "@/src/contexts/HumeContext";
 import HumeEchoInput from "./HumeEchoInput";
 import HumeSessionManager from "@/src/components/Hume/HumeSessionManager";
@@ -11,29 +10,21 @@ import HumeSessionManager from "@/src/components/Hume/HumeSessionManager";
 function HumeMinimalLayoutContent() {
   const { readyState, fft, isMuted } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
-  const hasAutoConnected = useRef(false);
   const { isLoading, handleStartSession, handleEndSession } = useHume();
-
-  const startSession = useCallback(async () => {
-    await handleStartSession();
-  }, [handleStartSession]);
-
-  const endSession = async () => {
-    await handleEndSession(true);
-  }
+  const hasAttemptedStart = useRef(false);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const shouldAutoConnect = searchParams.get("autoConnect") === "true";
-
-    if (shouldAutoConnect && !hasAutoConnected.current && !isConnected) {
-      hasAutoConnected.current = true;
-      searchParams.delete("autoConnect");
-      const newUrl = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-      window.history.replaceState({}, "", newUrl);
-      startSession();
+    if (!hasAttemptedStart.current && readyState === VoiceReadyState.CLOSED) {
+      hasAttemptedStart.current = true;
+      handleStartSession();
     }
-  }, [startSession, isConnected]);
+  }, [handleStartSession, readyState]);
+
+  useEffect(() => {
+    if (readyState === VoiceReadyState.CLOSED) {
+      hasAttemptedStart.current = false;
+    }
+  }, [readyState]);
 
   if (isLoading) {
     return (
@@ -47,11 +38,7 @@ function HumeMinimalLayoutContent() {
 
   return (
     <main className="flex flex-col h-screen bg-gray-900">
-      {!isConnected ? (
-        <div className="flex items-center justify-center h-full">
-          <HumeControls />
-        </div>
-      ) : (
+      {isConnected && (
         <>
           <div className="flex-grow flex items-center justify-center w-full">
             <div className="bg-gray-800/30 rounded-xl p-12 w-[600px] h-[400px] flex flex-col items-center justify-center">
@@ -75,7 +62,7 @@ function HumeMinimalLayoutContent() {
             <div className="flex flex-col items-center gap-2">
               {isMuted && <HumeEchoInput />}
               <button
-                onClick={endSession}
+                onClick={() => handleEndSession(true)}
                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-lg font-medium"
               >
                 End Session

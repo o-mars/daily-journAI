@@ -10,21 +10,21 @@ import HumeSessionManager from "./HumeSessionManager";
 function HumeLayoutContent() {
   const { readyState } = useVoice();
   const isConnected = readyState === VoiceReadyState.OPEN;
-  const hasAutoConnected = useRef(false);
   const { handleStartSession, isLoading } = useHume();
+  const hasAttemptedStart = useRef(false);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const shouldAutoConnect = searchParams.get("autoConnect") === "true";
-
-    if (shouldAutoConnect && !hasAutoConnected.current && !isConnected) {
-      hasAutoConnected.current = true;
-      searchParams.delete("autoConnect");
-      const newUrl = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-      window.history.replaceState({}, "", newUrl);
+    if (!hasAttemptedStart.current && (readyState === VoiceReadyState.IDLE || readyState === VoiceReadyState.CLOSED)) {
+      hasAttemptedStart.current = true;
       handleStartSession();
     }
-  }, [handleStartSession, isConnected]);
+  }, [handleStartSession, readyState]);
+
+  useEffect(() => {
+    if (readyState === VoiceReadyState.CLOSED) {
+      hasAttemptedStart.current = false;
+    }
+  }, [readyState]);
 
   if (isLoading) {
     return (
@@ -38,16 +38,8 @@ function HumeLayoutContent() {
 
   return (
     <div className="flex flex-col h-[calc(100svh-64px)]">
-      <main
-        className="flex-1 px-2 relative overflow-y-auto"
-      >
-        {!isConnected ? (
-          <div className="flex items-center justify-center h-full">
-            <HumeControls />
-          </div>
-        ) : (
-          <HumeMessages />
-        )}
+      <main className="flex-1 px-2 relative overflow-y-auto">
+        {isConnected && <HumeMessages />}
       </main>
 
       {isConnected && (

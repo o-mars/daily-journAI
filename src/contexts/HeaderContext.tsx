@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { brands, defaultBranding } from '@/src/models/brand';
 import { Branding } from '@/src/models/brand';
 
-type HeaderView = 'main' | 'start' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
+type HeaderView = 'main' | 'start' | 'session' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
 
 interface HeaderContextType {
   isShowingMenuOptions: boolean;

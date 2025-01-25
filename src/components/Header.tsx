@@ -114,7 +114,7 @@ const Header: React.FC = () => {
         {(currentView === 'journals') && (
           <button
             className="w-7" 
-            onClick={() => navigateToView('start', { autoConnect: 'true' })}
+            onClick={() => navigateToView('start')}
             title="Start"
           >
             <Image

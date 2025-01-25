@@ -99,12 +99,15 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         } else {
           await closePrivateJournalEntry(messagesToSave, finalMetadata);
           trackEvent("session", "session-discarded", { ...finalMetadata });
+          navigateToView('start');
         }
         trackEvent("session", "session-ended", { ...finalMetadata });
       } catch (e) {
         trackEvent("session", "session-error", { error: e instanceof Error ? e.message : 'Error saving journal entry', userId: user?.userId, email: user?.profile?.email ?? '' });
         console.error(`Error saving journal entry: ${e}`);
       }
+    } else {
+      navigateToView('start');
     }
     setIsLoading(false);
     setAllMessages([]);
