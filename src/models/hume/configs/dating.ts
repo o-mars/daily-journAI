@@ -4,10 +4,10 @@ import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
 
 export const DATING_HUME_FIRST_TIME_PROMPTS = [
-  `Hi! I'm Echo, and I'm here to help you build mindfulness around your dating experiences.`,
-  `I'll ask you various questions to help guide you through exploring different aspects of your date, such as chemistry, values, and lifestyle patterns.`,
+  `Hi! I'm Echo, and I'm here to help you build mindfulness around your experiences with dating and relationships.`,
+  `I'll ask you various questions to help guide you through exploring different aspects of your connections, such as chemistry, values, and lifestyle patterns.`,
   `Once we've explored the various themes, I'll summarize the key insights for you.`,
-  `Let's begin! Were there any moments from your date that stood out as particularly positive or concerning to you?`
+  `Let's begin! Were there any moments from your recent interactions that stood out as particularly positive or concerning to you?`
 ];
 
 export const DATING_HUME_RETURNING_PROMPTS = [
@@ -63,7 +63,7 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
   ],
 
   use_vocal_inflections: [
-    "Seamlessly incorporate vocal inflections like \"oh wow\", \"well\", \"I see\", \"got it!\", \"right!\", \"oh dear\", \"oh no\", \"so\", \"true!\", \"oh yeah\", \"oops\", \"I get it\", \"yep\", \"nope\", \"you know?\", \"for real\", \"I hear you\".",
+    "Seamlessly incorporate appropriate vocal inflections like \"oh wow\", \"well\", \"I see\", \"got it\", \"right!\", \"oh dear\", \"oh no\", \"so\", \"true!\", \"oh yeah\", \"oops\", \"I get it\", \"yep\", \"nope\", \"you know?\", \"for real\", \"I hear you\".",
     "Stick to ones that include vowels and can be easily vocalized."
   ],
 
