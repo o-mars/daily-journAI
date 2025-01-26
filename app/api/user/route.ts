@@ -1,5 +1,5 @@
 // Example API route to get user
-import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount, deleteUser } from '@/app/lib/firebase.admin';
+import { getUser, updateUser, auth, getRecentJournalEntries, getJournalEntriesCount, deleteUser, createUser } from '@/app/lib/firebase.admin';
 import { defaultUserPreferences } from '@/src/models/user.preferences';
 import { NextResponse } from 'next/server';
 
@@ -40,6 +40,27 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error verifying ID token:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+}
+
+export async function POST(request: Request) {
+  const token = request.headers.get("Authorization")?.split("Bearer ")[1];
+
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const userId = decodedToken.uid;
+    const userData = await request.json();
+
+    await createUser(userId, userData);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
   }
 }
 

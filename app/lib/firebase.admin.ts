@@ -17,7 +17,7 @@ if (!admin.apps.length) {
 export const auth = admin.auth();
 export const db = admin.firestore();
 
-export async function getUser(userId: string, ): Promise<User> {
+export async function getUser(userId: string): Promise<User> {
   try {
     const userDocRef = db.doc(`${USER_PATH}/${userId}`);
     const docSnap = await userDocRef.get();
@@ -27,22 +27,7 @@ export async function getUser(userId: string, ): Promise<User> {
       console.log('user exists');
       return user;
     } else {
-      const userRecord = await auth.getUser(userId);
-      const isAnonymous = !userRecord.email && !userRecord.phoneNumber && userRecord.providerData.length === 0;
-
-      const user: User = {
-        ...defaultUser,
-        userId,
-        createdAt: new Date(),
-        profile: {
-          isAnonymous,
-          ...userRecord.email ? { email: userRecord.email } : {},
-          ...userRecord.phoneNumber ? { phone: userRecord.phoneNumber } : {},
-        }
-      };
-      await userDocRef.set(user);
-      console.log('created user');
-      return user;
+      return await createUser(userId, {});
     }
   } catch (error) {
     throw error;
@@ -54,6 +39,46 @@ export async function updateUser(userId: string, userData: Partial<User>): Promi
     const userDocRef = db.doc(`${USER_PATH}/${userId}`);
     await userDocRef.update(userData);
   } catch (error) {
+    throw error;
+  }
+}
+
+export async function createUser(userId: string, userData: Partial<User>): Promise<User> {
+  try {
+    const userDocRef = db.doc(`${USER_PATH}/${userId}`);
+
+    const userRecord = await auth.getUser(userId);
+    const isAnonymous = !userRecord.email && !userRecord.phoneNumber && userRecord.providerData.length === 0;
+
+    const user: User = {
+      ...defaultUser,
+      userId,
+      createdAt: new Date(),
+      profile: {
+        isAnonymous,
+        ...userRecord.email ? { email: userRecord.email } : {},
+        ...userRecord.phoneNumber ? { phone: userRecord.phoneNumber } : {},
+      },
+      ...userData,
+    };
+
+    const result = await userDocRef.set(user);
+    console.log('created user', result);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  try {
+    await deleteAllJournalEntries(userId);
+    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}`);
+    await usersJournalEntryDocumentRef.delete();
+    await auth.deleteUser(userId);
+    console.log(`Deleted user and all data with ID: ${userId}`);
+  } catch (error) {
+    console.error("Error deleting user:", error);
     throw error;
   }
 }
@@ -242,19 +267,6 @@ export async function deleteAllJournalEntries(userId: string): Promise<void> {
     console.log(`Deleted all journal entries for user: ${userId}`);
   } catch (error) {
     console.error("Error deleting all journal entries:", error);
-    throw error;
-  }
-}
-
-export async function deleteUser(userId: string): Promise<void> {
-  try {
-    await deleteAllJournalEntries(userId);
-    const usersJournalEntryDocumentRef = db.doc(`${USER_PATH}/${userId}`);
-    await usersJournalEntryDocumentRef.delete();
-    await auth.deleteUser(userId);
-    console.log(`Deleted user and all data with ID: ${userId}`);
-  } catch (error) {
-    console.error("Error deleting user:", error);
     throw error;
   }
 }

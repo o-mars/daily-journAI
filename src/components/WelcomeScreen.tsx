@@ -2,91 +2,93 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithNewAnonymousUser } from "@/src/services/authService";
 import { useHeader } from "@/src/contexts/HeaderContext";
+import HumeSelector from "@/src/components/Hume/HumeSelector";
+import { CONFIG_TEMPLATES, ConfigCategory } from "@/src/models/hume.config";
 
 const shouldShowPrivacyPolicy = false;
 
-const WelcomeScreen: React.FC = () => {
+interface WelcomeScreenProps {
+  preSelectedCategory?: ConfigCategory;
+  showCategorySelector?: boolean;
+}
+
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ 
+  preSelectedCategory = 'journaling',
+  showCategorySelector = true 
+}) => {
   const { branding } = useHeader();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [acceptedPolicy, setAcceptedPolicy] = useState(!shouldShowPrivacyPolicy);
+  const [acceptedPolicy] = useState(!shouldShowPrivacyPolicy);
+  const [selectedCategory, setSelectedCategory] = useState<ConfigCategory>(preSelectedCategory);
 
   const handleAgreeAndContinue = async () => {
     try {
-      await signInWithNewAnonymousUser();
-      router.push('/start?autoConnect=true');
+      await signInWithNewAnonymousUser(selectedCategory);
+      const categoryConfig = CONFIG_TEMPLATES[selectedCategory];
+      router.push(`/session?configId=${categoryConfig.defaultConfigId}`);
     } catch (e) {
       setError("Failed to sign in or connect. Please try again." + e);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 style={{ marginBottom: '32px' }} className="text-3xl font-bold">
-        <span className="xs:inline block text-center">Welcome to</span>{' '}
-        <span className="xs:inline block text-center mt-2 xs:mt-0">{branding.appName}</span>
-      </h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white p-4">
+      <div className="flex-1 min-h-[2vh]" />
 
-      <p style={{ marginTop: '16px' }} className="mb-4 text-center">
-        Providing you a safe and supportive space for your thoughts.
-      </p>
-      <p className="mb-4 text-center">
-        {branding.appWelcomeMessage}
-      </p>
-      
-      {shouldShowPrivacyPolicy ? (
-        <div className="flex items-center gap-2 mt-4">
-          <input
-            type="checkbox"
-            id="privacy-checkbox"
-            checked={acceptedPolicy}
-            onChange={(e) => setAcceptedPolicy(e.target.checked)}
-            className="w-4 h-4"
-          />
-          <label htmlFor="privacy-checkbox">
-            I confirm that I have read and agreed to the{' '}
-            <a
-              href="/privacy-policy"
-              onClick={(e) => {
-                e.preventDefault();
-                window.open(
-                  '/privacy-policy',
-                  'Privacy Policy',
-                  'width=700,height=250,left=200,top=200,menubar=no,toolbar=no,location=no,status=no'
-                );
-              }}
-              className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
-            >
-              Privacy Policy
-            </a>
-            {' '}
-          </label>
+      <div className="flex flex-col items-center justify-between flex-1 max-h-[96vh] w-full">
+        <div className="text-center">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-center">
+            Welcome to {branding.appName}
+          </h1>
         </div>
-      ) : (
-        <div className="text-center text-gray-300">
-          <p>Your data is stored securely and only accessible to you.</p>
-        </div>
-      )}
 
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      
-      <button
-        style={{ 
-          marginTop: '32px',
-          border: '2px solid #3b82f6',
-          backgroundColor: '#1d4ed8',
-          padding: '12px 24px',
-          borderRadius: '9999px'
-        }}
-        className={`text-white font-bold text-lg transition duration-300 ease-in-out transform 
-          ${acceptedPolicy 
-            ? 'hover:scale-105 hover:bg-blue-800 hover:border-blue-400' 
-            : 'opacity-50 cursor-not-allowed'}`}
-        onClick={handleAgreeAndContinue}
-        disabled={!acceptedPolicy}
-      >
-        Start
-      </button>
+        <div className="text-center space-y-2 xs:space-y-4">
+          <p className="text-sm xs:text-base">
+            Providing you a safe and supportive space for your thoughts.
+          </p>
+          <p className="text-sm xs:text-base">
+            {branding.appWelcomeMessage}
+          </p>
+          {!shouldShowPrivacyPolicy && (
+            <p className="text-sm xs:text-base text-gray-300">
+              Your data is stored securely and only accessible to you.
+            </p>
+          )}
+        </div>
+
+        {showCategorySelector && (
+          <div className="w-full max-w-md">
+            <HumeSelector 
+              onCategorySelect={setSelectedCategory}
+              hideStartButton={true}
+              minimal={true}
+            />
+          </div>
+        )}
+
+        <div className="text-center">
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+          <button
+            style={{ 
+              border: '2px solid #3b82f6',
+              backgroundColor: '#1d4ed8',
+              padding: '12px 24px',
+              borderRadius: '9999px'
+            }}
+            className={`text-white font-bold text-lg transition duration-300 ease-in-out transform 
+              ${acceptedPolicy 
+                ? 'hover:scale-105 hover:bg-blue-800 hover:border-blue-400' 
+                : 'opacity-50 cursor-not-allowed'}`}
+            onClick={handleAgreeAndContinue}
+            disabled={!acceptedPolicy}
+          >
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-[2vh]" />
     </div>
   );
 };

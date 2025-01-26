@@ -1,5 +1,7 @@
+import { ConfigCategory } from "@/src/models/hume.config";
 import { JournalConversationEntry, JournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { toUser, User } from "@/src/models/user";
+import { defaultUserPreferences } from "@/src/models/user.preferences";
 import { getAuth } from "firebase/auth";
 
 export async function fetchUser(userId: string): Promise<User> {
@@ -241,6 +243,37 @@ export async function updateJournalEntry(entryId: string, updates: Partial<Journ
     return await response.json();
   } catch (error) {
     console.error("Error updating journal entry:", error);
+    throw error;
+  }
+}
+
+export async function createUserWithSelectedCategory(selectedCategory: ConfigCategory) {
+  const userData = {
+    preferences: {
+      ...defaultUserPreferences,
+      selectedConfig: selectedCategory
+    }
+  };
+  
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch('/api/user', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) throw new Error(`Failed to create user: ${response.statusText}`);
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error creating user:", error);
     throw error;
   }
 }

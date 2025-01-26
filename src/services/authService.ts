@@ -3,6 +3,8 @@ import { EmailAuthProvider, sendSignInLinkToEmail, signInWithEmailLink, User, li
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import { PhoneAuthProvider } from 'firebase/auth';
 import { trackEvent } from '@/src/services/metricsSerivce';
+import { ConfigCategory } from '@/src/models/hume.config';
+import { createUserWithSelectedCategory } from '@/src/client/firebase.service.client';
 
 export const sendMagicLink = async (email: string, userId: string = '', journalEntryId: string = '') => {
   const linkUrl = `${window.location.origin}/auth/complete?userId=${userId}&journalEntryId=${journalEntryId}`;
@@ -63,8 +65,10 @@ export const signOut = async () => {
   return;
 }
 
-export const signInWithNewAnonymousUser = async () => {
-  const result = await signInAnonymously(auth);
-  trackEvent("auth", "login", { userId: result.user?.uid, method: "anonymous" });
-  return result;
+export const signInWithNewAnonymousUser = async (selectedCategory: ConfigCategory) => {
+  const userCredential = await signInAnonymously(auth);
+  trackEvent("auth", "login", { userId: userCredential.user?.uid, method: "anonymous" });
+  
+  await createUserWithSelectedCategory(selectedCategory);
+  return userCredential;
 }
