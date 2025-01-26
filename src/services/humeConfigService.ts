@@ -4,12 +4,7 @@ import { User } from "@/src/models/user";
 import { JournalEntry } from "@/src/models/journal.entry";
 import { fetchAccessToken } from "hume";
 import { trackEvent } from "@/src/services/metricsSerivce";
-import { generateDatingPostedConfig } from "@/src/models/hume/configs/dating";
-import { generateJournalingPostedConfig } from "@/src/models/hume/configs/journaling";
-import { generateGrowthPostedConfig } from "@/src/models/hume/configs/growth";
-import { generateGratitudePostedConfig } from "@/src/models/hume/configs/gratitude";
-import { generateCreativityPostedConfig } from "@/src/models/hume/configs/creativity";
-import { generateProblemSolvingPostedConfig } from "@/src/models/hume/configs/solutions";
+import { CONFIG_TEMPLATES } from "@/src/models/hume.config";
 
 export const baseVoice: PostedVoice = {
   name: 'KORA',
@@ -24,23 +19,8 @@ export const baseLanguageModel: PostedLanguageModel = {
 
 export function generateHumeConfigForUserWithJournalEntries(user: User, journalEntries: JournalEntry[]): PostedConfig {
   const category = user.preferences.selectedConfig;
-  
-  switch (category) {
-    case 'journaling':
-      return generateJournalingPostedConfig(user, journalEntries);
-    case 'dating':
-      return generateDatingPostedConfig(user);
-    case 'solutions':
-      return generateProblemSolvingPostedConfig(user);
-    case 'gratitude':
-      return generateGratitudePostedConfig(user);
-    case 'growth':
-      return generateGrowthPostedConfig(user);
-    case 'creativity':
-      return generateCreativityPostedConfig(user);
-  }
-
-  throw new Error(`Unsupported category: ${category}`);
+  const configTemplate = CONFIG_TEMPLATES[category];
+  return configTemplate.generateConfig(user, journalEntries);
 }
 
 export async function getHumeAccessToken(retries = 3, backoffMs = 1000): Promise<string> {

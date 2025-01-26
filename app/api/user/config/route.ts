@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, getUser, getRecentJournalEntries, updateUser } from '@/app/lib/firebase.admin';
 import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig } from '@/app/lib/hume.admin';
-import { HumeConfigId } from '@/src/models/hume.config';
+import { ConfigCategory, HumeConfigId } from '@/src/models/hume.config';
 import { DEFAULT_JOURNALING_HUME_CONFIG_ID } from '@/src/models/constants';
 
 /*
@@ -40,8 +40,7 @@ export async function GET(request: Request) {
       version: response.id ? response.version : undefined,
     };
     
-    // Update the specific category config
-    user.preferences.humeConfigs[category] = humeConfigId;
+    user.preferences.humeConfigs[category as ConfigCategory] = humeConfigId;
     await updateUser(user.userId, user);
 
     return NextResponse.json(humeConfigId);

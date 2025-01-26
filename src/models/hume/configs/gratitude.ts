@@ -1,7 +1,8 @@
 import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
+import { DEFAULT_GRATITUDE_HUME_CONFIG_ID } from "@/src/models/constants";
 
 export const GRATITUDE_HUME_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you notice and appreciate the positive moments in your life.`,
@@ -108,8 +109,7 @@ export const generateGratitudePostedConfig = (user?: User): PostedConfig => {
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {
-        enabled: true,
-        text: GRATITUDE_HUME_FIRST_TIME_PROMPTS[0],
+        enabled: false,
       },
       onInactivityTimeout: {
         enabled: true,
@@ -127,3 +127,10 @@ export const generateGratitudePostedConfig = (user?: User): PostedConfig => {
     }
   };
 }; 
+
+export const GratitudeConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_GRATITUDE_HUME_CONFIG_ID,
+  generateConfig: generateGratitudePostedConfig,
+  firstTimePrompts: GRATITUDE_HUME_FIRST_TIME_PROMPTS,
+  returningPrompts: GRATITUDE_HUME_RETURNING_PROMPTS,
+};

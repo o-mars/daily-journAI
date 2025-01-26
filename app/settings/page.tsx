@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { deleteAllJournalEntries, deleteUser } from "@/src/client/firebase.service.client";
 import { signOut } from "@/src/services/authService";
 import { trackEvent } from "@/src/services/metricsSerivce";
+import { ConfigCategory } from "@/src/models/hume.config";
 
 export default function Settings() {
   const { user, syncLocalUser, updateUser } = useUser();
@@ -94,7 +95,7 @@ export default function Settings() {
       ...user,
       preferences: {
         ...user.preferences,
-        selectedConfig: e.target.value
+        selectedConfig: e.target.value as ConfigCategory
       }
     };
 
@@ -141,6 +142,10 @@ export default function Settings() {
                   >
                     <option value="journaling">Journaling</option>
                     <option value="dating">Dating</option>
+                    <option value="solutions">Problem Solving & Decision Making</option>
+                    <option value="gratitude">Gratitude</option>
+                    <option value="growth">Personal Growth</option>
+                    <option value="creativity">Creativity</option>
                   </select>
                 </div>
 

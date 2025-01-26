@@ -1,7 +1,8 @@
 import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
+import { DEFAULT_CREATIVITY_HUME_CONFIG_ID } from "@/src/models/constants";
 
 export const CREATIVITY_HUME_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help spark your creativity and explore your imagination.`,
@@ -105,8 +106,7 @@ export const generateCreativityPostedConfig = (user?: User): PostedConfig => {
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {
-        enabled: true,
-        text: CREATIVITY_HUME_FIRST_TIME_PROMPTS[0],
+        enabled: false,
       },
       onInactivityTimeout: {
         enabled: true,
@@ -124,3 +124,10 @@ export const generateCreativityPostedConfig = (user?: User): PostedConfig => {
     }
   };
 }; 
+
+export const CreativityConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_CREATIVITY_HUME_CONFIG_ID,
+  generateConfig: generateCreativityPostedConfig,
+  firstTimePrompts: CREATIVITY_HUME_FIRST_TIME_PROMPTS,
+  returningPrompts: CREATIVITY_HUME_RETURNING_PROMPTS,
+};

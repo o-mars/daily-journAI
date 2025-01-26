@@ -1,7 +1,8 @@
 import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
+import { DEFAULT_GROWTH_HUME_CONFIG_ID } from "@/src/models/constants";
 
 export const GROWTH_HUME_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you explore your personal growth journey.`,
@@ -106,8 +107,7 @@ export const generateGrowthPostedConfig = (user?: User): PostedConfig => {
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {
-        enabled: true,
-        text: GROWTH_HUME_FIRST_TIME_PROMPTS[0],
+        enabled: false,
       },
       onInactivityTimeout: {
         enabled: true,
@@ -124,4 +124,11 @@ export const generateGrowthPostedConfig = (user?: User): PostedConfig => {
       },
     }
   };
-}; 
+};
+
+export const GrowthConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_GROWTH_HUME_CONFIG_ID,
+  generateConfig: generateGrowthPostedConfig,
+  firstTimePrompts: GROWTH_HUME_FIRST_TIME_PROMPTS,
+  returningPrompts: GROWTH_HUME_RETURNING_PROMPTS,
+};

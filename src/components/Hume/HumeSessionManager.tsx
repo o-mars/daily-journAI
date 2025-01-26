@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useVoice, VoiceReadyState } from '@humeai/voice-react';
 import { useUser } from '@/src/contexts/UserContext';
-import { DATING_HUME_FIRST_TIME_PROMPTS } from "@/src/models/hume/configs/dating";
+import { CONFIG_TEMPLATES } from '@/src/models/hume.config';
+import { ConfigCategory } from '@/src/models/hume.config';
 
 interface QueuedMessage {
   text: string;
@@ -17,7 +18,8 @@ export default function HumeSessionManager() {
   const isProcessingRef = useRef(false);
   const hasSetMessageQueueRef = useRef(false);
   const isConnected = readyState === VoiceReadyState.OPEN;
-  const isDatingConfig = user?.preferences.selectedConfig === 'dating';
+  const configCategory: ConfigCategory = user?.preferences.selectedConfig ?? 'journaling';
+  const isJournalingConfig = configCategory === 'journaling';
 
   useEffect(() => {
     if (!isConnected) {
@@ -27,19 +29,19 @@ export default function HumeSessionManager() {
       return;
     }
 
-    if (isDatingConfig && !hasSetMessageQueueRef.current) {
-      const prompts = DATING_HUME_FIRST_TIME_PROMPTS;
+    if (!isJournalingConfig && !hasSetMessageQueueRef.current) {
+      const prompts = CONFIG_TEMPLATES[configCategory].firstTimePrompts;
 
-      setMessageQueue(prompts.map((text: string, index: number) => ({
+      setMessageQueue(prompts.map((text: string) => ({
         text,
-        sent: index === 0 ? true : false,
+        sent: false,
         confirmed: false
       })));
       hasSetMessageQueueRef.current = true;
 
       if (prompts.length > 0) mute();
     }
-  }, [isConnected, isDatingConfig, user, mute]);
+  }, [isConnected, configCategory, isJournalingConfig, user, mute]);
 
   useEffect(() => {
     if (!isConnected || messageQueue.length === 0) return;

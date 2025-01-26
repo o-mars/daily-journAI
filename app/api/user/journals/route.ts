@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { addJournalEntry, auth, deleteAllJournalEntries, getJournalEntries, getRecentJournalEntries, getUser, updateUser } from '@/app/lib/firebase.admin';
-import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig, updatePublishedConfig } from '@/app/lib/hume.admin';
-import { HumeConfigId } from '@/src/models/hume.config';
-import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID } from '@/src/models/constants';
+import { CONFIG_TEMPLATES, ConfigCategory, HumeConfigId } from '@/src/models/hume.config';
 import { defaultUserPreferences } from '@/src/models/user.preferences';
 
 export async function GET(request: Request) {
@@ -50,9 +48,10 @@ export async function POST(request: Request) {
         user.preferences.humeConfigs = defaultUserPreferences.humeConfigs;
       }
 
-      const defaultConfigId = category === 'journaling' ? DEFAULT_JOURNALING_HUME_CONFIG_ID : DEFAULT_DATING_HUME_CONFIG_ID;
-      const config = generateHumeConfigForUserWithJournalEntries(user, recentJournalEntries);
-      const currentConfigId = user.preferences.humeConfigs[category].id;
+      const configCategory = category as ConfigCategory;
+      const defaultConfigId = CONFIG_TEMPLATES[configCategory].defaultConfigId;
+      const config = CONFIG_TEMPLATES[configCategory].generateConfig(user, recentJournalEntries);
+      const currentConfigId = user.preferences.humeConfigs[configCategory].id;
       const shouldCreateConfigVersion = currentConfigId !== defaultConfigId;
 
       const humeConfigResponse = shouldCreateConfigVersion
@@ -64,7 +63,7 @@ export async function POST(request: Request) {
         version: humeConfigResponse.id ? humeConfigResponse.version : undefined,
       };
       
-      user.preferences.humeConfigs[category] = humeConfigId;
+      user.preferences.humeConfigs[configCategory] = humeConfigId;
       return updateUser(user.userId, user);
     })();
 

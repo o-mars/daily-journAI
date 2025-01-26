@@ -5,7 +5,7 @@ import { useUser } from "@/src/contexts/UserContext";
 import { DEFAULT_CREATIVITY_HUME_CONFIG_ID, DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_GROWTH_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { User } from "@/src/models/user";
-import { ConfigCategory } from "@/src/models/user.preferences";
+import { ConfigCategory } from "@/src/models/hume.config";
 
 interface CategoryOption {
   id: ConfigCategory;
@@ -112,8 +112,8 @@ export default function HumeSelector() {
     },
     {
       id: 'solutions',
-      title: 'Goals & Aspirations',
-      description: 'Turn dreams into actionable steps and track progress',
+      title: 'Problem Solving',
+      description: 'Talk through your problems to arrive at a solution',
       icon: '🎯',
       configId: user?.preferences.humeConfigs?.solutions?.id ?? DEFAULT_SOLUTIONS_HUME_CONFIG_ID,
     },

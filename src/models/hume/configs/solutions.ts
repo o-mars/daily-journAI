@@ -1,7 +1,8 @@
 import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
+import { DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
 
 export const PROBLEM_SOLVING_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, your thinking partner for untangling life's puzzles.`,
@@ -104,8 +105,7 @@ export const generateProblemSolvingPostedConfig = (user?: User): PostedConfig =>
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {
-        enabled: true,
-        text: PROBLEM_SOLVING_FIRST_TIME_PROMPTS[0],
+        enabled: false,
       },
       onInactivityTimeout: {
         enabled: true,
@@ -122,4 +122,11 @@ export const generateProblemSolvingPostedConfig = (user?: User): PostedConfig =>
       },
     }
   };
+};
+
+export const ProblemSolvingConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_SOLUTIONS_HUME_CONFIG_ID,
+  generateConfig: generateProblemSolvingPostedConfig,
+  firstTimePrompts: PROBLEM_SOLVING_FIRST_TIME_PROMPTS,
+  returningPrompts: PROBLEM_SOLVING_RETURNING_PROMPTS,
 };

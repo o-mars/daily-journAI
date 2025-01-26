@@ -1,4 +1,5 @@
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { DEFAULT_JOURNALING_HUME_CONFIG_ID } from "@/src/models/constants";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { JournalEntry } from "@/src/models/journal.entry";
 import { User } from "@/src/models/user";
 import { baseVoice } from "@/src/services/humeConfigService";
@@ -88,8 +89,8 @@ export const generateJournalingPostedConfig = (user?: User, journalEntries?: Jou
   const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0;
   return {
     eviVersion: '2',
-    name: 'Dating Assistant Config',
-    versionDescription: 'Dating reflection assistant configuration',
+    name: `General Journal Config: ${user?.userId}`,
+    versionDescription: 'General journal assistant configuration',
     prompt: {
       text: generateJournalingSystemPrompt(journalEntries),
     },
@@ -120,4 +121,11 @@ export const generateJournalingPostedConfig = (user?: User, journalEntries?: Jou
       },
     }
   };
+};
+
+export const JournalingConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_JOURNALING_HUME_CONFIG_ID,
+  generateConfig: generateJournalingPostedConfig,
+  firstTimePrompts: [JOURNALING_HUME_FIRST_TIME_MESSAGE],
+  returningPrompts: [JOURNALING_HUME_RETURNING_FIRST_MESSAGE],
 };

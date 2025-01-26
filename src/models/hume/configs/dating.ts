@@ -1,7 +1,8 @@
 import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
+import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
 import { baseVoice } from "@/src/services/humeConfigService";
 import { User } from "@/src/models/user";
+import { DEFAULT_DATING_HUME_CONFIG_ID } from "@/src/models/constants";
 
 export const DATING_HUME_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you build mindfulness around your experiences with dating and relationships.`,
@@ -107,9 +108,7 @@ export const generateDatingPostedConfig = (user?: User): PostedConfig => {
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {
-        enabled: true,
-        text: DATING_HUME_FIRST_TIME_PROMPTS[0],
-        // text: !isFirstSession ? DATING_HUME_FIRST_TIME_PROMPTS[0] : DATING_HUME_RETURNING_PROMPTS[0],
+        enabled: false,
       },
       onInactivityTimeout: {
         enabled: true,
@@ -126,4 +125,11 @@ export const generateDatingPostedConfig = (user?: User): PostedConfig => {
       },
     }
   };
+};
+
+export const DatingConfig: HumeConfigTemplate = {
+  defaultConfigId: DEFAULT_DATING_HUME_CONFIG_ID,
+  generateConfig: generateDatingPostedConfig,
+  firstTimePrompts: DATING_HUME_FIRST_TIME_PROMPTS,
+  returningPrompts: DATING_HUME_RETURNING_PROMPTS,
 };
