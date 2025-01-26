@@ -94,6 +94,11 @@ export const generateJournalingPostedConfig = (user?: User, journalEntries?: Jou
       text: generateJournalingSystemPrompt(journalEntries),
     },
     voice: baseVoice,
+    languageModel: {
+      modelProvider: "OPEN_AI",
+      modelResource: "gpt-4o-mini",
+      temperature: 0.5,
+    },
     ellmModel: { allowShortResponses: true },
     eventMessages: {
       onNewChat: {

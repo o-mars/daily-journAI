@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useHeader } from "@/src/contexts/HeaderContext";
+import { User } from "@/src/models/user";
 
 interface CategoryOption {
   id: string;
@@ -45,7 +46,7 @@ function CategoryGrid({ onSelect, selectedCategory, categories }: {
 
 export default function HumeSelector() {
   const { navigateToView } = useHeader();
-  const { user } = useUser();
+  const { user, updateUser } = useUser();
   const [selectedCategory, setSelectedCategory] = useState(
     user?.preferences.selectedConfig ?? 'journaling'
   );
@@ -69,6 +70,18 @@ export default function HumeSelector() {
 
   const selectedConfig = categories.find(c => c.id === selectedCategory)?.configId;
 
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    if (!user) return;
+    const partialUser: Partial<User> = {
+      preferences: {
+        ...user.preferences,
+        selectedConfig: categoryId
+      }
+    }
+    void updateUser(partialUser);
+  };
+
   const handleStart = () => {
     if (selectedConfig) {
       navigateToView('session', { configId: selectedConfig });
@@ -78,8 +91,8 @@ export default function HumeSelector() {
   return (
     <div className="flex flex-col h-[calc(100svh-64px)]">
       <div className="flex-1 overflow-y-auto py-8">
-        <CategoryGrid 
-          onSelect={setSelectedCategory} 
+        <CategoryGrid
+          onSelect={handleCategorySelect}
           selectedCategory={selectedCategory}
           categories={categories}
         />

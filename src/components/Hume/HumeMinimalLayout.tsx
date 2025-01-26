@@ -20,12 +20,6 @@ function HumeMinimalLayoutContent() {
     }
   }, [handleStartSession, readyState]);
 
-  useEffect(() => {
-    if (readyState === VoiceReadyState.CLOSED) {
-      hasAttemptedStart.current = false;
-    }
-  }, [readyState]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">

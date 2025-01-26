@@ -20,12 +20,6 @@ function HumeLayoutContent() {
     }
   }, [handleStartSession, readyState]);
 
-  useEffect(() => {
-    if (readyState === VoiceReadyState.CLOSED) {
-      hasAttemptedStart.current = false;
-    }
-  }, [readyState]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center flex-1" style={{ height: 'calc(100svh - 64px)' }}>

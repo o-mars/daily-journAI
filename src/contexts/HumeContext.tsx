@@ -84,6 +84,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
           userEntries: userEntries.length,
           duration: durationInSeconds,
           type: branding.botType,
+          category: user!.preferences.selectedConfig ?? '',
           inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
           provider: 'hume' as ClientProvider,
@@ -94,7 +95,7 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
         if (shouldSave) {
           const response = await saveJournalEntry(user?.preferences.selectedConfig ?? 'journaling', messagesToSave, finalMetadata);
           trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
-          await syncLocalUser();
+          void syncLocalUser();
           navigateToView('journals/:journalEntryId', { journalEntryId: response.id });
         } else {
           await closePrivateJournalEntry(messagesToSave, finalMetadata);
