@@ -19,7 +19,7 @@ const ErrorState = () => (
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { configId?: string }
+  searchParams: Promise<{ configId?: string }>
 }) {
   const params = await searchParams;
   if (!params.configId) {
