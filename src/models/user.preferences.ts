@@ -1,6 +1,6 @@
 import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
-import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
+import { DEFAULT_CREATIVITY_HUME_CONFIG_ID, DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_GROWTH_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
 import { BotType } from "@/src/models/user";
 import { HumeConfigId } from "@/src/models/hume.config";
 export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
@@ -8,6 +8,17 @@ export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
 export type VocabularyType = "simple" | "regular" | "formal" | "slang";
 export type ClientProvider = 'dailybots' | 'hume';
+
+export type BaseConfigCategory = 
+  | 'journaling' 
+  | 'dating'
+  | 'solutions'
+  | 'gratitude'
+  | 'growth'
+  | 'creativity';
+
+export type CustomConfigCategory = `custom${number}`;
+export type ConfigCategory = BaseConfigCategory | CustomConfigCategory;
 
 export interface BotPreferences {
   style: ConversationStyle;
@@ -27,8 +38,8 @@ export interface UserPreferences {
   llmService: LLMService;
   sttModel: string;
   sttService: STTService;
-  selectedConfig: string;
-  humeConfigs: Record<string, HumeConfigId>;
+  selectedConfig: ConfigCategory;
+  humeConfigs: Record<ConfigCategory, HumeConfigId>;
   botPreferences: Record<BotType, BotPreferences>;
   quirks: string[];
 }
@@ -65,6 +76,10 @@ export const defaultInnerEchoUserPreferences: UserPreferences = {
   humeConfigs: {
     journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
     dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
+    solutions: { id: DEFAULT_SOLUTIONS_HUME_CONFIG_ID },
+    gratitude: { id: DEFAULT_GRATITUDE_HUME_CONFIG_ID },
+    growth: { id: DEFAULT_GROWTH_HUME_CONFIG_ID },
+    creativity: { id: DEFAULT_CREATIVITY_HUME_CONFIG_ID },
   },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
@@ -85,6 +100,10 @@ export const defaultVentingMachineUserPreferences: UserPreferences = {
   humeConfigs: {
     journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
     dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
+    solutions: { id: DEFAULT_SOLUTIONS_HUME_CONFIG_ID },
+    gratitude: { id: DEFAULT_GRATITUDE_HUME_CONFIG_ID },
+    growth: { id: DEFAULT_GROWTH_HUME_CONFIG_ID },
+    creativity: { id: DEFAULT_CREATIVITY_HUME_CONFIG_ID },
   },
   botPreferences: {
     'inner-echo': innerEchoBotPreferences,
