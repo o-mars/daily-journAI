@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { DEFAULT_CREATIVITY_HUME_CONFIG_ID, DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_GROWTH_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useHeader } from "@/src/contexts/HeaderContext";
@@ -21,6 +21,31 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
   categories: CategoryOption[];
   minimal?: boolean;
 }) {
+  const [gridDimensions, setGridDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      const vh = window.innerHeight;
+      const vw = window.innerWidth;
+      setGridDimensions({ width: vw, height: vh });
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  const getCardHeight = () => {
+    if (minimal) return 80;
+    
+    const baseHeight = Math.min(
+      180,
+      (gridDimensions.height - 200) * 0.2
+    );
+    
+    return Math.max(120, baseHeight);
+  };
+
   return (
     <div className="flex flex-col h-full justify-between">
       <div>
@@ -29,35 +54,44 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
             What would you like to explore today?
           </h2>
         )}
-        <div className={`grid grid-cols-2 gap-2 sm:gap-4 px-2 sm:px-4 ${minimal ? 'max-w-md' : 'max-w-2xl'} mx-auto`}>
+        <div 
+          className={`grid grid-cols-2 gap-2 sm:gap-4 px-2 sm:px-4 py-1 ${minimal ? 'max-w-md' : 'max-w-2xl'} mx-auto`}
+          style={{
+            maxHeight: minimal ? 'auto' : `calc(${gridDimensions.height}px - 200px)`,
+            overflow: 'auto'
+          }}
+        >
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => onSelect(category.id)}
               className={`
                 group flex flex-col 
-                ${minimal 
-                  ? 'h-[80px] min-h-[80px] p-1 sm:p-2' 
-                  : 'h-[calc(18vh-1.5rem)] sm:h-auto min-h-[120px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[180px] p-2 sm:p-4'
-                }
                 rounded-lg transition-all relative
                 ${selectedCategory === category.id 
-                  ? 'bg-blue-600 ring-2 ring-blue-400 shadow-lg scale-105' 
+                  ? 'bg-blue-600 ring-2 ring-blue-400 shadow-lg scale-[1.02]' 
                   : 'bg-gray-800 hover:bg-gray-700'}
               `}
+              style={{
+                height: `${getCardHeight()}px`,
+                padding: minimal ? '0.25rem 0.5rem' : '0.5rem 1rem'
+              }}
               title={category.description}
             >
               <div className="flex flex-col items-center justify-center w-full h-full gap-1 sm:gap-2">
-                <span className={`${minimal 
-                  ? 'text-[1.5rem] sm:text-[1.75rem]' 
-                  : 'text-[2rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[3.5rem]'
-                } -mt-1`}>
+                <span style={{
+                  fontSize: minimal 
+                    ? 'clamp(1.5rem, 3vw, 1.75rem)'
+                    : 'clamp(2rem, 4vw, 3.5rem)'
+                }}>
                   {category.icon}
                 </span>
-                <h3 className={`${minimal 
-                  ? 'text-[0.7rem] sm:text-[0.8rem]' 
-                  : 'text-[0.9rem] sm:text-[1.1rem] md:text-[1.3rem] lg:text-[1.5rem]'
-                } font-semibold text-white text-center w-full leading-tight`}>
+                <h3 style={{
+                  fontSize: minimal
+                    ? 'clamp(0.7rem, 2vw, 0.8rem)'
+                    : 'clamp(0.9rem, 2.5vw, 1.5rem)'
+                }} 
+                className="font-semibold text-white text-center w-full leading-tight">
                   {category.title}
                 </h3>
               </div>
@@ -69,7 +103,10 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
       {!minimal && (
         <div className="px-4 mt-4">
           {selectedCategory && (
-            <p className="text-xs sm:text-base md:text-xl lg:text-2xl text-gray-300 text-center animate-fade-in">
+            <p className="text-xs sm:text-base md:text-xl lg:text-2xl text-gray-300 text-center animate-fade-in"
+               style={{
+                 fontSize: `clamp(0.75rem, 2vw, 1.5rem)`
+               }}>
               {categories.find(c => c.id === selectedCategory)?.description}
             </p>
           )}
