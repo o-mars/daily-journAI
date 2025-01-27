@@ -60,9 +60,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       amplitude.setUserId(firebaseUser?.uid);
       if (firebaseUser) {
         setUserId(firebaseUser.uid);
-        if (!user || user.userId !== firebaseUser.uid) {
-          syncLocalUser();
-        }
       } else {
         setUserId(null);
         setUser(null);
@@ -71,7 +68,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, [user, syncLocalUser]);
+  }, []);
+
+  useEffect(() => {
+    if (userId && (!user || user.userId !== userId)) {
+      syncLocalUser();
+    }
+  }, [userId, user, syncLocalUser]);
 
   useEffect(() => {
     if (userId && !user) {

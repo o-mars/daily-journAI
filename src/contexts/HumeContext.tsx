@@ -56,11 +56,16 @@ export function HumeProvider({ children }: { children: React.ReactNode }) {
       const error = e instanceof Error ? e.message : 'Error connecting to Hume, reloading and retrying...';
       trackEvent("session", "session-error", { error, userId: user?.userId, email: user?.profile?.email ?? '' });
       console.error(`Error starting session: ${error}`);
-      navigateToView('start', { autoConnect: 'true' });
+      const configId = user?.preferences.humeConfigs[user.preferences.selectedConfig]?.id;
+      if (configId) {
+        navigateToView('session', { configId });
+      } else {
+        navigateToView('start');
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [connect, preventSleep, navigateToView, user?.userId, user?.profile?.email]);
+  }, [connect, preventSleep, navigateToView, user?.userId, user?.profile?.email, user?.preferences.selectedConfig, user?.preferences.humeConfigs]);
 
   const handleEndSession = useCallback(async (shouldSave: boolean) => {
     setIsLoading(true);
