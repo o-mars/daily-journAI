@@ -4,6 +4,7 @@ import { signInWithNewAnonymousUser } from "@/src/services/authService";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import HumeSelector from "@/src/components/Hume/HumeSelector";
 import { CONFIG_TEMPLATES, ConfigCategory } from "@/src/models/hume.config";
+import { useUser } from "@/src/contexts/UserContext";
 
 const shouldShowPrivacyPolicy = false;
 
@@ -21,10 +22,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [acceptedPolicy] = useState(!shouldShowPrivacyPolicy);
   const [selectedCategory, setSelectedCategory] = useState<ConfigCategory>(preSelectedCategory);
+  const { setUser } = useUser();
 
   const handleAgreeAndContinue = async () => {
     try {
-      await signInWithNewAnonymousUser(selectedCategory);
+      const { user } = await signInWithNewAnonymousUser(selectedCategory);
+      setUser(user);
+      await new Promise(resolve => setTimeout(resolve, 0));
       const categoryConfig = CONFIG_TEMPLATES[selectedCategory];
       router.push(`/session?configId=${categoryConfig.defaultConfigId}`);
     } catch (e) {

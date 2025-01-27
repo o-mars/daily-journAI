@@ -69,6 +69,6 @@ export const signInWithNewAnonymousUser = async (selectedCategory: ConfigCategor
   const userCredential = await signInAnonymously(auth);
   trackEvent("auth", "login", { userId: userCredential.user?.uid, method: "anonymous" });
   
-  await createUserWithSelectedCategory(selectedCategory);
-  return userCredential;
+  const newUser = await createUserWithSelectedCategory(selectedCategory);
+  return newUser;
 }

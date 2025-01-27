@@ -12,18 +12,32 @@ const GratitudePage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isInitialized) return;
-    if (user) {
-      const partialUser: Partial<User> = {
-        preferences: {
-          ...user.preferences,
-          selectedConfig: "gratitude",
-        },
-      };
-      void updateUser(partialUser);
-      router.push(`/session?configId=${DEFAULT_GRATITUDE_HUME_CONFIG_ID}`);
-    }
-  }, [user, isInitialized, router, updateUser]);
+    let mounted = true;
+
+    const initGratitude = async () => {
+      if (!isInitialized || !user) return;
+      
+      if (user.preferences.selectedConfig !== "gratitude") {
+        const partialUser: Partial<User> = {
+          preferences: {
+            ...user.preferences,
+            selectedConfig: "gratitude",
+          },
+        };
+        await updateUser(partialUser);
+      }
+      
+      if (mounted) {
+        router.push(`/session?configId=${DEFAULT_GRATITUDE_HUME_CONFIG_ID}`);
+      }
+    };
+
+    void initGratitude();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user, isInitialized, updateUser, router]);
 
   if (!isInitialized || user) {
     return (

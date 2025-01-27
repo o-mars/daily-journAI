@@ -17,7 +17,8 @@ const UserContext = createContext<{
   syncLocalUser: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
   isInitialized: boolean;
-}>({ user: null, isLoading: true, error: null, journalEntries: [], syncLocalUser: async () => {}, updateUser: async () => {}, isInitialized: false });
+  setUser: (user: User | null) => void;
+}>({ user: null, isLoading: true, error: null, journalEntries: [], syncLocalUser: async () => {}, updateUser: async () => {}, isInitialized: false, setUser: () => {} });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -27,21 +28,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      amplitude.setUserId(user?.uid);
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        setUserId(null);
-        setUser(null);
-        setIsInitialized(true);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
 
   const syncLocalUser = useCallback(async () => {
@@ -70,11 +56,22 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
-    syncLocalUser();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      amplitude.setUserId(firebaseUser?.uid);
+      if (firebaseUser) {
+        setUserId(firebaseUser.uid);
+        if (!user || user.userId !== firebaseUser.uid) {
+          syncLocalUser();
+        }
+      } else {
+        setUserId(null);
+        setUser(null);
+        setIsInitialized(true);
+      }
+    });
 
-    return () => { };
-  }, [userId, syncLocalUser]);
+    return () => unsubscribe();
+  }, [user, syncLocalUser]);
 
   useEffect(() => {
     if (userId && !user) {
@@ -126,7 +123,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       journalEntries,
       syncLocalUser,
       updateUser,
-      isInitialized
+      isInitialized,
+      setUser
     }}>
       {children}
     </UserContext.Provider>
