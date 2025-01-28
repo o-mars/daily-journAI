@@ -177,6 +177,10 @@ export function toUserPreferences(document: DocumentData): UserPreferences {
     humeConfigs: {
       journaling: { id: DEFAULT_JOURNALING_HUME_CONFIG_ID },
       dating: { id: DEFAULT_DATING_HUME_CONFIG_ID },
+      solutions: { id: DEFAULT_SOLUTIONS_HUME_CONFIG_ID },
+      gratitude: { id: DEFAULT_GRATITUDE_HUME_CONFIG_ID },
+      growth: { id: DEFAULT_GROWTH_HUME_CONFIG_ID },
+      creativity: { id: DEFAULT_CREATIVITY_HUME_CONFIG_ID },
       ...document.humeConfigs,
     },
 

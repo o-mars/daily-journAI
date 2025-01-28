@@ -86,7 +86,7 @@ export function toUser(document: DocumentData): User {
   user.profile = document['profile'] || {};
   user.preferences = document.preferences ? document.preferences : defaultUserPreferences;
   if (!user.preferences.humeConfigs) user.preferences.humeConfigs = defaultUserPreferences.humeConfigs;
-  if (!user.preferences.selectedConfig) user.preferences.selectedConfig = 'dating';
+  if (!user.preferences.selectedConfig) user.preferences.selectedConfig = 'journaling';
 
   user.journalEntries = document.journalEntries ? toJournalEntries(document.journalEntries) : [];
   user.isNewUser = document.isNewUser ? document.isNewUser : user.journalEntries.length === 0;
