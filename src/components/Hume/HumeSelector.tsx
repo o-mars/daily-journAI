@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@/src/contexts/UserContext";
-import { DEFAULT_CREATIVITY_HUME_CONFIG_ID, DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_GROWTH_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
+import { DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { User } from "@/src/models/user";
 import { ConfigCategory } from "@/src/models/hume.config";
@@ -50,12 +50,12 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
     <div className="flex flex-col h-full justify-between">
       <div>
         {!minimal && (
-          <h2 className="hidden sm:block lg:block md:hidden text-xl md:text-2xl font-semibold mb-4 sm:mb-6 text-white text-center">
+          <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-4 sm:mb-6 text-white text-center">
             What would you like to explore today?
           </h2>
         )}
         <div 
-          className={`grid grid-cols-2 gap-2 sm:gap-4 px-2 sm:px-4 py-1 ${minimal ? 'max-w-md' : 'max-w-2xl'} mx-auto`}
+          className={`grid grid-cols-2 gap-3 sm:gap-5 px-2 sm:px-4 py-1 ${minimal ? 'max-w-md' : 'max-w-2xl'} mx-auto`}
           style={{
             maxHeight: minimal ? 'auto' : `calc(${gridDimensions.height}px - 200px)`,
             overflow: 'auto'
@@ -69,8 +69,8 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
                 group flex flex-col 
                 rounded-lg transition-all relative
                 ${selectedCategory === category.id 
-                  ? 'bg-blue-600 ring-2 ring-blue-400 shadow-lg scale-[1.02]' 
-                  : 'bg-gray-800 hover:bg-gray-700'}
+                  ? 'bg-blue-600 ring-2 ring-blue-400 shadow-lg scale-[1.02]'
+                  : 'bg-gray-800/70 hover:bg-gray-700/80 opacity-75 hover:opacity-90'}
               `}
               style={{
                 height: `${getCardHeight()}px`,
@@ -101,11 +101,11 @@ function CategoryGrid({ onSelect, selectedCategory, categories, minimal }: {
       </div>
       
       {!minimal && (
-        <div className="px-4 mt-4">
+        <div className="px-4 mt-4 sm:mt-6">
           {selectedCategory && (
-            <p className="text-xs sm:text-base md:text-xl lg:text-2xl text-gray-300 text-center animate-fade-in"
+            <p className="text-blue-200 text-center animate-fade-in font-medium"
                style={{
-                 fontSize: `clamp(0.75rem, 2vw, 1.5rem)`
+                 fontSize: `clamp(0.9rem, 2.2vw, 1.5rem)`
                }}>
               {categories.find(c => c.id === selectedCategory)?.description}
             </p>
@@ -147,24 +147,17 @@ export default function HumeSelector({
   const categories: CategoryOption[] = [
     {
       id: 'journaling',
-      title: 'General',
+      title: 'Journaling',
       description: 'Reflect on your thoughts, feelings, and experiences',
       icon: '📝',
       configId: user?.preferences.humeConfigs?.journaling?.id ?? DEFAULT_JOURNALING_HUME_CONFIG_ID,
     },
     {
       id: 'dating',
-      title: 'Relationships',
+      title: 'Dating',
       description: 'Gain deeper insights into your relationships',
       icon: '💝',
       configId: user?.preferences.humeConfigs?.dating?.id ?? DEFAULT_DATING_HUME_CONFIG_ID,
-    },
-    {
-      id: 'growth',
-      title: 'Personal Growth',
-      description: 'Explore your values, habits, and emotional patterns',
-      icon: '🌱',
-      configId: user?.preferences.humeConfigs?.growth?.id ?? DEFAULT_GROWTH_HUME_CONFIG_ID,
     },
     {
       id: 'gratitude',
@@ -179,13 +172,6 @@ export default function HumeSelector({
       description: 'Talk through your problems to arrive at a solution',
       icon: '🎯',
       configId: user?.preferences.humeConfigs?.solutions?.id ?? DEFAULT_SOLUTIONS_HUME_CONFIG_ID,
-    },
-    {
-      id: 'creativity',
-      title: 'Creativity',
-      description: 'Explore ideas, stories, and artistic expression',
-      icon: '🎨',
-      configId: user?.preferences.humeConfigs?.creativity?.id ?? DEFAULT_CREATIVITY_HUME_CONFIG_ID,
     },
   ];
 
