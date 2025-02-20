@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { auth, getUser, getRecentJournalEntries, updateUser } from '@/app/lib/firebase.admin';
 import { generateHumeConfigForUserWithJournalEntries } from '@/src/services/humeConfigService';
 import { publishConfig } from '@/app/lib/hume.admin';
-import { ConfigCategory, HumeConfigId } from '@/src/models/hume.config';
+import { HumeConfigId } from '@/src/models/configs/hume/hume.config';
 import { DEFAULT_JOURNALING_HUME_CONFIG_ID } from '@/src/models/constants';
-
+import { ConfigCategory } from '@/src/models/categories.config';
 /*
  GET = get config id for user from firebase, if not found, create default hume config, save to firebase, and then return config id
 

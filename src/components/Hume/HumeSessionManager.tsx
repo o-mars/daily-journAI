@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useVoice, VoiceReadyState } from '@humeai/voice-react';
 import { useUser } from '@/src/contexts/UserContext';
-import { CONFIG_TEMPLATES } from '@/src/models/hume.config';
-import { ConfigCategory } from '@/src/models/hume.config';
+import { CONFIG_TEMPLATES } from '@/src/models/configs/hume/hume.config';
+import { ConfigCategory } from '@/src/models/categories.config';
 
 interface QueuedMessage {
   text: string;

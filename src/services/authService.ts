@@ -3,7 +3,7 @@ import { EmailAuthProvider, sendSignInLinkToEmail, signInWithEmailLink, User, li
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import { PhoneAuthProvider } from 'firebase/auth';
 import { trackEvent } from '@/src/services/metricsSerivce';
-import { ConfigCategory } from '@/src/models/hume.config';
+import { ConfigCategory } from '@/src/models/categories.config';
 import { createUserWithSelectedCategory } from '@/src/client/firebase.service.client';
 
 export const sendMagicLink = async (email: string, userId: string = '', journalEntryId: string = '') => {

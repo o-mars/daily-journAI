@@ -1,21 +1,17 @@
-import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
-import { baseVoice } from "@/src/services/humeConfigService";
-import { User } from "@/src/models/user";
-import { DEFAULT_GRATITUDE_HUME_CONFIG_ID } from "@/src/models/constants";
+import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
-export const GRATITUDE_HUME_FIRST_TIME_PROMPTS = [
+export const GRATITUDE_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you notice the positive moments in your life, from small daily joys to meaningful connections.`,
   `Let's begin! What's something you're grateful for today?`
 ];
 
-export const GRATITUDE_HUME_RETURNING_PROMPTS = [
+export const GRATITUDE_RETURNING_PROMPTS = [
   `Welcome back to your gratitude journal!`,
   `I'm here to help you notice and celebrate the positive moments in your life.`,
   `What's brought you joy since we last spoke?`
 ];
 
-export const GRATITUDE_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
+export const GRATITUDE_SYSTEM_PROMPT: SystemPrompt = {
   role: [
     "You are Echo, a gratitude companion who helps people recognize and appreciate positive moments.",
     "Your goal is to guide users in noticing and savoring both small and significant sources of joy.",
@@ -81,54 +77,10 @@ export const GRATITUDE_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
     "Use uplifting transitions like \"that's wonderful\", \"tell me more about\", \"what else brings you joy?\".",
     "Signal deeper appreciation with \"and what makes that special?\" or \"how does that feel?\""
   ],
-
-  respond_to_expressions: [
-    "If responding to the user, carefully read the user's message and analyze the top 3 emotional expressions provided in brackets.",
-    "These expressions indicate the user's tone, and will be in the format: {intensity1 emotion1, intensity2 emotion2, ...}",
-    "Identify the primary expressions, and consider their intensities.",
-    "Match your response tone to the emotional context while maintaining an appreciative mindset."
-  ]
 };
 
-export const generateGratitudePostedConfig = (user?: User): PostedConfig => {
-  return {
-    eviVersion: '2',
-    name: `Gratitude Config: ${user?.userId}`,
-    versionDescription: 'Gratitude reflection assistant configuration using GPT-4o-mini',
-    prompt: {
-      text: humeSystemPromptAsString(GRATITUDE_HUME_SYSTEM_PROMPT),
-    },
-    voice: baseVoice,
-    languageModel: {
-      modelProvider: "OPEN_AI",
-      modelResource: "gpt-4o-mini",
-      temperature: 0.5,
-    },
-    ellmModel: { allowShortResponses: true },
-    eventMessages: {
-      onNewChat: {
-        enabled: false,
-      },
-      onInactivityTimeout: {
-        enabled: true,
-        text: "Are you still there?"
-      },
-      onMaxDurationTimeout: {
-        enabled: true,
-      }
-    },
-    timeouts: {
-      inactivity: {
-        enabled: true,
-        durationSecs: 150,
-      },
-    }
-  };
-}; 
-
-export const GratitudeConfig: HumeConfigTemplate = {
-  defaultConfigId: DEFAULT_GRATITUDE_HUME_CONFIG_ID,
-  generateConfig: generateGratitudePostedConfig,
-  firstTimePrompts: GRATITUDE_HUME_FIRST_TIME_PROMPTS,
-  returningPrompts: GRATITUDE_HUME_RETURNING_PROMPTS,
+export const GRATITUDE_SYSTEM_PROMPT_WITH_INITIAL_MESSAGE: SystemPromptWithInitialMessage = {
+  firstTimePrompts: GRATITUDE_FIRST_TIME_PROMPTS,
+  returningPrompts: GRATITUDE_RETURNING_PROMPTS,
+  systemPrompt: systemPromptAsString(GRATITUDE_SYSTEM_PROMPT),
 };

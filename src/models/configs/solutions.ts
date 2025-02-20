@@ -1,8 +1,5 @@
-import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
-import { baseVoice } from "@/src/services/humeConfigService";
-import { User } from "@/src/models/user";
-import { DEFAULT_SOLUTIONS_HUME_CONFIG_ID } from "@/src/models/constants";
+
+import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
 export const PROBLEM_SOLVING_FIRST_TIME_PROMPTS = [
   `Hello! I'm Echo, and I'm here to help you break down challenges, weigh options, and map out next steps.`,
@@ -15,7 +12,7 @@ export const PROBLEM_SOLVING_RETURNING_PROMPTS = [
   `What situation would you like to explore today?`
 ];
 
-export const PROBLEM_SOLVING_SYSTEM_PROMPT: HumeSystemPrompt = {
+export const PROBLEM_SOLVING_SYSTEM_PROMPT: SystemPrompt = {
   role: [
     "You are Echo, a strategic thinking partner who helps people navigate decisions and challenges.",
     "Your goal is to help users break down complex problems into manageable pieces.",
@@ -76,54 +73,10 @@ export const PROBLEM_SOLVING_SYSTEM_PROMPT: HumeSystemPrompt = {
     "Use analytical transitions like \"let's break this down\", \"consider this angle\", \"what if we tried\".",
     "Signal deeper analysis with \"what's beneath that?\" or \"let's examine that further\"."
   ],
-
-  respond_to_expressions: [
-    "If responding to the user, carefully read the user's message and analyze the top 3 emotional expressions provided in brackets.",
-    "These expressions indicate the user's tone, and will be in the format: {intensity1 emotion1, intensity2 emotion2, ...}",
-    "Identify the primary expressions, and consider their intensities.",
-    "Match your response tone to the emotional context while maintaining analytical focus."
-  ]
 };
 
-export const generateProblemSolvingPostedConfig = (user?: User): PostedConfig => {
-  return {
-    eviVersion: '2',
-    name: `Problem-Solving Config: ${user?.userId}`,
-    versionDescription: 'Problem-solving assistant configuration using GPT-4o-mini',
-    prompt: {
-      text: humeSystemPromptAsString(PROBLEM_SOLVING_SYSTEM_PROMPT),
-    },
-    voice: baseVoice,
-    languageModel: {
-      modelProvider: "OPEN_AI",
-      modelResource: "gpt-4o-mini",
-      temperature: 0.4,
-    },
-    ellmModel: { allowShortResponses: true },
-    eventMessages: {
-      onNewChat: {
-        enabled: false,
-      },
-      onInactivityTimeout: {
-        enabled: true,
-        text: "Are you still there?"
-      },
-      onMaxDurationTimeout: {
-        enabled: true,
-      }
-    },
-    timeouts: {
-      inactivity: {
-        enabled: true,
-        durationSecs: 150,
-      },
-    }
-  };
-};
-
-export const ProblemSolvingConfig: HumeConfigTemplate = {
-  defaultConfigId: DEFAULT_SOLUTIONS_HUME_CONFIG_ID,
-  generateConfig: generateProblemSolvingPostedConfig,
+export const PROBLEM_SOLVING_SYSTEM_PROMPT_WITH_INITIAL_MESSAGE: SystemPromptWithInitialMessage = {
   firstTimePrompts: PROBLEM_SOLVING_FIRST_TIME_PROMPTS,
   returningPrompts: PROBLEM_SOLVING_RETURNING_PROMPTS,
+  systemPrompt: systemPromptAsString(PROBLEM_SOLVING_SYSTEM_PROMPT),
 };

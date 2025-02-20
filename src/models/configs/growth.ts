@@ -1,23 +1,19 @@
-import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
-import { baseVoice } from "@/src/services/humeConfigService";
-import { User } from "@/src/models/user";
-import { DEFAULT_GROWTH_HUME_CONFIG_ID } from "@/src/models/constants";
+import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
-export const GROWTH_HUME_FIRST_TIME_PROMPTS = [
+export const GROWTH_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you explore your personal growth journey.`,
   `We'll explore different aspects of your development, from your values and beliefs to your emotional patterns and habits.`,
   `I'll guide you through reflective questions that help you gain deeper insights about yourself.`,
   `Let's begin! What's something about yourself that you've been thinking about lately?`
 ];
 
-export const GROWTH_HUME_RETURNING_PROMPTS = [
+export const GROWTH_RETURNING_PROMPTS = [
   `Welcome back to your personal growth journey!`,
   `I'm here to help you continue exploring and understanding yourself better.`,
   `What's been on your mind since our last conversation?`
 ];
 
-export const GROWTH_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
+export const GROWTH_SYSTEM_PROMPT: SystemPrompt = {
   role: [
     "You are Echo, a personal growth companion who helps people explore their inner landscape.",
     "Your goal is to guide users through meaningful self-reflection across different aspects of their development.",
@@ -81,54 +77,10 @@ export const GROWTH_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
     "Use gentle transitions like \"I'm curious about\", \"let's explore\", \"I notice that\".",
     "Signal deeper inquiry with \"and beneath that?\" or \"tell me more about that\"."
   ],
-
-  respond_to_expressions: [
-    "If responding to the user, carefully read the user's message and analyze the top 3 emotional expressions provided in brackets.",
-    "These expressions indicate the user's tone, and will be in the format: {intensity1 emotion1, intensity2 emotion2, ...}",
-    "Identify the primary expressions, and consider their intensities.",
-    "Match your response tone to the emotional context while maintaining a growth mindset."
-  ]
 };
 
-export const generateGrowthPostedConfig = (user?: User): PostedConfig => {
-  return {
-    eviVersion: '2',
-    name: `Growth Config: ${user?.userId}`,
-    versionDescription: 'Personal growth reflection assistant configuration using GPT-4o-mini',
-    prompt: {
-      text: humeSystemPromptAsString(GROWTH_HUME_SYSTEM_PROMPT),
-    },
-    voice: baseVoice,
-    languageModel: {
-      modelProvider: "OPEN_AI",
-      modelResource: "gpt-4o-mini",
-      temperature: 0.5,
-    },
-    ellmModel: { allowShortResponses: true },
-    eventMessages: {
-      onNewChat: {
-        enabled: false,
-      },
-      onInactivityTimeout: {
-        enabled: true,
-        text: "Are you still there?"
-      },
-      onMaxDurationTimeout: {
-        enabled: true,
-      }
-    },
-    timeouts: {
-      inactivity: {
-        enabled: true,
-        durationSecs: 150,
-      },
-    }
-  };
-};
-
-export const GrowthConfig: HumeConfigTemplate = {
-  defaultConfigId: DEFAULT_GROWTH_HUME_CONFIG_ID,
-  generateConfig: generateGrowthPostedConfig,
-  firstTimePrompts: GROWTH_HUME_FIRST_TIME_PROMPTS,
-  returningPrompts: GROWTH_HUME_RETURNING_PROMPTS,
+export const GROWTH_SYSTEM_PROMPT_WITH_INITIAL_MESSAGE: SystemPromptWithInitialMessage = {
+  firstTimePrompts: GROWTH_FIRST_TIME_PROMPTS,
+  returningPrompts: GROWTH_RETURNING_PROMPTS,
+  systemPrompt: systemPromptAsString(GROWTH_SYSTEM_PROMPT),
 };

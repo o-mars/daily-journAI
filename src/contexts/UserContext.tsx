@@ -7,7 +7,9 @@ import { fetchUser, saveUpdatedUser, fetchJournalEntries } from "@/src/client/fi
 import { User } from "@/src/models/user";
 import { JournalEntry } from '@/src/models/journal.entry';
 import * as amplitude from '@amplitude/analytics-browser';
+import { ClientProvider } from '@/src/models/user.preferences';
 
+const ENV_PROVIDER = process.env.NEXT_PUBLIC_PROVIDER as ClientProvider | undefined;
 
 const UserContext = createContext<{
   user: User | null;
@@ -18,9 +20,20 @@ const UserContext = createContext<{
   updateUser: (data: Partial<User>) => Promise<void>;
   isInitialized: boolean;
   setUser: (user: User | null) => void;
-}>({ user: null, isLoading: true, error: null, journalEntries: [], syncLocalUser: async () => {}, updateUser: async () => {}, isInitialized: false, setUser: () => {} });
+  clientProvider: ClientProvider;
+}>({
+  user: null,
+  isLoading: true,
+  error: null,
+  journalEntries: [],
+  syncLocalUser: async () => {},
+  updateUser: async () => {},
+  isInitialized: false,
+  setUser: () => {},
+  clientProvider: ENV_PROVIDER || 'hume'
+});
 
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
@@ -28,7 +41,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
-
+  const clientProvider = ENV_PROVIDER || 'hume';
 
   const syncLocalUser = useCallback(async () => {
     if (!userId) {
@@ -44,6 +57,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         fetchUser(userId),
         fetchJournalEntries()
       ]);
+
+      // Always override with environment provider if set
+      if (ENV_PROVIDER) {
+        newUser.preferences = {
+          ...newUser.preferences,
+          provider: ENV_PROVIDER
+        };
+      }
+
       setUser(newUser);
       setJournalEntries(userJournals);
       setError(null);
@@ -98,15 +120,28 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     
     try {
       setIsLoading(true);
-      await saveUpdatedUser(data);
       
-      // Update local state immediately
+      // Ensure we don't override the environment provider
+      const dataToSave = ENV_PROVIDER ? {
+        ...data,
+        preferences: {
+          ...(data.preferences || {}),
+          provider: ENV_PROVIDER
+        }
+      } as Partial<User> : data;
+      
+      await saveUpdatedUser(dataToSave);
+      
       const updatedUser = {
         ...user,
-        ...data,
-        profile: { ...user.profile, ...(data.profile || {}) },
-        preferences: { ...user.preferences, ...(data.preferences || {}) }
+        ...dataToSave,
+        profile: { ...user.profile, ...(dataToSave.profile || {}) },
+        preferences: { 
+          ...user.preferences, 
+          ...(dataToSave.preferences || {})
+        }
       };
+      
       setUser(updatedUser);
       setError(null);
     } catch (error) {
@@ -127,11 +162,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       syncLocalUser,
       updateUser,
       isInitialized,
-      setUser
+      setUser,
+      clientProvider
     }}>
       {children}
     </UserContext.Provider>
   );
-};
+}
 
 export const useUser = () => useContext(UserContext);

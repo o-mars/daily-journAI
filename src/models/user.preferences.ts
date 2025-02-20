@@ -2,7 +2,11 @@ import { LLMService, STTService, TTSService } from "@/src/models/common";
 import { DocumentData } from "firebase/firestore";
 import { DEFAULT_CREATIVITY_HUME_CONFIG_ID, DEFAULT_DATING_HUME_CONFIG_ID, DEFAULT_GRATITUDE_HUME_CONFIG_ID, DEFAULT_GROWTH_HUME_CONFIG_ID, DEFAULT_JOURNALING_HUME_CONFIG_ID, DEFAULT_SOLUTIONS_HUME_CONFIG_ID, DEFAULT_VOICE_ID } from "@/src/models/constants";
 import { BotType } from "@/src/models/user";
-import { ConfigCategory, HumeConfigId } from "@/src/models/hume.config";
+import { HumeConfigId } from "@/src/models/configs/hume/hume.config";
+import { ConfigCategory } from "@/src/models/categories.config";
+
+const DEFAULT_CLIENT_PROVIDER = 'hume' as ClientProvider;
+
 export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
 export type ConversationTone = "reflective" | "professional" | "inquisitive";
 export type ResponseDepth = "brief" | "regular" | "elaborate";
@@ -54,7 +58,7 @@ export const ventingMachineBotPreferences: BotPreferences = {
 };
 
 export const defaultInnerEchoUserPreferences: UserPreferences = {
-  provider: 'hume',
+  provider: DEFAULT_CLIENT_PROVIDER,
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
@@ -78,7 +82,7 @@ export const defaultInnerEchoUserPreferences: UserPreferences = {
 };
 
 export const defaultVentingMachineUserPreferences: UserPreferences = {
-  provider: 'hume',
+  provider: DEFAULT_CLIENT_PROVIDER,
   ttsService: 'cartesia',
   ttsModel: 'sonic-english',
   llmModel: 'gpt-4o-mini',
@@ -163,7 +167,7 @@ export function getLlmConfig(preferences: UserPreferences, systemMessage: string
 
 export function toUserPreferences(document: DocumentData): UserPreferences {
   const preferences: UserPreferences = {
-    provider: !!document.provider ? document.provider : defaultUserPreferences.provider,
+    provider: document.provider ?? DEFAULT_CLIENT_PROVIDER,
     llmModel: !!document.llmModel ? document.llmModel : defaultUserPreferences.llmModel,
     llmService: !!document.llmService ? document.llmService : defaultUserPreferences.llmService,
 

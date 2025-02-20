@@ -4,7 +4,7 @@ import { User } from "@/src/models/user";
 import { JournalEntry } from "@/src/models/journal.entry";
 import { fetchAccessToken } from "hume";
 import { trackEvent } from "@/src/services/metricsSerivce";
-import { CONFIG_TEMPLATES } from "@/src/models/hume.config";
+import { CONFIG_TEMPLATES } from "@/src/models/configs/hume/hume.config";
 
 export const baseVoice: PostedVoice = {
   name: 'KORA',

@@ -1,5 +1,7 @@
+import { systemPromptAsString } from "@/src/models/configs/config";
+import { getDailySystemPromptForCategory } from "@/src/models/configs/daily/daily.config";
 import { JournalEntry, toJournalEntries } from "@/src/models/journal.entry";
-import { generateSystemMessagesForInnerEcho, generateSystemMessagesForVentingMachine } from "@/src/models/prompts";
+import { generateSystemMessagesForVentingMachine } from "@/src/models/prompts";
 import { UserPreferences, defaultUserPreferences, getVadConfig, getTtsConfig, getLlmConfig, getSttConfig } from "@/src/models/user.preferences";
 import { DocumentData } from "firebase/firestore";
 
@@ -40,12 +42,13 @@ export function createUser(userId: string, createdAt: Date): User {
 }
 
 export function generateConfigForInnerEcho(user: User) {
-  const systemPromptChunks = generateSystemMessagesForInnerEcho(user);
+  const promptChunks = getDailySystemPromptForCategory(user);
+  const prompt = systemPromptAsString(promptChunks);
 
   const config = [
     getVadConfig(user.preferences, 'inner-echo'),
     getTtsConfig(user.preferences, 'inner-echo'),
-    getLlmConfig(user.preferences, systemPromptChunks.join(' ')),
+    getLlmConfig(user.preferences, prompt),
     getSttConfig(user.preferences, 'inner-echo'),
   ];
 

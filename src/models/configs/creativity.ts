@@ -1,22 +1,18 @@
-import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
-import { baseVoice } from "@/src/services/humeConfigService";
-import { User } from "@/src/models/user";
-import { DEFAULT_CREATIVITY_HUME_CONFIG_ID } from "@/src/models/constants";
+import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
-export const CREATIVITY_HUME_FIRST_TIME_PROMPTS = [
+export const CREATIVITY_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help spark your creativity and explore your imagination.`,
   `We can dive into different aspects of creative expression, from storytelling to artistic inspiration.`,
   `Let's begin! What creative ideas have been dancing in your mind lately?`
 ];
 
-export const CREATIVITY_HUME_RETURNING_PROMPTS = [
+export const CREATIVITY_RETURNING_PROMPTS = [
   `Welcome back to your creative space!`,
   `I'm here to help you continue exploring your artistic expression.`,
   `What's been inspiring you since we last spoke?`
 ];
 
-export const CREATIVITY_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
+export const CREATIVITY_SYSTEM_PROMPT: SystemPrompt = {
   role: [
     "You are Echo, a creativity companion who helps people explore their artistic expression.",
     "Your goal is to guide users through playful exploration of ideas and inspiration.",
@@ -80,54 +76,10 @@ export const CREATIVITY_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
     "Use imaginative transitions like \"let's explore\", \"imagine if\", \"what if we tried\".",
     "Signal creative diving with \"and what else could happen?\" or \"where might that lead?\""
   ],
-
-  respond_to_expressions: [
-    "If responding to the user, carefully read the user's message and analyze the top 3 emotional expressions provided in brackets.",
-    "These expressions indicate the user's tone, and will be in the format: {intensity1 emotion1, intensity2 emotion2, ...}",
-    "Identify the primary expressions, and consider their intensities.",
-    "Match your response tone to the emotional context while maintaining a creative mindset."
-  ]
 };
 
-export const generateCreativityPostedConfig = (user?: User): PostedConfig => {
-  return {
-    eviVersion: '2',
-    name: `Creativity Config: ${user?.userId}`,
-    versionDescription: 'Creativity exploration assistant configuration using GPT-4o-mini',
-    prompt: {
-      text: humeSystemPromptAsString(CREATIVITY_HUME_SYSTEM_PROMPT),
-    },
-    voice: baseVoice,
-    languageModel: {
-      modelProvider: "OPEN_AI",
-      modelResource: "gpt-4o-mini",
-      temperature: 0.7, // Slightly higher temperature for more creative responses
-    },
-    ellmModel: { allowShortResponses: true },
-    eventMessages: {
-      onNewChat: {
-        enabled: false,
-      },
-      onInactivityTimeout: {
-        enabled: true,
-        text: "Are you still there?"
-      },
-      onMaxDurationTimeout: {
-        enabled: true,
-      }
-    },
-    timeouts: {
-      inactivity: {
-        enabled: true,
-        durationSecs: 150,
-      },
-    }
-  };
-}; 
-
-export const CreativityConfig: HumeConfigTemplate = {
-  defaultConfigId: DEFAULT_CREATIVITY_HUME_CONFIG_ID,
-  generateConfig: generateCreativityPostedConfig,
-  firstTimePrompts: CREATIVITY_HUME_FIRST_TIME_PROMPTS,
-  returningPrompts: CREATIVITY_HUME_RETURNING_PROMPTS,
+export const CREATIVITY_SYSTEM_PROMPT_WITH_INITIAL_MESSAGE: SystemPromptWithInitialMessage = {
+  firstTimePrompts: CREATIVITY_FIRST_TIME_PROMPTS,
+  returningPrompts: CREATIVITY_RETURNING_PROMPTS,
+  systemPrompt: systemPromptAsString(CREATIVITY_SYSTEM_PROMPT),
 };

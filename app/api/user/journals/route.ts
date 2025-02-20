@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { addJournalEntry, auth, deleteAllJournalEntries, getJournalEntries, getRecentJournalEntries, getUser, updateUser } from '@/app/lib/firebase.admin';
 import { publishConfig, updatePublishedConfig } from '@/app/lib/hume.admin';
-import { CONFIG_TEMPLATES, ConfigCategory, HumeConfigId } from '@/src/models/hume.config';
+import { CONFIG_TEMPLATES, HumeConfigId } from '@/src/models/configs/hume/hume.config';
 import { defaultUserPreferences } from '@/src/models/user.preferences';
+import { ConfigCategory } from '@/src/models/categories.config';
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split("Bearer ")[1];

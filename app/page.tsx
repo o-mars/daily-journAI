@@ -1,21 +1,26 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useHeader } from "@/src/contexts/HeaderContext";
 import { useUser } from "@/src/contexts/UserContext";
 
 export default function Home() {
-  const { user, isInitialized } = useUser();
-  const { branding } = useHeader();
-  const router = useRouter();
+  const { user, isInitialized, clientProvider } = useUser();
+  const { branding, navigateToView } = useHeader();
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (!user) router.push("/welcome");
-    // else if (user.profile.isAnonymous || !user.profile.email) router.push("/auth");
-    else router.push("/start");
-  }, [router, user, isInitialized]);
+    if (!user) {
+      navigateToView('welcome');
+      return;
+    }
+
+    if (clientProvider === 'dailybots') {
+      navigateToView('main', { autoConnect: 'true' });
+    } else {
+      navigateToView('start');
+    }
+  }, [user, isInitialized, clientProvider, navigateToView]);
 
   return (
     <>

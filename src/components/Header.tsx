@@ -11,6 +11,7 @@ import { RTVIClientAudio } from "realtime-ai-react";
 
 const Header: React.FC = () => {
   const { user } = useUser();
+  const { clientProvider } = useUser();
   const {
     branding,
     isShowingMenuOptions,
@@ -42,7 +43,6 @@ const Header: React.FC = () => {
     } else {
       navigateToView('feedback', {
         entryId: lastJournalEntryId,
-        isShowingMenuOptions: isShowingMenuOptions.toString() 
       });
     }
   };
@@ -51,15 +51,21 @@ const Header: React.FC = () => {
     if (currentView === 'settings') {
       toggleMenu();
     } else {
-      navigateToView('settings', {
-        isShowingMenuOptions: isShowingMenuOptions.toString() 
-      });
+      navigateToView('settings');
+    }
+  };
+
+  const handleNewJournalClick = () => {
+    if (clientProvider === 'dailybots') {
+      navigateToView('main');
+    } else {
+      navigateToView('start');
     }
   };
 
   return (
     <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
-      <RTVIClientAudio />
+      {clientProvider === 'dailybots' && <RTVIClientAudio />}
 
       <div className="flex flex-grow-0">
 
@@ -114,7 +120,7 @@ const Header: React.FC = () => {
         {(currentView === 'journals') && (
           <button
             className="w-7" 
-            onClick={() => navigateToView('start')}
+            onClick={handleNewJournalClick}
             title="Start"
           >
             <Image
@@ -126,7 +132,7 @@ const Header: React.FC = () => {
             />
           </button>
         )}
-        {(currentView === 'start' || currentView === 'journals/:journalEntryId') && (
+        {(currentView === 'start' || currentView === 'main' || currentView === 'journals/:journalEntryId') && (
           <button className="w-7" onClick={() => navigateToView('journals')}>
             <Image
               width={26}

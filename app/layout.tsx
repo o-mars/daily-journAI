@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { brands } from "@/src/models/brand";
 import { defaultBranding } from "@/src/models/brand";
 import { AmplitudeInitializer } from '@/src/components/AmplitudeInitializer';
+import { ProviderWrapper } from '@/src/components/ProviderWrapper';
 
 export async function generateMetadata(): Promise<Metadata> {
   const hostname = (await headers()).get('host');
@@ -31,7 +32,9 @@ export default function RootLayout({
       <UserProvider>
         <HeaderProvider>
           <body>
-            {children}
+            <ProviderWrapper>
+              {children}
+            </ProviderWrapper>
           </body>
         </HeaderProvider>
       </UserProvider>

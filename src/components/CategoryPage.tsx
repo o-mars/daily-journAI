@@ -4,9 +4,8 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/contexts/UserContext";
 import WelcomeScreen from "@/src/components/WelcomeScreen";
-import { ConfigCategory } from "@/src/models/hume.config";
 import { User } from "@/src/models/user";
-
+import { ConfigCategory } from "@/src/models/categories.config";
 interface CategoryPageProps {
   category: ConfigCategory;
   configId: string;
@@ -58,7 +57,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, configId }) => {
   }
 
   return (
-    <WelcomeScreen 
+    <WelcomeScreen
       preSelectedCategory={category}
       showCategorySelector={false}
     />

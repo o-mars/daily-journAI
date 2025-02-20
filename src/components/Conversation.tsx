@@ -3,9 +3,15 @@ import { JournalConversationEntry } from "@/src/models/journal.entry";
 
 interface ConversationProps {
   messages?: JournalConversationEntry[];
+  isTextInputVisible?: boolean;
+  staticHeight?: boolean;
 }
 
-const Conversation: React.FC<ConversationProps> = ({ messages }) => {
+const Conversation: React.FC<ConversationProps> = ({ 
+  messages,
+  isTextInputVisible = false,
+  staticHeight = true,
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,7 +32,9 @@ const Conversation: React.FC<ConversationProps> = ({ messages }) => {
         paddingTop: '16px',
         borderRadius: '8px',
         overflowY: 'scroll',
-        height: 'auto',
+        height: staticHeight
+          ? 'auto'
+          : `calc(100svh - ${isTextInputVisible ? 170 : 120}px)`,
         flexGrow: 1
       }}
       data-conversation-content

@@ -1,4 +1,4 @@
-import { ConfigCategory } from "@/src/models/hume.config";
+import { ConfigCategory } from "@/src/models/categories.config";
 import { JournalConversationEntry, JournalEntry, JournalEntryMetadata } from "@/src/models/journal.entry";
 import { toUser, User } from "@/src/models/user";
 import { defaultUserPreferences } from "@/src/models/user.preferences";

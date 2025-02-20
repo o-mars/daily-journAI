@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { signInWithNewAnonymousUser } from "@/src/services/authService";
 import { useHeader } from "@/src/contexts/HeaderContext";
-import HumeSelector from "@/src/components/Hume/HumeSelector";
-import { CONFIG_TEMPLATES, ConfigCategory } from "@/src/models/hume.config";
+import { ConfigCategory } from "@/src/models/categories.config";
 import { useUser } from "@/src/contexts/UserContext";
+import HumeSelector from "@/src/components/Hume/HumeSelector";
+import DailySelector from "@/src/components/Daily/DailySelector";
+import { CONFIG_TEMPLATES } from "@/src/models/configs/hume/hume.config";
 
 const shouldShowPrivacyPolicy = false;
 
@@ -13,28 +14,33 @@ interface WelcomeScreenProps {
   showCategorySelector?: boolean;
 }
 
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ 
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   preSelectedCategory = 'journaling',
   showCategorySelector = true 
 }) => {
-  const { branding } = useHeader();
-  const router = useRouter();
+  const { branding, navigateToView } = useHeader();
   const [error, setError] = useState<string | null>(null);
   const [acceptedPolicy] = useState(!shouldShowPrivacyPolicy);
   const [selectedCategory, setSelectedCategory] = useState<ConfigCategory>(preSelectedCategory);
-  const { setUser } = useUser();
+  const { setUser, clientProvider } = useUser();
 
   const handleAgreeAndContinue = async () => {
     try {
       const { user } = await signInWithNewAnonymousUser(selectedCategory);
       setUser(user);
       await new Promise(resolve => setTimeout(resolve, 0));
-      const categoryConfig = CONFIG_TEMPLATES[selectedCategory];
-      router.push(`/session?configId=${categoryConfig.defaultConfigId}`);
+      if (clientProvider === 'dailybots') {
+        navigateToView('main', { autoConnect: 'true' });
+      } else {
+        const categoryConfig = CONFIG_TEMPLATES[selectedCategory];
+        navigateToView('session', { configId: categoryConfig.defaultConfigId });
+      }
     } catch (e) {
       setError("Failed to sign in or connect. Please try again." + e);
     }
   };
+
+  const Selector = clientProvider === 'dailybots' ? DailySelector : HumeSelector;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white p-4">
@@ -55,15 +61,24 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             {branding.appWelcomeMessage}
           </p>
           {!shouldShowPrivacyPolicy && (
-            <p className="text-sm xs:text-base text-gray-300">
-              Your data is stored securely and only accessible to you.
-            </p>
+            <div className="relative inline-flex items-center group">
+              <p className="text-sm xs:text-base text-gray-300">
+                Your data is stored securely and only accessible to you
+              </p>
+              <button 
+                className="ml-2 w-5 h-5 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center text-sm 
+                           hover:bg-gray-600 hover:text-white transition-colors"
+                onClick={() => window.open('/privacy-policy', '_blank')}
+              >
+                ?
+              </button>
+            </div>
           )}
         </div>
 
         {showCategorySelector && (
           <div className="w-full max-w-md">
-            <HumeSelector 
+            <Selector
               onCategorySelect={setSelectedCategory}
               hideStartButton={true}
               minimal={true}
@@ -74,7 +89,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <div className="text-center">
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <button
-            style={{ 
+            style={{
               border: '2px solid #3b82f6',
               backgroundColor: '#1d4ed8',
               padding: '12px 24px',
@@ -82,7 +97,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             }}
             className={`text-white font-bold text-lg transition duration-300 ease-in-out transform 
               ${acceptedPolicy 
-                ? 'hover:scale-105 hover:bg-blue-800 hover:border-blue-400' 
+                ? 'hover:scale-105 hover:bg-blue-800 hover:border-blue-400'
                 : 'opacity-50 cursor-not-allowed'}`}
             onClick={handleAgreeAndContinue}
             disabled={!acceptedPolicy}
@@ -97,4 +112,4 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   );
 };
 
-export default WelcomeScreen; 
+export default WelcomeScreen;

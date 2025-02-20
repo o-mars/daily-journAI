@@ -4,8 +4,18 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { useRouter, usePathname } from 'next/navigation';
 import { brands, defaultBranding } from '@/src/models/brand';
 import { Branding } from '@/src/models/brand';
+import { useUser } from '@/src/contexts/UserContext';
 
-type HeaderView = 'main' | 'start' | 'session' | 'settings' | 'feedback' | 'journals' | 'auth' | 'journals/:journalEntryId';
+type HeaderView = 
+  | 'main'
+  | 'start'
+  | 'session'
+  | 'settings'
+  | 'feedback'
+  | 'journals'
+  | 'auth'
+  | 'welcome'
+  | 'journals/:journalEntryId';
 
 interface HeaderContextType {
   isShowingMenuOptions: boolean;
@@ -23,6 +33,8 @@ function getCurrentViewFromPath(pathName: string): HeaderView {
   if (paths[1] === 'journals' && paths[2]) {
     return 'journals/:journalEntryId';
   }
+  if (paths[1] === 'session') return 'session';
+  if (paths[1] === 'welcome') return 'welcome';
   return (paths[1] as HeaderView) || 'main';
 }
 
@@ -33,10 +45,9 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const pathName = usePathname();
   const [currentView, setCurrentView] = useState<HeaderView>(getCurrentViewFromPath(pathName));
   const [branding, setBranding] = useState<Branding>(defaultBranding);
-
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
-
-  const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(false);
+  const { clientProvider } = useUser();
+  const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(currentView === 'settings' || currentView === 'feedback');
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -47,14 +58,10 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
     const nextView = getCurrentViewFromPath(pathName);
     setCurrentView(nextView);
     
-    const searchParams = new URLSearchParams(window.location.search);
-    const menuParam = searchParams.get('isShowingMenuOptions');
-    if (menuParam !== null) {
-      setIsShowingMenuOptions(menuParam === 'true');
-    } else {
-      setIsShowingMenuOptions(nextView === 'settings');
+    if (nextView !== currentView) {
+      setIsShowingMenuOptions(nextView === 'settings' || nextView === 'feedback');
     }
-  }, [pathName]);
+  }, [pathName, currentView]);
 
   const toggleMenu = () => {
     setIsShowingMenuOptions(!isShowingMenuOptions);
@@ -89,7 +96,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
 
   const goBack = () => {
     if (currentView === 'settings') {
-      navigateToView('start');
+      navigateToView(clientProvider === 'dailybots' ? 'main' : 'start');
     } else {
       router.back();
     }

@@ -1,23 +1,19 @@
-import { PostedConfig } from "hume/api/resources/empathicVoice";
-import { HumeConfigTemplate, HumeSystemPrompt, humeSystemPromptAsString } from "@/src/models/hume.config";
-import { baseVoice } from "@/src/services/humeConfigService";
-import { User } from "@/src/models/user";
-import { DEFAULT_DATING_HUME_CONFIG_ID } from "@/src/models/constants";
+import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
-export const DATING_HUME_FIRST_TIME_PROMPTS = [
+export const DATING_FIRST_TIME_PROMPTS = [
   `Hi! I'm Echo, and I'm here to help you build mindfulness around your experiences with dating and relationships.`,
   `I'll ask you various questions to help guide you through exploring different aspects of your connections, such as chemistry, values, and lifestyle patterns.`,
   `Once we've explored the various themes, I'll summarize the key insights for you.`,
   `Let's begin! Were there any moments from your recent interactions that stood out as particularly positive or concerning to you?`
 ];
 
-export const DATING_HUME_RETURNING_PROMPTS = [
+export const DATING_RETURNING_PROMPTS = [
   `Welcome back! Let's continue mindfully reflecting on your dating experience.`,
   `As always, I'll ask you various questions to explore different aspects of your date, before summarizing the key insights at the end.`,
   `To start, what moments stood out to you the most from this date?`
 ];
 
-export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
+export const DATING_SYSTEM_PROMPT: SystemPrompt = {
   role: [
     "You are an AI dating coach, Echo, who helps people systematically reflect on key aspects of their date.",
     "Your primary goal is to guide users through a balanced exploration of all compatibility themes through concise questioning.",
@@ -79,57 +75,10 @@ export const DATING_HUME_SYSTEM_PROMPT: HumeSystemPrompt = {
     "Use discourse markers to ease comprehension.",
     "For example, use \"now, here's the deal\" to start a new topic, change topics with \"anyway\", clarify with \"I mean\"."
   ],
-
-  respond_to_expressions: [
-    "If responding to the user, carefully read the user's message and analyze the top 3 emotional expressions provided in brackets.",
-    "These expressions indicate the user's tone, and will be in the format: {intensity1 emotion1, intensity2 emotion2, ...}, e.g., {very happy, slightly anxious}.",
-    "Identify the primary expressions, and consider their intensities.",
-    "These intensities represent the confidence that the user is expressing it.",
-    "Use the top few expressions to inform your response."
-  ]
 };
 
-export const generateDatingPostedConfig = (user?: User): PostedConfig => {
-  console.info("ignore", user);
-  // const isFirstSession = !user || !user.journalEntries || user.journalEntries.length === 0 || true;
-  return {
-    eviVersion: '2',
-    name: `Dating Config: ${user?.userId}`,
-    versionDescription: 'Dating reflection assistant configuration using GPT-4o-mini',
-    prompt: {
-      text: humeSystemPromptAsString(DATING_HUME_SYSTEM_PROMPT),
-    },
-    voice: baseVoice,
-    languageModel: {
-      modelProvider: "OPEN_AI",
-      modelResource: "gpt-4o-mini",
-      temperature: 0.5,
-    },
-    ellmModel: { allowShortResponses: true },
-    eventMessages: {
-      onNewChat: {
-        enabled: false,
-      },
-      onInactivityTimeout: {
-        enabled: true,
-        text: "Are you still there?"
-      },
-      onMaxDurationTimeout: {
-        enabled: true,
-      }
-    },
-    timeouts: {
-      inactivity: {
-        enabled: true,
-        durationSecs: 150,
-      },
-    }
-  };
-};
-
-export const DatingConfig: HumeConfigTemplate = {
-  defaultConfigId: DEFAULT_DATING_HUME_CONFIG_ID,
-  generateConfig: generateDatingPostedConfig,
-  firstTimePrompts: DATING_HUME_FIRST_TIME_PROMPTS,
-  returningPrompts: DATING_HUME_RETURNING_PROMPTS,
+export const DATING_SYSTEM_PROMPT_WITH_INITIAL_MESSAGE: SystemPromptWithInitialMessage = {
+  firstTimePrompts: DATING_FIRST_TIME_PROMPTS,
+  returningPrompts: DATING_RETURNING_PROMPTS,
+  systemPrompt: systemPromptAsString(DATING_SYSTEM_PROMPT),
 };
