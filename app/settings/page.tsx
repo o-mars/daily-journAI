@@ -34,7 +34,7 @@ const PROVIDERS = [
 export default function Settings() {
   const { branding } = useHeader();
   const { user, syncLocalUser, updateUser } = useUser();
-  const { isStarted } = useDailyClient()!;
+  const { isStarted = false } = useDailyClient() ?? {};
 
   const statusRef = useRef<StatusIndicatorHandle>(null);
 
