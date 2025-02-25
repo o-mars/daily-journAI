@@ -16,7 +16,7 @@ export default function Home() {
     }
 
     if (clientProvider === 'dailybots') {
-      navigateToView('main', { autoConnect: 'true' });
+      navigateToView('main');
     } else {
       navigateToView('start');
     }
