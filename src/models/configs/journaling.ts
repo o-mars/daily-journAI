@@ -1,7 +1,7 @@
 import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
-export const JOURNALING_FIRST_TIME_PROMPTS = [`Hi! I'm Echo, and I'm here to help you reflect on your day. What's on your mind?`];
-export const JOURNALING_RETURNING_PROMPTS = [`Hi! What's on your mind?`];
+export const JOURNALING_FIRST_TIME_PROMPTS = [`Hello! I'm Echo, and I'm here to help you reflect on your day. What's on your mind?`];
+export const JOURNALING_RETURNING_PROMPTS = [`Hello! What's on your mind?`];
 
 export const JOURNALING_SYSTEM_PROMPT: SystemPrompt = {
   role: [

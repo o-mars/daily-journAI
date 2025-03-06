@@ -1,7 +1,7 @@
 import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
 export const GRATITUDE_FIRST_TIME_PROMPTS = [
-  `Hi! I'm Echo, and I'm here to help you notice the positive moments in your life, from small daily joys to meaningful connections.`,
+  `Hello! I'm Echo, and I'm here to help you notice the positive moments in your life, from small daily joys to meaningful connections.`,
   `Let's begin! What's something you're grateful for today?`
 ];
 

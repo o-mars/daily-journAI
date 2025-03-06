@@ -1,7 +1,7 @@
 import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
 export const DATING_FIRST_TIME_PROMPTS = [
-  `Hi! I'm Echo, and I'm here to help you build mindfulness around your experiences with dating and relationships.`,
+  `Hello! I'm Echo, and I'm here to help you build mindfulness around your experiences with dating and relationships.`,
   `I'll ask you various questions to help guide you through exploring different aspects of your connections, such as chemistry, values, and lifestyle patterns.`,
   `Once we've explored the various themes, I'll summarize the key insights for you.`,
   `Let's begin! Were there any moments from your recent interactions that stood out as particularly positive or concerning to you?`

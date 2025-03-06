@@ -1,7 +1,7 @@
 import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
 export const CREATIVITY_FIRST_TIME_PROMPTS = [
-  `Hi! I'm Echo, and I'm here to help spark your creativity and explore your imagination.`,
+  `Hello! I'm Echo, and I'm here to help spark your creativity and explore your imagination.`,
   `We can dive into different aspects of creative expression, from storytelling to artistic inspiration.`,
   `Let's begin! What creative ideas have been dancing in your mind lately?`
 ];

@@ -1,7 +1,7 @@
 import { SystemPrompt, systemPromptAsString, SystemPromptWithInitialMessage } from "@/src/models/configs/config";
 
 export const GROWTH_FIRST_TIME_PROMPTS = [
-  `Hi! I'm Echo, and I'm here to help you explore your personal growth journey.`,
+  `Hello! I'm Echo, and I'm here to help you explore your personal growth journey.`,
   `We'll explore different aspects of your development, from your values and beliefs to your emotional patterns and habits.`,
   `I'll guide you through reflective questions that help you gain deeper insights about yourself.`,
   `Let's begin! What's something about yourself that you've been thinking about lately?`
