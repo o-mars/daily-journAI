@@ -7,6 +7,7 @@ import { GROWTH_FIRST_TIME_PROMPTS, GROWTH_RETURNING_PROMPTS, GROWTH_SYSTEM_PROM
 import { JOURNALING_FIRST_TIME_PROMPTS, JOURNALING_RETURNING_PROMPTS, JOURNALING_SYSTEM_PROMPT } from "@/src/models/configs/journaling";
 import { PROBLEM_SOLVING_FIRST_TIME_PROMPTS, PROBLEM_SOLVING_RETURNING_PROMPTS, PROBLEM_SOLVING_SYSTEM_PROMPT } from "@/src/models/configs/solutions";
 import { LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS, LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS } from "@/src/models/prompts";
+import { generateSystemMessageForAlternateLanguage, LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS, LLM_SYSTEM_PROMPT_EXPECT_AUDIO_INSTRUCTIONS } from "@/src/models/prompts";
 import { User } from "@/src/models/user";
 
 export function getDailySystemPrompt(config: SystemPrompt): SystemPrompt {
@@ -61,9 +62,12 @@ export function getDailySystemPromptForCategory(user: User): SystemPrompt {
   const prompt = getBasePromptForCategory(category);
   const isNewUser = user.isNewUser;
   const firstMessage = getFirstMessageForCategory(category, isNewUser);
+  const languageId = user.preferences.botPreferences['inner-echo'].languageId;
   return {
     ...prompt,
-
+    
+    ...(languageId !== 'en' ? { language: [generateSystemMessageForAlternateLanguage(languageId)] } : {}),
+    
     wrapping_up_conversation: [
       LLM_SYSTEM_PROMPT_DISCONNECT_WITH_PROMPT_INSTRUCTIONS
     ],

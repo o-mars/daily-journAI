@@ -32,6 +32,8 @@ export const LANGUAGES: Record<string, Language> = {
   'es': { id: 'es', name: 'Spanish' },
   'fr': { id: 'fr', name: 'French' },
 
+  'de': { id: 'de', name: 'German' },
+
   // 'zh': { id: 'zh', name: 'Chinese' },
   // 'ja': { id: 'ja', name: 'Japanese' },
   // 'ko': { id: 'ko', name: 'Korean' },
@@ -54,6 +56,9 @@ export const VOICES: Voice[] = [
   { id: '15d0c2e2-8d29-44c3-be23-d585d5f154a1', name: 'Antonio', region: 'X', country: 'ES', sex: 'male', languageId: 'es' },
   { id: 'a249eaff-1e96-4d2c-b23b-12efa4f66f41', name: 'Fleur', region: 'X', country: 'FR', sex: 'female', languageId: 'fr' },
   { id: 'ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3', name: 'Pierre', region: 'X', country: 'FR', sex: 'male', languageId: 'fr' },
+
+  { id: '1ade29fc-6b82-4607-9e70-361720139b12', name: 'Helga', region: 'X', country: 'DE', sex: 'female', languageId: 'de' },
+  { id: 'afa425cf-5489-4a09-8a3f-d3cb1f82150d', name: 'Hans', region: 'X', country: 'DE', sex: 'male', languageId: 'de' },
 
   { id: '95d51f79-c397-46f9-b49a-23763d3eaa2d', name: 'Woman', region: 'X', country: 'IN', sex: 'female', languageId: 'hi' },
   { id: 'ac7ee4fa-25db-420d-bfff-f590d740aeb2', name: 'Man', region: 'X', country: 'IN', sex: 'male', languageId: 'hi' },
