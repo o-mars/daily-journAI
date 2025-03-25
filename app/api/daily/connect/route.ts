@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       api_keys: {
         openai: process.env.OPENAI_API_KEY,
         gemini: process.env.GEMINI_API_KEY,
+        grok: process.env.XAI_API_KEY,
       }
     };
 
