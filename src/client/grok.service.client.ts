@@ -5,7 +5,7 @@ export async function generateTransformedEntry(conversation: JournalConversation
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user');
-    const response = await fetch('/api/llm/analysis/openai/mood', {
+    const response = await fetch('/api/llm/analysis/mood/grok', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -17,10 +17,9 @@ export async function generateTransformedEntry(conversation: JournalConversation
     if (!response.ok) throw new Error('Failed to analyze transcript');
 
     const data = await response.json();
-
     return data;
   } catch (error) {
     console.error(error);
     return {};
   }
-}
+} 
