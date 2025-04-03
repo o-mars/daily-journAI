@@ -5,18 +5,21 @@ import { JournalConversationEntry, JournalEntry, toJournalEntry, JournalEntryMet
 import { generateSummary, generateTitle } from "@/app/lib/openai.admin";
 import { JOURNAL_ENTRIES_PATH, MAX_JOURNAL_ENTRIES, USER_PATH } from "@/src/models/constants";
 import { saveJournalEntryMetrics } from "@/app/lib/firebase.admin.metrics";
+import { firebaseConfig } from "@/firebase.config";
 
 
 if (!admin.apps.length) {
   const firebaseKey = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT as string);
   admin.initializeApp({
     credential: admin.credential.cert(firebaseKey),
+    storageBucket: firebaseConfig.storageBucket,
+    projectId: firebaseConfig.projectId
   });
 }
 
 export const auth = admin.auth();
 export const db = admin.firestore();
-
+export const storage = admin.storage();
 export async function getUser(userId: string): Promise<User> {
   try {
     const userDocRef = db.doc(`${USER_PATH}/${userId}`);
@@ -86,17 +89,16 @@ export async function deleteUser(userId: string): Promise<void> {
 export async function addJournalEntry(
   userId: string, 
   conversation: JournalConversationEntry[],
-  metadata: JournalEntryMetadata
+  metadata: JournalEntryMetadata,
+  recording?: Blob,
 ): Promise<JournalEntry> {
   try {
     const [
       summary,
       title,
-      // transformedEntry
     ] = await Promise.all([
       generateSummary(conversation),
       generateTitle(conversation),
-      // generateTransformedEntry(conversation)
     ]);
 
     const startTime = conversation[0].sentAt;
@@ -121,6 +123,15 @@ export async function addJournalEntry(
       const document = await journalEntryDocRef.get();
       console.log('created journalEntry: ', document.data());
       void saveJournalEntryMetrics({...metadata, userId: userId, journalEntryId: document.id}, summary, title);
+
+      if (recording) {
+        const buffer = Buffer.from(await recording.arrayBuffer());
+        const recordingRef = storage.bucket(firebaseConfig.storageBucket).file(`users/${userId}/${document.id}.webm`);
+      
+        await recordingRef.save(buffer, {
+          metadata: { contentType: recording.type },
+        });
+      }
 
       return toJournalEntry({id: document.id, ...document.data()});
     } catch (error) {

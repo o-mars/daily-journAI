@@ -176,9 +176,9 @@
 }
 
 .footer-right {
-  flex: 1;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
 }
 
 .toggle-view-button {
@@ -261,4 +261,36 @@
 .generate-notes-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.reset-recording-button,
+.play-recording-button,
+.speed-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.reset-recording-button:hover,
+.play-recording-button:hover,
+.speed-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.speed-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 49px;
+  height: 34px;
+}
+
+.speed-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ccc;
 }

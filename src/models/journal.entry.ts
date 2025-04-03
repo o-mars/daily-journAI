@@ -18,6 +18,7 @@ export interface JournalEntryMetadata {
 
   email?: string;
   provider?: ClientProvider;
+  hasRecording?: boolean;
 }
 
 export interface JournalEntrySummary {

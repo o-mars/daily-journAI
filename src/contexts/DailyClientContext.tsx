@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { LLMHelper, RTVIClient, RTVIEvent } from "realtime-ai";
-import { DailyTransport } from "realtime-ai-daily";
 import { getServices } from "@/src/models/user.preferences";
 import { defaultUser, generateConfigWithBotType } from "@/src/models/user";
 import { useUser } from "@/src/contexts/UserContext";
@@ -10,6 +9,7 @@ import { RTVIClientProvider as BaseRTVIClientProvider, useRTVIClientEvent } from
 import { LLM_GOODBYE_PROMPTS } from '@/src/models/prompts';
 import { useHeader } from '@/src/contexts/HeaderContext';
 import { trackEvent } from '@/src/services/metricsSerivce';
+import { DailyTransport } from '@daily-co/realtime-ai-daily';
 
 interface DailyClientContextType {
   voiceClient: RTVIClient | null;
@@ -228,7 +228,8 @@ export const DailyClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const config = generateConfigWithBotType(user, branding.botType) ?? generateConfigWithBotType(defaultUser, branding.botType);
 
     const newVoiceClient = new RTVIClient({
-      transport: new DailyTransport(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transport: new DailyTransport() as any,
       params: {
         baseUrl: `/api`,
         requestData: {

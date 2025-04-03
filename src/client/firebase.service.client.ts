@@ -4,6 +4,13 @@ import { toUser, User } from "@/src/models/user";
 import { defaultUserPreferences } from "@/src/models/user.preferences";
 import { getAuth } from "firebase/auth";
 
+interface RecordingMetadata {
+  url: string;
+  contentType: string;
+  size: string;
+  updated: string;
+}
+
 export async function fetchUser(userId: string): Promise<User> {
   try {
     const token = await getAuth().currentUser?.getIdToken();
@@ -98,19 +105,25 @@ export async function saveUpdatedUser(data: Partial<User>) {
 export async function saveJournalEntry(
   category: string,
   conversation: JournalConversationEntry[],
-  metadata: JournalEntryMetadata
+  metadata: JournalEntryMetadata,
+  recording?: Blob,
 ) {
   try {
     const token = await getAuth().currentUser?.getIdToken();
     if (!token) throw new Error('Failed to fetch token for logged in user.');
 
+    const formData = new FormData();
+    formData.append('conversation', JSON.stringify(conversation));
+    formData.append('metadata', JSON.stringify(metadata));
+    formData.append('category', category);
+    if (recording) formData.append('recording', recording, 'recording.wav');
+
     const response = await fetch('/api/user/journals', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ conversation, metadata, category })
+      body: formData
     });
 
     if (!response.ok) throw new Error(`Failed to save journal entry: ${response.statusText}`);
@@ -274,6 +287,34 @@ export async function createUserWithSelectedCategory(selectedCategory: ConfigCat
     return result;
   } catch (error) {
     console.error("Error creating user:", error);
+    throw error;
+  }
+}
+
+export async function fetchJournalEntryRecording(entryId: string): Promise<RecordingMetadata> {
+  try {
+    const token = await getAuth().currentUser?.getIdToken();
+    if (!token) throw new Error('Failed to fetch token for logged in user.');
+
+    const response = await fetch(`/api/user/journals/${entryId}/recording`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Recording not found');
+      }
+      throw new Error(`Failed to get recording: ${response.statusText}`);
+    }
+
+    const result: RecordingMetadata = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching recording:", error);
     throw error;
   }
 }

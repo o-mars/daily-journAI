@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useRef, ReactNode, useMemo } from "react";
+import React, { createContext, useContext, useState, useRef, ReactNode, useMemo, useEffect } from "react";
 import { useRTVIClientEvent } from "realtime-ai-react";
 import { defaultJournalEntryMetadata, JournalConversationEntry } from "@/src/models/journal.entry";
 import { BotLLMTextData, RTVIEvent, TranscriptData } from "realtime-ai";
@@ -10,6 +10,7 @@ import { useHeader } from "@/src/contexts/HeaderContext";
 import { useDailyClient } from "@/src/contexts/DailyClientContext";
 import { trackEvent } from "@/src/services/metricsSerivce";
 import { ClientProvider } from "@/src/models/user.preferences";
+import { RecordingService } from "@/src/services/recordingService";
 
 interface DailySessionContextType {
   messages: JournalConversationEntry[];
@@ -25,7 +26,8 @@ const DailySessionContext = createContext<DailySessionContextType | undefined>(u
 export const DailySessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { branding, navigateToView } = useHeader();
   const { syncLocalUser, user } = useUser();
-  const { shouldSaveRef, isStarted } = useDailyClient()!;
+  const { shouldSaveRef, isStarted, voiceClient } = useDailyClient()!;
+  const recordingServiceRef = useRef<RecordingService>(new RecordingService());
   const [rawMessages, setRawMessages] = useState<JournalConversationEntry[]>([]);
   const messages = useMemo(() => {
     return rawMessages.reduce((acc, message) => {
@@ -81,9 +83,15 @@ export const DailySessionProvider: React.FC<{ children: ReactNode }> = ({ childr
     setRawMessages((prevMessages) => [...prevMessages, { from: 'assistant', sentAt: new Date(), text }]);
   });
 
+  useEffect(() => {
+    if (isStarted) {
+      startRecording();
+    }
+  }, [isStarted]);
+
   useRTVIClientEvent(RTVIEvent.Disconnected, async () => {
     if (!isStarted) return;
-
+    const recordingPromise = recordingServiceRef.current.stopRecording();
     const didUserInteract = rawMessages.some(message => message.from === 'user');
     if (didUserInteract) {
       setIsLoading(true);
@@ -94,6 +102,8 @@ export const DailySessionProvider: React.FC<{ children: ReactNode }> = ({ childr
           0;
         const assistantEntries = rawMessages.filter(message => message.from === 'assistant');
         const userEntries = rawMessages.filter(message => message.from === 'user');
+        
+        const recording = await recordingPromise;
 
         const finalMetadata = {
           ...defaultJournalEntryMetadata,
@@ -107,10 +117,11 @@ export const DailySessionProvider: React.FC<{ children: ReactNode }> = ({ childr
           provider: 'dailybots' as ClientProvider,
           inputLength: userEntries.reduce((acc, message) => acc + message.text.length, 0),
           outputLength: assistantEntries.reduce((acc, message) => acc + message.text.length, 0),
+          hasRecording: !!recording?.blob,
         };
 
         if (shouldSaveRef.current) {
-          const response = await saveJournalEntry(user!.preferences.selectedConfig, messagesToSave, finalMetadata);
+          const response = await saveJournalEntry(user!.preferences.selectedConfig, messagesToSave, finalMetadata, recording?.blob);
           trackEvent("session", "session-saved", { ...finalMetadata, journalId: response.id });
           await syncLocalUser();
           setLastSavedJournalId(response.id);
@@ -130,6 +141,16 @@ export const DailySessionProvider: React.FC<{ children: ReactNode }> = ({ childr
       navigateToView('main');
     }
   });
+
+  const startRecording = () => {
+    if (!voiceClient) return;
+    const tracks = [];
+    const botTrack = voiceClient.tracks().bot?.audio;
+    const userTrack = voiceClient.tracks().local?.audio;
+    if (botTrack) tracks.push(botTrack);
+    if (userTrack) tracks.push(userTrack);
+    recordingServiceRef.current.startRecording(tracks);
+  }
 
   const addMessage = (message: JournalConversationEntry) => {
     setRawMessages((prevMessages) => [...prevMessages, message]);

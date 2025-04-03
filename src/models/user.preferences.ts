@@ -5,7 +5,7 @@ import { BotType } from "@/src/models/user";
 import { HumeConfigId } from "@/src/models/configs/hume/hume.config";
 import { ConfigCategory } from "@/src/models/categories.config";
 
-const DEFAULT_CLIENT_PROVIDER = 'hume' as ClientProvider;
+const DEFAULT_CLIENT_PROVIDER = 'dailybots' as ClientProvider;
 
 export type ConversationStyle = "empathetic" | "reflective" | "conversational" | "inquisitive" | "neutral" | "Playful";
 export type ConversationTone = "reflective" | "professional" | "inquisitive";

@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.9",
+    "@daily-co/daily-js": "^0.76.0",
+    "@daily-co/realtime-ai-daily": "^0.2.3",
     "@humeai/voice-react": "^0.1.19",
     "firebase": "^11.0.1",
     "firebase-admin": "^13.0.0",
@@ -18,9 +20,8 @@
     "openai": "^4.72.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "realtime-ai": "^0.2.1",
-    "realtime-ai-daily": "^0.2.0",
-    "realtime-ai-react": "^0.2.1"
+    "realtime-ai": "^0.2.3",
+    "realtime-ai-react": "^0.2.2"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",

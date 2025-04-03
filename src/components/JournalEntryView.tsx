@@ -4,7 +4,7 @@ import Conversation from "./Conversation";
 import { TransformedEntryView } from "./TransformedEntryView";
 import '@/src/styles/JournalEntryView.css';
 import Image from "next/image";
-import { updateJournalEntry } from "@/src/client/firebase.service.client";
+import { updateJournalEntry, fetchJournalEntryRecording } from "@/src/client/firebase.service.client";
 import { useUser } from "@/src/contexts/UserContext";
 import { trackEvent } from "@/src/services/metricsSerivce";
 import { generateTransformedEntry } from "@/src/client/openai.service.client";
@@ -45,6 +45,10 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [titleSizeClass, setTitleSizeClass] = useState('size-lg');
   const titleRef = useRef<HTMLInputElement>(null);
+  const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   useEffect(() => {
     setEditedTitle(getEntryDisplayText(entry));
@@ -65,6 +69,29 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
     window.addEventListener('resize', updateTitleSize);
     return () => window.removeEventListener('resize', updateTitleSize);
   }, [editedTitle]);
+
+  useEffect(() => {
+    const fetchRecording = async () => {
+      if (entry.metadata?.hasRecording) {
+        try {
+          const recording = await fetchJournalEntryRecording(entry.id!);
+          setRecordingUrl(recording.url);
+        } catch (error) {
+          console.error('Failed to fetch recording:', error);
+        }
+      }
+    };
+
+    fetchRecording();
+  }, [entry.id, entry.metadata?.hasRecording]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+      };
+    }
+  }, [recordingUrl]);
 
   const handleCancel = () => {
     setEditedTitle(getEntryDisplayText(entry));
@@ -120,6 +147,25 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePlayPause = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleSpeedChange = () => {
+    if (!audioRef.current) return;
+    
+    const newSpeed = playbackSpeed === 1 ? 1.25 : playbackSpeed === 1.25 ? 1.5 : playbackSpeed === 1.5 ? 1.75 : playbackSpeed === 1.75 ? 2 : 1;
+    audioRef.current.playbackRate = newSpeed;
+    setPlaybackSpeed(newSpeed);
   };
 
   return (
@@ -182,6 +228,29 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
               )}
             </div>
             <div className="footer-right">
+              {recordingUrl && (
+                <>
+                  <button
+                    className="play-recording-button"
+                    onClick={handlePlayPause}
+                    title={isPlaying ? 'Pause Recording' : 'Play Recording'}
+                  >
+                    <Image 
+                      width={24} 
+                      height={24} 
+                      src={isPlaying ? "/icons/pause.png" : "/icons/play.png"} 
+                      alt={isPlaying ? "Pause" : "Play"} 
+                    />
+                  </button>
+                  <button
+                    className="speed-button"
+                    onClick={handleSpeedChange}
+                    title={`Playback Speed: ${playbackSpeed}x`}
+                  >
+                    <span className="speed-text">{playbackSpeed}x</span>
+                  </button>
+                </>
+              )}
               <button
                 className="toggle-view-button"
                 onClick={() => setActiveTab(activeTab === 'conversation' ? 'transformed' : 'conversation')}
@@ -196,6 +265,13 @@ export function JournalEntryView({ entry }: JournalEntryViewProps) {
           </div>
         </div>
       </div>
+      {recordingUrl && (
+        <audio
+          ref={audioRef}
+          src={recordingUrl}
+          style={{ display: 'none' }}
+        />
+      )}
     </div>
   );
 } 
