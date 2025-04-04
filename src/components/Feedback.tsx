@@ -35,7 +35,7 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
           {[2, 4, 6, 8, 10].map((star) => (
             <span
               key={star}
-              className={`text-2xl cursor-pointer ${star <= rating ? "text-yellow-400" : "text-gray-400"}`}
+              className={`text-2xl cursor-pointer ${star <= rating ? "text-yellow-400" : "text-secondary"}`}
               onClick={() => setRating(star)}
             >
               ★
@@ -43,21 +43,21 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
           ))}
         </div>
         <textarea
-          className="w-full h-20 bg-gray-800 text-white p-4 rounded-md mt-4 mb-4"
+          className="w-full h-20 bg-surface-1 text-primary p-4 rounded-md mt-4 mb-4"
           placeholder="Add your comment here..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
         <div className="flex justify-center space-x-4 mt-4">
           <button 
-            className="bg-blue-500 px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-accent-primary px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
             disabled={rating === 0}
           >
             Submit
           </button>
           <button 
-            className="bg-gray-500 px-4 py-2 rounded-md"
+            className="bg-surface-4 px-4 py-2 rounded-md"
             onClick={() => router.back()}
           >
             Cancel
@@ -66,7 +66,7 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
         <div className="mt-4">
           <StatusIndicator
             ref={statusRef}
-            className="text-white"
+            className="text-primary"
           />
         </div>
       </div>

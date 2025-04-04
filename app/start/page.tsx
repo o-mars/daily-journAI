@@ -5,7 +5,7 @@ import HumeSelector from "@/src/components/Hume/HumeSelector";
 
 export default function Page() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <HumeSelector />
     </div>

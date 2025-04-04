@@ -10,7 +10,7 @@ const ErrorState = () => (
     <h2 className="text-xl text-red-400 mb-4">
       Uhoh! Something went wrong.
     </h2>
-    <p className="text-gray-300">
+    <p className="text-tertiary">
       Please try refreshing the page. If the problem persists, contact support.
     </p>
   </div>
@@ -29,7 +29,7 @@ export default async function Page({
   try {
     const accessToken = await getHumeAccessToken();
     return (
-      <div className="flex flex-col min-h-screen bg-gray-900">
+      <div className="flex flex-col min-h-screen bg-background">
         <Header />
         <HumeClient 
           accessToken={accessToken} 
@@ -39,7 +39,7 @@ export default async function Page({
     );
   } catch {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-900">
+      <div className="flex flex-col min-h-screen bg-background">
         <Header />
         <ErrorState />
       </div>

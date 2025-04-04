@@ -30,7 +30,7 @@ export default function JournalEntryPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow overflow-auto px-2">
         <JournalEntryView entry={entry} />

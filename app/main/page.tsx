@@ -69,17 +69,17 @@ function Dashboard() {
 
   if (isLoading || (isConnecting && !isStarted)) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-900">
+      <div className="flex flex-col min-h-screen bg-background">
         <Header />
         <div className="flex-grow flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
       <main className="flex-grow">
@@ -93,7 +93,7 @@ function Dashboard() {
       </main>
 
       {isStarted && (
-        <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+        <footer className="bg-background sticky bottom-0 z-10 p-2">
           <DailyVoiceControls />
         </footer>
       )}

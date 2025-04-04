@@ -140,15 +140,15 @@ function CompleteEmailAuth() {
   }, [firebaseUserState, handlePostAuthRedirect, router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-backgroundp-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-2">{branding.appName}</h1>
+          <h1 className="text-5xl font-bold text-primary mb-2">{branding.appName}</h1>
         </div>
 
-        <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
+        <div className="bg-surface-1 rounded-lg shadow-xl p-8 space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            <label htmlFor="email" className="block text-sm font-medium text-tertiary">
               Email
             </label>
                 <input
@@ -156,7 +156,7 @@ function CompleteEmailAuth() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+                  className="mt-1 block w-full rounded-md bg-surface-2 border-transparent focus:border-accent-primary focus:ring-2 focus:ring-indigo-500 text-primary px-4 py-2"
                   placeholder="you@example.com"
             />
           </div>

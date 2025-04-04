@@ -15,7 +15,7 @@ export default function Journals() {
   };
 
   return (
-      <div className="flex flex-col min-h-screen bg-gray-900">
+      <div className="flex flex-col min-h-screen bg-background">
         <Header />
 
         <main className="relative" style={{ minHeight: 'calc(100svh - 170px)' }}>

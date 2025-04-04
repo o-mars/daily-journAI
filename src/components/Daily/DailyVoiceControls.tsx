@@ -57,10 +57,10 @@ const DailyVoiceControls: React.FC = () => {
     return (
       <button 
         onClick={connect}
-        className="w-32 h-32 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-lg"
+        className="w-32 h-32 rounded-full bg-accent-primary hover:bg-accent-primary-hover transition-colors duration-200 flex items-center justify-center shadow-lg"
       >
         <div className="text-center">
-          <span className="text-white" style={{ fontSize: '1.5rem' }}>Start</span>
+          <span className="text-primary" style={{ fontSize: '1.5rem' }}>Start</span>
         </div>
       </button>
     );

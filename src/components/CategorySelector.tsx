@@ -70,7 +70,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
       <div className={`${minimal ? '' : 'flex-1 overflow-y-auto'} py-2 sm:py-4`}>
         <div>
           {!minimal && (
-            <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-4 sm:mb-6 text-white text-center">
+            <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-4 sm:mb-6 text-primary text-center">
               What would you like to explore today?
             </h2>
           )}
@@ -83,8 +83,8 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
                   group flex flex-col 
                   rounded-lg transition-all relative
                   ${selectedCategory === category.id 
-                    ? 'bg-blue-600 ring-2 ring-blue-400 shadow-lg scale-[1.02]'
-                    : 'bg-gray-800/70 hover:bg-gray-700/80 opacity-75 hover:opacity-90'}
+                    ? 'bg-accent-primary ring-2 ring-blue-400 shadow-lg scale-[1.02]'
+                    : 'bg-surface-1/70 hover:bg-surface-2/80 opacity-75 hover:opacity-90'}
                 `}
                 style={{
                   height: `${getCardHeight()}px`,
@@ -104,7 +104,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
                       ? 'clamp(0.7rem, 2vw, 0.8rem)'
                       : 'clamp(0.9rem, 2.5vw, 1.5rem)'
                   }} 
-                  className="font-semibold text-white text-center w-full leading-tight">
+                  className="font-semibold text-primary text-center w-full leading-tight">
                     {category.name}
                   </h3>
                 </div>
@@ -118,9 +118,9 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         <div className="flex justify-center p-6 sm:p-8 bg-gradient-to-t from-black/50 to-transparent">
           <button
             onClick={onStart}
-            className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-36 lg:h-36 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-lg"
+            className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-36 lg:h-36 rounded-full bg-accent-primary hover:bg-accent-primary-hover transition-colors duration-200 flex items-center justify-center shadow-lg"
           >
-            <span className="text-white text-2xl">Start</span>
+            <span className="text-primary text-2xl">Start</span>
           </button>
         </div>
       )}

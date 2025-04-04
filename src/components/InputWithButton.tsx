@@ -42,8 +42,8 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={`flex-grow bg-gray-800 text-white placeholder-gray-400 focus:outline-none ${inputStyles} ${
-            readOnly ? 'opacity-50 cursor-default' : 'focus:border-blue-500'
+          className={`flex-grow bg-surface-1 text-primary placeholder-gray-400 focus:outline-none ${inputStyles} ${
+            readOnly ? 'opacity-50 cursor-default' : 'focus:border-accent-primary'
           }`}
           readOnly={readOnly}
         />
@@ -51,8 +51,8 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
           <button 
             onClick={onButtonClick} 
             disabled={disabled}
-            className={`ml-2 p-2 bg-blue-500 text-white rounded ${
-              disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+            className={`ml-2 p-2 bg-accent-primary text-primary rounded ${
+              disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-primary-hover'
             }`}
           >
             {buttonLabel}

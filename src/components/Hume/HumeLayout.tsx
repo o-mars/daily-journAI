@@ -24,7 +24,7 @@ function HumeLayoutContent() {
     return (
       <div className="flex items-center justify-center flex-1" style={{ height: 'calc(100svh - 64px)' }}>
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-light"></div>
         </div>
       </div>
     );
@@ -37,7 +37,7 @@ function HumeLayoutContent() {
       </main>
 
       {isConnected && (
-        <footer className="bg-gray-900 w-full z-10 p-2">
+        <footer className="bg-backgroundw-full z-10 p-2">
           <HumeControls />
         </footer>
       )}

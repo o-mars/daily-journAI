@@ -26,6 +26,8 @@ interface HeaderContextType {
   toggleMenu: () => void;
   navigateToView: (view: HeaderView, params?: Record<string, string>) => void;
   goBack: () => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 function getCurrentViewFromPath(pathName: string): HeaderView {
@@ -48,6 +50,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const [lastJournalEntryId, setLastJournalEntryId] = useState<string>('');
   const { clientProvider } = useUser();
   const [isShowingMenuOptions, setIsShowingMenuOptions] = useState(currentView === 'settings' || currentView === 'feedback');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -62,6 +65,34 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
       setIsShowingMenuOptions(nextView === 'settings' || nextView === 'feedback');
     }
   }, [pathName, currentView]);
+
+  useEffect(() => {
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme-preference') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      applyTheme(savedTheme);
+    } else {
+      // Default to light theme
+      applyTheme('light');
+    }
+  }, []);
+
+  const applyTheme = (themeValue: 'light' | 'dark') => {
+    // Remove any existing theme classes
+    document.documentElement.classList.remove('light-mode', 'dark-mode');
+    
+    // Apply chosen theme
+    document.documentElement.setAttribute('data-theme', themeValue);
+    document.documentElement.classList.add(`${themeValue}-mode`);
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme-preference', newTheme);
+    applyTheme(newTheme);
+  };
 
   const toggleMenu = () => {
     setIsShowingMenuOptions(!isShowingMenuOptions);
@@ -112,7 +143,9 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
         setLastJournalEntryId,
         toggleMenu,
         navigateToView,
-        goBack
+        goBack,
+        theme,
+        toggleTheme,
       }}
     >
       {children}

@@ -20,7 +20,9 @@ const Header: React.FC = () => {
     setLastJournalEntryId,
     toggleMenu,
     navigateToView,
-    goBack
+    goBack,
+    theme,
+    toggleTheme
   } = useHeader();
 
   useEffect(() => {
@@ -64,11 +66,10 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="relative flex items-center p-4 bg-gray-900 sticky top-0 z-10">
+    <header className="relative flex items-center p-4 bg-background sticky top-0 z-10">
       {clientProvider === 'dailybots' && <RTVIClientAudio />}
 
       <div className="flex flex-grow-0">
-
         {!isShowingMenuOptions ? (
           <button className="w-8" onClick={toggleMenu} title="Menu">
             <Image width={32} height={32} src="/icons/menu.svg" alt="Menu" />
@@ -83,12 +84,12 @@ const Header: React.FC = () => {
           <>
             <button className="w-7 mr-3" onClick={handleSettingsClick} title="Settings">
               <Image
-                  width={24}
-                  height={24}
-                  src="/icons/settings.svg"
-                  alt="Settings"
-                  className={`${currentView === 'settings' ? '' : 'opacity-50'}`}
-                />
+                width={24}
+                height={24}
+                src="/icons/settings.svg"
+                alt="Settings"
+                className={`${currentView === 'settings' ? '' : 'opacity-50'}`}
+              />
             </button>
             <button className="w-7 mr-4" onClick={handleFeedbackClick} title="Feedback">
               <Image
@@ -111,38 +112,59 @@ const Header: React.FC = () => {
           </>
         )}
       </div>
-      <h1 className={`absolute left-1/2 transform -translate-x-1/2 text-lg sm:text-2xl md:text-4xl font-bold select-none truncate max-w-[240px] sm:max-w-[300px] ${
-        isShowingMenuOptions ? 'hidden-on-small' : ''
-      }`}>
+      <h1 className={`absolute left-1/2 transform -translate-x-1/2 text-lg sm:text-2xl md:text-4xl font-bold select-none truncate max-w-[240px] sm:max-w-[300px] ${isShowingMenuOptions ? 'hidden-on-small' : ''}`}>
         {currentView === 'settings' ? 'Settings' : branding.appName}
       </h1>
       <div className="flex flex-grow-0 ml-auto">
-        {(currentView === 'journals') && (
-          <button
-            className="w-7" 
-            onClick={handleNewJournalClick}
-            title="Start"
-          >
-            <Image
-              width={28}
-              height={28}
-              src="/icons/chat-plus-corner-thick.png"
-              alt="New"
-              className="opacity-50 hover:opacity-100"
-            />
-          </button>
-        )}
-        {(currentView === 'start' || currentView === 'main' || currentView === 'journals/:journalEntryId') && (
-          <button className="w-7" onClick={() => navigateToView('journals')}>
-            <Image
-              width={26}
-              height={26}
-              src="/icons/book-white.png"
-              alt="Read"
-              className="opacity-50 hover:opacity-100"
-            />
-          </button>
-        )}
+          <>
+          {(currentView === 'settings') && (
+            <button className="w-7" onClick={toggleTheme} title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}>
+              {theme === 'light' ? (
+                <Image
+                  width={24}
+                  height={24}
+                  src="/icons/sun.png"
+                  alt="Light Mode"
+                  className="opacity-50 hover:opacity-100 icon-invert"
+                />
+              ) : (
+                <Image
+                  width={34}
+                  height={34}
+                  src="/icons/moon.png"
+                  alt="Dark Mode"
+                  className="opacity-50 hover:opacity-100 icon-invert"
+                />
+              )}
+            </button>
+            )}
+            {(currentView === 'journals') && (
+              <button
+                className="w-7" 
+                onClick={handleNewJournalClick}
+                title="Start"
+              >
+                <Image
+                  width={28}
+                  height={28}
+                  src="/icons/chat-plus-corner-thick.png"
+                  alt="New"
+                  className="opacity-50 hover:opacity-100"
+                />
+              </button>
+            )}
+            {(currentView === 'start' || currentView === 'main' || currentView === 'journals/:journalEntryId') && (
+              <button className="w-7" onClick={() => navigateToView('journals')}>
+                <Image
+                  width={26}
+                  height={26}
+                  src="/icons/book-white.png"
+                  alt="Read"
+                  className="opacity-50 hover:opacity-100"
+                />
+              </button>
+            )}
+          </>
       </div>
     </header>
   );

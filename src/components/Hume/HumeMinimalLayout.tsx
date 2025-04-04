@@ -24,20 +24,20 @@ function HumeMinimalLayoutContent() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-lg">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-light"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <main className="flex flex-col h-screen bg-gray-900">
+    <main className="flex flex-col h-screen bg-background">
       {isConnected && (
         <>
           <div className="flex-grow flex items-center justify-center w-full">
-            <div className="bg-gray-800/30 rounded-xl p-12 w-[600px] h-[400px] flex flex-col items-center justify-center">
+            <div className="bg-surface-1/30 rounded-xl p-12 w-[600px] h-[400px] flex flex-col items-center justify-center">
               <div className="relative mt-20">
-                <div className="absolute inset-0 bg-blue-500/20 blur-xl" />
+                <div className="absolute inset-0 bg-accent-primary/20 blur-xl" />
                 <div className="text-blue-500/70 text-lg mb-4 text-center">
                   Echo
                 </div>
@@ -52,12 +52,12 @@ function HumeMinimalLayoutContent() {
             </div>
           </div>
           
-          <footer className="bg-gray-900 sticky bottom-0 z-10 p-2">
+          <footer className="bg-backgroundsticky bottom-0 z-10 p-2">
             <div className="flex flex-col items-center gap-2">
               {isMuted && <HumeEchoInput />}
               <button
                 onClick={() => handleEndSession(true)}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-lg font-medium"
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-primary rounded-lg transition-colors text-lg font-medium"
               >
                 End Session
               </button>

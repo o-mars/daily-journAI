@@ -51,7 +51,7 @@ export default function EmailAuth({
     <div className="relative flex flex-col">
       <div className="flex-1">
         <div className="pt-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+          <label htmlFor="email" className="block text-sm font-medium text-tertiary">
             Email
           </label>
           <input
@@ -59,14 +59,14 @@ export default function EmailAuth({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-white px-4 py-2"
+            className="mt-1 block w-full rounded-md bg-surface-2 border-transparent focus:border-accent-primary focus:ring-2 focus:ring-indigo-500 text-primary px-4 py-2"
             placeholder="you@example.com"
           />
         </div>
 
         <button
           onClick={handleAuth}
-          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-surface-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           disabled={!isFormValid}
         >
           Connect Email

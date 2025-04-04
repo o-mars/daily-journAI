@@ -43,7 +43,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const Selector = clientProvider === 'dailybots' ? DailySelector : HumeSelector;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white p-4">
+    <div className="flex flex-col items-center min-h-screen bg-backgroundtext-primary p-4">
       <div className="flex-1 min-h-[2vh]" />
 
       <div className="flex flex-col items-center justify-between flex-1 max-h-[96vh] w-full">
@@ -62,12 +62,12 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </p>
           {!shouldShowPrivacyPolicy && (
             <div className="relative inline-flex items-center group">
-              <p className="text-sm xs:text-base text-gray-300">
+              <p className="text-sm xs:text-base text-tertiary">
                 Your data is stored securely and only accessible to you
               </p>
               <button 
-                className="ml-2 w-5 h-5 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center text-sm 
-                           hover:bg-gray-600 hover:text-white transition-colors"
+                className="ml-2 w-5 h-5 rounded-full bg-surface-2 text-tertiary flex items-center justify-center text-sm 
+                           hover:bg-surface-3 hover:text-primary transition-colors"
                 onClick={() => window.open('/privacy-policy', '_blank')}
               >
                 ?
@@ -95,9 +95,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               padding: '12px 24px',
               borderRadius: '9999px'
             }}
-            className={`text-white font-bold text-lg transition duration-300 ease-in-out transform 
+            className={`text-primary font-bold text-lg transition duration-300 ease-in-out transform 
               ${acceptedPolicy 
-                ? 'hover:scale-105 hover:bg-blue-800 hover:border-blue-400'
+                ? 'hover:scale-105 hover:bg-accent-primary-hover hover:border-accent-primary'
                 : 'opacity-50 cursor-not-allowed'}`}
             onClick={handleAgreeAndContinue}
             disabled={!acceptedPolicy}

@@ -9,12 +9,12 @@
   align-items: center;
   position: sticky;
   top: 0;
-  background: #1a1a1a;
+  background: var(--surface-1);
   z-index: 1;
   width: 100%;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #2a2a2a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid var(--border-medium);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .content-card-header {
@@ -24,7 +24,7 @@
   }
   input.title-input {
     text-align: center;
-    border-bottom-color: #555;
+    border-bottom-color: var(--border-dark);
   }
 }
 
@@ -52,9 +52,9 @@
 }
 
 .content-card {
-  background: #1a1a1a;
+  background: var(--surface-1);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px var(--shadow-color);
   margin: 8px;
   padding: 16px;
   padding-bottom: 10px;
@@ -86,7 +86,7 @@
 
 .title-input:focus {
   outline: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .transformed-entry-input {
@@ -123,11 +123,11 @@
 }
 
 .save-status.success {
-  color: #22c55e;
+  color: var(--success);
 }
 
 .save-status.error {
-  color: #ef4444;
+  color: var(--error);
 }
 
 .spinner {
@@ -135,8 +135,8 @@
   height: 20px;
   align-self: center;
   border-radius: 60%;
-  border: 1.5px solid #fff;
-  border-left-color: #999;
+  border: 1.5px solid var(--text-inverse);
+  border-left-color: var(--text-tertiary);
   animation: spin 1s linear infinite;
 }
 
@@ -278,7 +278,7 @@
 .reset-recording-button:hover,
 .play-recording-button:hover,
 .speed-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--overlay-light);
 }
 
 .speed-button {
@@ -292,5 +292,5 @@
 .speed-text {
   font-size: 16px;
   font-weight: 500;
-  color: #ccc;
+  color: var(--text-tertiary);
 }

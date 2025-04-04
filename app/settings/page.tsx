@@ -230,11 +230,11 @@ export default function Settings() {
   }, [user, syncLocalUser, updateUser]);
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-gray-900">
+    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-background">
         <Header />
 
         <main className="px-4 min-h-0">
-            <div className="max-w-2xl mx-auto space-y-6 text-white py-6">
+            <div className="max-w-2xl mx-auto space-y-6 text-primary py-6">
                 <div className="space-y-4">
 
                     <div className="form-group">
@@ -258,7 +258,7 @@ export default function Settings() {
                         <select 
                             value={user?.preferences.selectedConfig ?? 'journaling'}
                             onChange={handleCategoryChange}
-                            className="w-full p-2 bg-gray-800 rounded"
+                            className="w-full p-2 bg-surface-1 rounded"
                         >
                             <option value="journaling">Journaling 📝</option>
                             <option value="dating">Dating 💝</option>
@@ -276,7 +276,7 @@ export default function Settings() {
                             id="provider"
                             value={localUser.preferences.provider}
                             onChange={handleChange}
-                            className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full p-2 rounded bg-surface-1 border border-dark disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={isDisabled || !showProviderSelection}
                         >
                             {PROVIDERS.map(provider => (
@@ -297,7 +297,7 @@ export default function Settings() {
                                         id="voiceId"
                                         value={localUser.preferences.botPreferences[branding.botType].voiceId}
                                         onChange={handleChange}
-                                        className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full p-2 rounded bg-surface-1 border border-dark disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={isDisabled}
                                     >
                                         {filteredVoices.map(voice => (
@@ -311,7 +311,7 @@ export default function Settings() {
 
                             <div className="form-group">
                                 <label htmlFor="vadStopSecs" className="block mb-2">
-                                    Delay Before Response: <span className="text-gray-400">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
+                                    Delay Before Response: <span className="text-secondary">{localUser.preferences.botPreferences[branding.botType].vadStopSecs}s</span>
                                 </label>
                                 <input
                                     type="range"
@@ -333,7 +333,7 @@ export default function Settings() {
                                         id="languageId"
                                         value={localUser.preferences.botPreferences[branding.botType].languageId}
                                         onChange={handleChange}
-                                        className="w-full p-2 rounded bg-gray-800 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full p-2 rounded bg-surface-1 border border-dark disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={isDisabled}
                                     >
                                         {Object.values(LANGUAGES).map(language => (
@@ -356,7 +356,7 @@ export default function Settings() {
                         </button>
                         <button
                             onClick={handleDeleteAccount}
-                            className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            className="w-full p-2 bg-red-600 text-primary rounded hover:bg-red-700"
                         >
                             Delete Account
                         </button>
@@ -381,7 +381,7 @@ export default function Settings() {
         </main>
 
         {localUser.preferences.provider === 'dailybots' && isStarted && showFooter && (
-            <footer className="bg-gray-900 border-t border-gray-800 p-2 flex justify-center">
+            <footer className="bg-backgroundborder-t border-gray-800 p-2 flex justify-center">
                 <DailyVoiceControls />
             </footer>
         )}

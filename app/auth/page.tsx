@@ -46,18 +46,18 @@ function AuthForm() {
   }, [firebaseUserState, handlePostAuthRedirect, router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-backgroundp-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-2">{branding.appName}</h1>
+          <h1 className="text-5xl font-bold text-primary mb-2">{branding.appName}</h1>
         </div>
 
         <StatusIndicator
           ref={statusRef}
-          className="text-white"
+          className="text-primary"
         />
 
-        <div className="bg-gray-800 rounded-lg shadow-xl p-8 space-y-6">
+        <div className="bg-surface-1 rounded-lg shadow-xl p-8 space-y-6">
           <EmailAuth
             firebaseUser={firebaseUserState}
           />

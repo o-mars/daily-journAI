@@ -102,13 +102,13 @@ const DailyRecorder: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 flex flex-col gap-2 bg-gray-800 p-2 rounded-lg">
+    <div className="fixed bottom-4 right-4 flex flex-col gap-2 bg-surface-1 p-2 rounded-lg">
       <audio ref={audioRef} className="hidden" />
       
       {isRecording && (
         <button
           onClick={stopRecording}
-          className="w-10 h-10 rounded-full bg-gray-600 hover:bg-gray-700 flex items-center justify-center"
+          className="w-10 h-10 rounded-full bg-surface-3 hover:bg-surface-2 flex items-center justify-center"
           title="Stop Recording"
         >
           <div className="w-4 h-4 rounded bg-white" />
@@ -126,7 +126,7 @@ const DailyRecorder: React.FC = () => {
           </button>
           <button
             onClick={clearRecording}
-            className="w-10 h-10 rounded-full bg-gray-600 hover:bg-gray-700 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-surface-3 hover:bg-surface-2 flex items-center justify-center"
             title="Clear Recording"
           >
             <Image src="/icons/trash.png" alt="Clear" width={20} height={20} />
