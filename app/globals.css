@@ -21,8 +21,8 @@
   --text-inverse: #ffffff;
   
   /* Accent colors */
-  --accent-primary: #007aff; /* iOS blue */
-  --accent-primary-hover: #0066cc; /* darker iOS blue */
+  --accent-primary: #1358ff;
+  --accent-primary-hover: #0d42c7;
   --accent-secondary: #10b981; /* emerald-500 */
   --accent-secondary-hover: #059669; /* emerald-600 */
   
@@ -36,12 +36,12 @@
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-dark: #9ca3af;
-  
+  --border-primary: #007aff;
   /* Shadow colors */
   --shadow-color: rgba(0, 0, 0, 0.1);
   
   /* Chat bubble colors */
-  --chat-bubble-user-bg: var(--accent-primary);
+  --chat-bubble-user-bg: #007aff;
   --chat-bubble-assistant-bg: var(--surface-3);
   --chat-bubble-user: var(--text-inverse);
   --chat-bubble-assistant: var(--text-primary);

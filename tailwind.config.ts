@@ -36,6 +36,7 @@ export default {
           light: "var(--border-light)",
           medium: "var(--border-medium)",
           dark: "var(--border-dark)",
+          primary: "var(--border-primary)",
         },
       },
     },

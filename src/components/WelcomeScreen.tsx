@@ -90,14 +90,12 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <button
             style={{
-              border: '2px solid #3b82f6',
-              backgroundColor: '#1d4ed8',
               padding: '12px 24px',
               borderRadius: '9999px'
             }}
             className={`text-primary font-bold text-lg transition duration-300 ease-in-out transform 
               ${acceptedPolicy 
-                ? 'hover:scale-105 hover:bg-accent-primary-hover hover:border-accent-primary'
+                ? 'bg-accent-primary border-2 border-accent-primary hover:scale-105 hover:bg-accent-primary-hover hover:border-accent-primary'
                 : 'opacity-50 cursor-not-allowed'}`}
             onClick={handleAgreeAndContinue}
             disabled={!acceptedPolicy}

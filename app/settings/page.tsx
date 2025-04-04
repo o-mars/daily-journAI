@@ -230,7 +230,7 @@ export default function Settings() {
   }, [user, syncLocalUser, updateUser]);
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-background">
+    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-surface-1">
         <Header />
 
         <main className="px-4 min-h-0">
@@ -381,7 +381,7 @@ export default function Settings() {
         </main>
 
         {localUser.preferences.provider === 'dailybots' && isStarted && showFooter && (
-            <footer className="bg-backgroundborder-t border-gray-800 p-2 flex justify-center">
+            <footer className="bg-surface-1 border-t border-gray-800 p-2 flex justify-center">
                 <DailyVoiceControls />
             </footer>
         )}

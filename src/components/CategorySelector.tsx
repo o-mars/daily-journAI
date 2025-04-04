@@ -84,7 +84,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
                   rounded-lg transition-all relative
                   ${selectedCategory === category.id 
                     ? 'bg-accent-primary ring-2 ring-blue-400 shadow-lg scale-[1.02]'
-                    : 'bg-surface-1/70 hover:bg-surface-2/80 opacity-75 hover:opacity-90'}
+                    : 'bg-surface-4 hover:bg-surface-2 border-2 border-border-medium opacity-75 hover:opacity-90'}
                 `}
                 style={{
                   height: `${getCardHeight()}px`,

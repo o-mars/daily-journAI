@@ -5,6 +5,45 @@ import DailyTextInput from "./DailyTextInput";
 import { VoiceVisualizer } from "realtime-ai-react";
 import { useDailySessionContext } from "@/src/contexts/DailySessionContext";
 import { useUser } from "@/src/contexts/UserContext";
+import { useState, useEffect } from 'react';
+
+function useThemeColors() {
+  const [colors, setColors] = useState({
+    background: '#ffffff',
+    assistantBar: '#f3f4f6',
+  });
+
+  useEffect(() => {
+    function updateColors() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setColors({
+        background: isDark ? '#1e1e1e' : '#ffffff',
+        assistantBar: isDark ? '#ededed' : '#171717',
+      });
+    }
+
+    // Initial update
+    updateColors();
+
+    // Watch for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          updateColors();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return colors;
+}
 
 const DailyVoiceControls: React.FC = () => {
   const { isInitialized } = useUser();
@@ -43,6 +82,8 @@ const DailyVoiceControls: React.FC = () => {
       100% { transform: rotate(360deg); }
     }
   `;
+
+  const { background, assistantBar } = useThemeColors();
 
   if (isVoiceClientLoading || isJournalEntryLoading || !isInitialized) {
     return (
@@ -94,8 +135,8 @@ const DailyVoiceControls: React.FC = () => {
           <div style={{ marginLeft: '-12px' }}>
             <VoiceVisualizer
               participantType="bot"
-              backgroundColor="rgb(17 24 39)"
-              barColor="rgb(229, 229, 234)"
+              backgroundColor={background}
+              barColor={assistantBar}
               barGap={1}
               barWidth={4}
               barMaxHeight={36}
@@ -113,7 +154,7 @@ const DailyVoiceControls: React.FC = () => {
           </button>
           <VoiceVisualizer
             participantType="local"
-            backgroundColor="rgb(17 24 39)"
+            backgroundColor={background}
             barColor="rgb(0, 122, 255)"
             barGap={1}
             barWidth={4}

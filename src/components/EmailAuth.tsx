@@ -66,7 +66,7 @@ export default function EmailAuth({
 
         <button
           onClick={handleAuth}
-          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary bg-indigo-600 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-surface-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full flex justify-center mt-8 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary bg-accent-primary hover:bg-accent-primary-hover disabled:cursor-not-allowed disabled:bg-surface-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary"
           disabled={!isFormValid}
         >
           Connect Email
