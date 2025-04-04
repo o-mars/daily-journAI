@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 
 function useThemeColors() {
   const [colors, setColors] = useState({
-    background: '#ffffff',
+    background: '#f3f4f6',
     assistantBar: '#f3f4f6',
   });
 
@@ -17,7 +17,7 @@ function useThemeColors() {
     function updateColors() {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       setColors({
-        background: isDark ? '#1e1e1e' : '#ffffff',
+        background: isDark ? '#121212' : '#f3f4f6',
         assistantBar: isDark ? '#ededed' : '#171717',
       });
     }

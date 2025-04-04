@@ -86,14 +86,14 @@ function Dashboard() {
         {!isStarted ? (
           <DailySelector onStart={handleConnect} />
         ) : (
-          <div className="p-2 h-full overflow-auto bg-surface-1">
+          <div className="p-2 h-full overflow-auto">
             <DailyConversation />
           </div>
         )}
       </main>
 
       {isStarted && (
-        <footer className="bg-surface-1 sticky bottom-0 z-10 p-2">
+        <footer className="bg-background sticky bottom-0 z-10 p-2">
           <DailyVoiceControls />
         </footer>
       )}
