@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/src/components/Header";
 import Modal from "@/src/components/Modal";
 import { useUser } from "@/src/contexts/UserContext";
-import { useRouter } from "next/navigation";
 import { auth } from "@/firebase.config";
 import EmailAuth from "@/src/components/EmailAuth";
 import { useDailySessionContext } from "@/src/contexts/DailySessionContext";
@@ -13,18 +12,26 @@ import { useDailyClient } from "@/src/contexts/DailyClientContext";
 import DailyVoiceControls from "@/src/components/Daily/DailyVoiceControls";
 import DailyConversation from "@/src/components/Daily/DailyConversation";
 import DailySelector from "@/src/components/Daily/DailySelector";
+import { useHeader } from "@/src/contexts/HeaderContext";
 
 function Dashboard() {
-  const router = useRouter();
-  const { user } = useUser();
+  const { user, isInitialized } = useUser();
   const { lastSavedJournalId, isLoading: isSessionLoading } = useDailySessionContext();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const searchParams = useSearchParams();
   const [shouldAutoConnect, setShouldAutoConnect] = useState(false);
   const hasAutoConnected = useRef(false);
-  const { isInitialized } = useUser();
   const { isStarted, isLoading: isClientLoading, connect } = useDailyClient()!;
   const [isConnecting, setIsConnecting] = useState(false);
+  const { navigateToView} = useHeader()
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (!user) {
+      navigateToView('welcome');
+      return;
+    }
+  }, [user, isInitialized, navigateToView]);
 
   const handleConnect = useCallback(async () => {
     setIsConnecting(true);
@@ -60,10 +67,10 @@ function Dashboard() {
       if (user?.profile.isAnonymous) {
         setShowAuthModal(true);
       } else {
-        router.push(`/journals/${lastSavedJournalId}`);
+        navigateToView('journals/:journalEntryId', { journalEntryId: lastSavedJournalId });
       }
     }
-  }, [lastSavedJournalId, user?.profile.isAnonymous, router]);
+  }, [lastSavedJournalId, user?.profile.isAnonymous]);
 
   const isLoading = isClientLoading || isSessionLoading || isConnecting;
 

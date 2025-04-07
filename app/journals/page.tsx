@@ -2,16 +2,15 @@
 
 import Header from "@/src/components/Header";
 import { JournalEntryList } from "@/src/components/JournalEntryList";
-import { useRouter } from 'next/navigation';
+import { useHeader } from "@/src/contexts/HeaderContext";
 import { JournalEntry } from "@/src/models/journal.entry";
 import { useUser } from "@/src/contexts/UserContext";
-
 export default function Journals() {
   const { journalEntries } = useUser();
-  const router = useRouter();
+  const { navigateToView } = useHeader();
 
   const handleEntrySelect = (entry: JournalEntry) => {
-    router.push(`/journals/${entry.id}`);
+    navigateToView('journals/:journalEntryId', { journalEntryId: entry.id });
   };
 
   return (
