@@ -37,7 +37,7 @@ function HumeLayoutContent() {
       </main>
 
       {isConnected && (
-        <footer className="bg-backgroundw-full z-10 p-2">
+        <footer className="bg-background w-full z-10 p-2">
           <HumeControls />
         </footer>
       )}

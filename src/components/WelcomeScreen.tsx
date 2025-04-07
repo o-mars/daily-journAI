@@ -43,7 +43,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const Selector = clientProvider === 'dailybots' ? DailySelector : HumeSelector;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-backgroundtext-primary p-4">
+    <div className="flex flex-col items-center min-h-screen bg-background text-primary p-4">
       <div className="flex-1 min-h-[2vh]" />
 
       <div className="flex flex-col items-center justify-between flex-1 max-h-[96vh] w-full">

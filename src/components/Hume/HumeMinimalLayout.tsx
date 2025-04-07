@@ -52,7 +52,7 @@ function HumeMinimalLayoutContent() {
             </div>
           </div>
           
-          <footer className="bg-backgroundsticky bottom-0 z-10 p-2">
+          <footer className="bg-background sticky bottom-0 z-10 p-2">
             <div className="flex flex-col items-center gap-2">
               {isMuted && <HumeEchoInput />}
               <button
