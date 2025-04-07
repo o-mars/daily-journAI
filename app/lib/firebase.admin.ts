@@ -128,8 +128,10 @@ export async function addJournalEntry(
         const buffer = Buffer.from(await recording.arrayBuffer());
         const recordingRef = storage.bucket(firebaseConfig.storageBucket).file(`users/${userId}/${document.id}.webm`);
       
-        await recordingRef.save(buffer, {
+        void recordingRef.save(buffer, {
           metadata: { contentType: recording.type },
+        }).catch(error => {
+          console.error('Failed to save recording:', error);
         });
       }
 
