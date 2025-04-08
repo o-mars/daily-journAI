@@ -19,11 +19,13 @@ function Dashboard() {
   const { lastSavedJournalId, isLoading: isSessionLoading } = useDailySessionContext();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const searchParams = useSearchParams();
-  const [shouldAutoConnect, setShouldAutoConnect] = useState(false);
+  const [shouldAutoConnect] = useState(() => searchParams.get("autoConnect") === "true");
   const hasAutoConnected = useRef(false);
   const { isStarted, isLoading: isClientLoading, connect } = useDailyClient()!;
   const [isConnecting, setIsConnecting] = useState(false);
   const { navigateToView} = useHeader()
+
+  const isLoading = isClientLoading || isSessionLoading || isConnecting || (shouldAutoConnect && !hasAutoConnected.current);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -41,11 +43,6 @@ function Dashboard() {
       setIsConnecting(false);
     }
   }, [connect]);
-
-  useEffect(() => {
-    const autoConnect = searchParams.get("autoConnect") === "true";
-    setShouldAutoConnect(autoConnect);
-  }, [searchParams]);
 
   useEffect(() => {
     if (shouldAutoConnect && !hasAutoConnected.current && isInitialized) {
@@ -71,8 +68,6 @@ function Dashboard() {
       }
     }
   }, [lastSavedJournalId, user?.profile.isAnonymous]);
-
-  const isLoading = isClientLoading || isSessionLoading || isConnecting;
 
   if (isLoading || (isConnecting && !isStarted)) {
     return (
