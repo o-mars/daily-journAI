@@ -101,7 +101,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   padding: '12px 24px',
                   borderRadius: '9999px'
                 }}
-                className={`text-primary font-bold text-lg transition duration-300 ease-in-out transform 
+                className={`text-content-white font-bold text-lg transition duration-300 ease-in-out transform 
                   ${acceptedPolicy 
                     ? 'bg-accent-primary border-2 border-accent-primary hover:scale-105 hover:bg-accent-primary-hover hover:border-accent-primary'
                     : 'opacity-50 cursor-not-allowed'}`}

@@ -18,7 +18,9 @@
   --text-primary: #171717;
   --text-secondary: #525252;
   --text-tertiary: #737373;
-  --text-inverse: #ffffff;
+  --text-inverse: #ededed;
+  --text-black: var(--text-primary);
+  --text-white: var(--text-inverse);
   
   /* Accent colors */
   --accent-primary: #1358ff;
@@ -69,6 +71,9 @@
   --text-secondary: #d4d4d4;
   --text-tertiary: #a3a3a3;
   --text-inverse: #171717;
+  --text-black: var(--text-primary);
+  --text-white: var(--text-inverse);
+ 
   
   /* Accent colors */
   --accent-primary: #007aff; /* iOS blue */

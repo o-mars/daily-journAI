@@ -51,7 +51,7 @@ const InputWithButton = forwardRef<HTMLInputElement, InputWithButtonProps>(
           <button 
             onClick={onButtonClick} 
             disabled={disabled}
-            className={`ml-2 p-2 bg-accent-primary text-primary rounded ${
+            className={`ml-2 p-2 bg-accent-primary text-content-white rounded ${
               disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-primary-hover'
             }`}
           >

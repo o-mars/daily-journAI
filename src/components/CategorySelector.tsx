@@ -83,7 +83,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
                   group flex flex-col 
                   rounded-lg transition-all relative
                   ${selectedCategory === category.id 
-                    ? 'bg-accent-primary ring-2 ring-blue-400 shadow-lg scale-[1.02]'
+                    ? 'bg-accent-primary ring-2 ring-blue-400 shadow-lg scale-[1.02] text-content-white'
                     : 'bg-surface-4 hover:bg-surface-2 border-2 border-border-medium opacity-75 hover:opacity-90'}
                 `}
                 style={{
@@ -120,7 +120,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
             onClick={onStart}
             className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-36 lg:h-36 rounded-full bg-accent-primary hover:bg-accent-primary-hover transition-colors duration-200 flex items-center justify-center shadow-lg"
           >
-            <span className="text-primary text-2xl">Start</span>
+            <span className="text-content-white text-2xl">Start</span>
           </button>
         </div>
       )}

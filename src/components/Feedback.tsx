@@ -50,7 +50,7 @@ const Feedback: React.FC<FeedbackProps> = ({ lastJournalEntryId }) => {
         />
         <div className="flex justify-center space-x-4 mt-4">
           <button 
-            className="bg-accent-primary px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-accent-primary text-content-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
             disabled={rating === 0}
           >

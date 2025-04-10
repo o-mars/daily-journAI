@@ -20,11 +20,13 @@ export default {
           3: "var(--surface-3)",
           4: "var(--surface-4)",
         },
-        text: {
+        content: {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
           tertiary: "var(--text-tertiary)",
           inverse: "var(--text-inverse)",
+          black: "var(--text-black)",
+          white: "var(--text-white)",
         },
         accent: {
           primary: "var(--accent-primary)",
